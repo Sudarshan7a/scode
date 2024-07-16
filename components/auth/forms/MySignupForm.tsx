@@ -1,23 +1,67 @@
 "use client";
 
 import React from "react";
-import { SignupFormValues } from "./SignupEmailPasswordForm";
+import { useRouter } from "next/navigation";
+import { SignupFormValues } from "@/types/authTypes";
 import OAuthSection from "../common/OAuthSection";
 import FormDivider from "../common/FormDivider";
 import SignupEmailPasswordForm from "./SignupEmailPasswordForm";
 import TermsAndPrivacy from "../common/TermsAndPrivacy";
-
+import { toast } from "sonner";
 export function MySignupForm() {
+  const router = useRouter();
+
   // Handler for OAuth signup
   const handleOAuthSignup = (providerId: string): void => {
-    console.log(`Initiating ${providerId} OAuth signup flow`);
+    // TODO: Implement OAuth signup flow
+    console.log(`OAuth signup requested for provider: ${providerId}`);
     // Implement actual OAuth flow here (e.g., signIn(providerId))
   };
 
   // Handler for email/password signup
-  const handleEmailPasswordSubmit = (values: SignupFormValues): void => {
-    console.log("Sign-up submitted:", values);
+  const handleEmailPasswordSubmit = async (
+    values: SignupFormValues
+  ): Promise<{
+    ok: boolean;
+    message?: string;
+    redirect?: string;
+    fieldErrors?: Partial<Record<keyof SignupFormValues | "root", string>>;
+  }> => {
     // Add signup logic here (API call, error handling, etc.)
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok || !result.ok) {
+        toast.error(result.message ?? "Signup failed");
+        return {
+          ok: false,
+          message: result.message,
+          fieldErrors: result.fieldErrors,
+        };
+      }
+
+      toast.success(result.message ?? "Signup successful");
+
+      // Redirect or show success message
+      if (result.redirect) {
+        router.push(result.redirect);
+      }
+
+      return { ok: true, message: result.message, redirect: result.redirect };
+    } catch (error) {
+      const message = `Unexpected signup error: ${error}`;
+      toast.error(message);
+      return { ok: false, message };
+    }
   };
 
   return (
