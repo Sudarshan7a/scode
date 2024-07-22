@@ -93,11 +93,10 @@ function Page() {
               key={session.id}
               title={session.title}
               description={session.description}
-              date={session.date}
-              username={session.username}
-              buttons={session.buttons}
-              className="hover:shadow-lg transition-transform hover:scale-105 cursor-pointer
-"
+              scheduledAt={session.date}
+              status="scheduled"
+              host={{ name: session.username, avatar: "" }}
+              className="hover:shadow-lg transition-transform hover:scale-105 cursor-pointer"
             />
           ))}
         </div>
