@@ -4,11 +4,6 @@ import React from "react";
 import { ScheduleDialog } from "./dialogs/ScheduleDialog";
 import { HostDialog } from "./dialogs/HostDialog";
 import { JoinDialog } from "./dialogs/JoinDialog";
-import {
-  ScheduleFormValues,
-  HostFormValues,
-  JoinFormValues,
-} from "./schemas/formSchemas";
 
 type RegistrationFormProps = {
   formType: "schedule" | "host" | "join";
@@ -19,39 +14,19 @@ export default function RegistrationForm({
   formType,
   buttonUnderlineStyle,
 }: RegistrationFormProps) {
-  const handleScheduleSubmit = (data: ScheduleFormValues) => {
-    const enrichedData = {
-      ...data,
-      userId: null,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      language: navigator.language,
-      browserTime: new Date().toISOString(),
-      userAgent: navigator.userAgent,
-    };
-    console.log("Schedule submitted:", enrichedData);
+  const handleScheduleSubmit = () => {
+    // TODO: Handle schedule submission with enriched data
+    // Including: userId, timeZone, language, browserTime, userAgent
   };
 
-  const handleHostSubmit = (data: HostFormValues) => {
-    const enrichedData = {
-      ...data,
-      userId: null,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      language: navigator.language,
-      browserTime: new Date().toISOString(),
-      userAgent: navigator.userAgent,
-    };
-    console.log("Host submitted:", enrichedData);
+  const handleHostSubmit = () => {
+    // TODO: Handle host submission with enriched data
+    // Including: userId, timeZone, language, browserTime, userAgent
   };
 
-  const handleJoinSubmit = (data: JoinFormValues) => {
-    const joinData = {
-      ...data,
-      joinTimestamp: new Date().toISOString(),
-      userId: null,
-      ipAddressRegion: null,
-      deviceBrowserInfo: navigator.userAgent,
-    };
-    console.log("Join submitted:", joinData);
+  const handleJoinSubmit = () => {
+    // TODO: Handle join submission with enriched data
+    // Including: joinTimestamp, userId, ipAddressRegion, deviceBrowserInfo
   };
 
   switch (formType) {
