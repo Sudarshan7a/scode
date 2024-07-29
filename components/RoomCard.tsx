@@ -58,22 +58,18 @@ const RoomCard = ({
       live: {
         label: "Join Now",
         variant: "default",
-        // onClick: () => console.log("Join Now clicked"), // Example onClick
       },
       scheduled: {
         label: "Notify Me",
         variant: "default",
-        // onClick: () => console.log("Notify Me clicked"), // Example onClick
       },
       ended: {
         label: "View Details",
         variant: "default",
-        // onClick: () => console.log("View Details clicked"), // Example onClick
       },
       saved: {
         label: "View Notes",
         variant: "default",
-        // onClick: () => console.log("View Notes clicked"), // Example onClick
       },
     };
   let button: ButtonProps; // Renamed for clarity

@@ -24,7 +24,7 @@ function TitleBackgroundCard({
       >
         <div className="flex flex-col items-end  w-full gap-4  mx-auto ">
           {!hidebutton && (
-            <button className=" pr-4 text-mysecondary-hover hover:text-sky-400">
+            <button className=" pr-4 text-mysecondary hover:text-mysecondary-hover">
               View All
             </button>
           )}
