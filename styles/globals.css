@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #f8f8f8;
+  --color-foreground: #1a1a1a;
+  --color-secondary: #3c8de3;
+  --color-secondary-hover: #ff9819;
+
+  /* Font variables */
+  --font-navbar: "Roboto", sans-serif;
+  --font-title: "Inter Serif", serif;
+  --font-secondary: "Inter", sans-serif;
+  /* Font size variables */
+  --text-title: 2.25rem; /* 36px */
+  --text-title-section: 1.5rem; /* 24px */
+  --text-title-last: 1.25rem; /* 20px */
+  --text-body: 1rem; /* 16px */
+  --text-footer: 0.875rem; /* 14px */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #1a1a1a;
+    --color-foreground: #f8f8f8;
+    --color-secondary: #ff9819;
+    --color-secondary-hover: #3c8de3;
+  }
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+._logo {
+  /* Keep original background */
+  width: 2px;
+  height: 24px;
+  margin: 6px 2px;
+  border-radius: 2px;
+  animation: logoBlink 8s infinite; /* Apply animation to logo - removed step-end */
+}
+
+/* Animation for the logo */
+@keyframes logoBlink {
+  0% {
+    /* Blue state */
+    background-color: var(--color-secondary);
+    filter: blur(0.1px) brightness(1.2);
+  }
+  32% {
+    /* Blue state */
+    background-color: var(--color-secondary);
+    filter: blur(0.1px) brightness(1.2);
+  }
+  50% {
+    /* Orange state */
+    background-color: var(--color-secondary-hover);
+    filter: blur(0.1px) brightness(1.2);
+  }
+  82% {
+    /* Orange state */
+    background-color: var(--color-secondary-hover);
+    filter: blur(0.1px) brightness(1.2);
+  }
+  100% {
+    /* Back to Blue state */
+    background-color: var(--color-secondary);
+    filter: blur(0.1px) brightness(1.2);
+  }
+}
+
+.Slogo,
+.codelogo {
+  font-family: "jura", sans-serif;
+  font-size: var(--text-title-section);
+  font-weight: 500;
+  letter-spacing: 2px; /* Add letter spacing */
+}
+.Slogo {
+  color: var(--color-secondary);
+}
+.codelogo {
+  color: var(--color-secondary-hover);
+}
