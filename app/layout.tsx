@@ -15,9 +15,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-  const hideLayout = !pathname.startsWith("/room");
-
   return (
     <html lang="en">
       <body>
