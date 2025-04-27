@@ -8,11 +8,11 @@ import AvatarIcon from "./icons/AvatarIcon";
 import { useLayoutVisibility } from "../hooks/useLayoutVisibility"; // Import the hook
 
 export default function Navbar() {
-  const showLayout = useLayoutVisibility(); // Use the hook
+  const showLayout = useLayoutVisibility(["/login", "/signup", "/room"]); // Use the hook
 
   return (
     showLayout && (
-      <div className="h-[52px] flex px-8 items-center justify-between border-b-1 border-b-secondary shadow-secondary/40 shadow-sm bg-background">
+      <div className="h-[52px] flex px-8 items-center justify-between border-b-1 border-b-mysecondary shadow-mysecondary/40 shadow-sm bg-mybackground">
         <div className="flex items-center gap-6">
           <Link href="/">
             <Logo />
@@ -22,7 +22,7 @@ export default function Navbar() {
               <Link
                 key={link.id}
                 href={link.path}
-                className="text-foreground hover:text-secondary transition-colors duration-200"
+                className="text-myforeground hover:text-mysecondary transition-colors duration-200"
               >
                 {link.name}
               </Link>
@@ -35,7 +35,7 @@ export default function Navbar() {
               <Link
                 key={index}
                 href="#"
-                className="text-foreground hover:text-secondary transition-colors duration-200"
+                className="text-myforeground hover:text-mysecondary transition-colors duration-200"
               >
                 {link}
               </Link>

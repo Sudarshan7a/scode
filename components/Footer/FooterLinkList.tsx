@@ -24,14 +24,14 @@ export default function FooterLinkList({ title, links }: FooterLinkListProps) {
                 href={link.href}
                 target="_blank" // Open external links in new tab
                 rel="noopener noreferrer" // Security best practice
-                className="hover:text-primary transition-colors" // Added hover effect
+                className="hover:text-mysecondary transition-colors" // Updated hover effect
               >
                 {link.label}
               </Link>
             ) : (
               <Link
                 href={link.href}
-                className="hover:text-primary transition-colors"
+                className="hover:text-mysecondary transition-colors"
               >
                 {link.label}
               </Link>
