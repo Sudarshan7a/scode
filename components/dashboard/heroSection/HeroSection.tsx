@@ -5,17 +5,22 @@ import HeroSectionTitle from "./HeroSectionTitle";
 
 function HeroSection() {
   return (
-    <div className="flex flex-col items-center justify-around w-full h-full gap-4 px-4  mx-auto lg:flex-row lg:gap-8 lg:px-20">
-      {" "}
-      <div className="">
-        <HeroSectionTitle />
-        <RoomJoinForm />
+    <section className="w-full bg-mybackground from-gray-50 to-white">
+      <div className="flex flex-col items-center justify-around w-full h-full px-4 mx-auto max-w-7xl lg:flex-row lg:px-8">
+        <div className="flex flex-col items-start justify-center w-full max-w-xl gap-4">
+          <HeroSectionTitle />
+          <p className="text-lg text-myforeground/80 ">
+            Your interactive coding platform for real-time collaboration,
+            practice interviews, and skills development.
+          </p>
+          <RoomJoinForm />
+        </div>
+
+        <div className="w-full max-w-md">
+          <ProductHighlightCard />
+        </div>
       </div>
-      <div>
-        <ProductHighlightCard />
-      </div>
-      {/* Add any additional components or elements here */}
-    </div>
+    </section>
   );
 }
 

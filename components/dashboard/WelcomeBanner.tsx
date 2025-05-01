@@ -3,7 +3,7 @@ import React from "react";
 
 function WelcomeBanner({ username = "Username" }: { username: string }) {
   return (
-    <h1 className="py-12 mx-28 font-title text-title select-none">
+    <h1 className="pt-12 mx-28 font-title text-title select-none">
       Welcome back! {username}{" "}
       <Image
         src="/svg/wavingHand.svg"

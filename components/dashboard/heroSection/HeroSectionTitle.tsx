@@ -2,13 +2,15 @@ import React from "react";
 
 function HeroSectionTitle() {
   return (
-    <>
-      <h1 className="mb-1 font-title text-3xl select-none">
-        Code with friends & Interviews and
-        <br /> mock-Interviews for Everyone
+    <div>
+      <h1 className="text-title font-bold tracking-tight text-myforeground font-secondary md:text-5xl select-none">
+        Code with friends & <span className="text-primary">interviews</span> for
+        everyone
       </h1>
-      <p className="">Connect, Collaborate, and Code in Real-Time</p>
-    </>
+      <p className="mt-2 text-xl font-medium text-myforeground/80 font-secondary">
+        Connect, Collaborate, and Code in Real-Time
+      </p>
+    </div>
   );
 }
 
