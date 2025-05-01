@@ -9,13 +9,13 @@ export const oauthProviders: OAuthProvider[] = [
   {
     id: "google",
     name: "Google",
-    logo: "/oauth/google.svg",
+    logo: "/svg/google.svg",
     callbackUrl: "/api/auth/callback/google",
   },
   {
     id: "github",
     name: "GitHub",
-    logo: "/oauth/github.svg",
+    logo: "/svg/github.svg",
     callbackUrl: "/api/auth/callback/github",
   },
 ];

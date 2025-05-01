@@ -1,5 +1,5 @@
 "use client";
-import MySignupForm from "@/components/custom/MySignupForm";
+import MySignupForm from "@/components/auth/forms/MySignupForm";
 import React from "react";
 import Logo from "@/components/Logo";
 import Link from "next/link";

@@ -1,0 +1,48 @@
+"use client";
+
+import React from "react";
+import { LoginFormValues } from "./EmailPasswordForm";
+import OAuthSection from "../common/OAuthSection";
+import FormDivider from "../common/FormDivider";
+import EmailPasswordForm from "./EmailPasswordForm";
+import TermsAndPrivacy from "../common/TermsAndPrivacy";
+
+export function MyLoginForm() {
+  // Handler for OAuth login
+  const handleOAuthLogin = (providerId: string): void => {
+    console.log(`Initiating ${providerId} OAuth login flow`);
+    // Here you would implement the actual OAuth flow
+    // For example, with NextAuth.js you might use signIn(providerId)
+  };
+
+  // Handler for email/password login
+  const handleEmailPasswordSubmit = (values: LoginFormValues): void => {
+    console.log("Login submitted:", values);
+    // Add authentication logic here
+  };
+
+  return (
+    <div className="min-w-md mx-auto bg-myforeground shadow-sm rounded-md p-6">
+      {/* OAuth Provider Section */}
+      <OAuthSection onOAuthLogin={handleOAuthLogin} />
+
+      {/* Divider */}
+      <FormDivider text="or continue with email" />
+
+      {/* Email/Password Form */}
+      <EmailPasswordForm
+        onSubmit={handleEmailPasswordSubmit}
+        buttonText="Log In"
+        showRememberMe={true}
+        showForgotPassword={true}
+      />
+
+      {/* Terms & Privacy */}
+      <div className="mt-6">
+        <TermsAndPrivacy text="By logging in, you agree to our" />
+      </div>
+    </div>
+  );
+}
+
+export default MyLoginForm;

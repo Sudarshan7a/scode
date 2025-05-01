@@ -1,5 +1,5 @@
 "use client";
-import MyLoginForm from "@/components/custom/MyLoginForm";
+import MyLoginForm from "@/components/auth/forms/MyLoginForm";
 import React from "react";
 import Logo from "@/components/Logo";
 import Link from "next/link";
