@@ -56,7 +56,7 @@ function ProductHighlightCard() {
               <h3 className="mb-3 text-2xl font-medium text-center font-navbar">
                 {highlight.title}
               </h3>
-              <p className="text-center text-gray-600">
+              <p className="text-center text-gray-400">
                 {highlight.description}
               </p>
             </div>

@@ -25,7 +25,7 @@ function RoomJoinForm() {
           placeholder="Enter Room ID or Link"
           className="w-full py-2 px-2 pl-3 pr-20 border-1 border-myforeground rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50"
         />
-        <button className="absolute right-1 top-1/2 -translate-y-1/2 bg-mysecondary-hover hover:bg-mysecondary-hover/90 text-white py-1 px-4 rounded-full text-sm font-medium transition-colors cursor-pointer">
+        <button className="absolute right-1 top-1/2 -translate-y-1/2 bg-mysecondary-hover hover:bg-mysecondary-hover/80 text-white py-1.5 px-4 rounded-full text-sm font-medium transition-colors cursor-pointer">
           Join
         </button>
       </div>

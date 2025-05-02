@@ -19,11 +19,9 @@ function MyButton({
     | undefined;
 }) {
   return (
-    <button className="style-button">
-      <Button className={className} variant={variant}>
-        {label}
-      </Button>
-    </button>
+    <Button className={className} variant={variant}>
+      {label}
+    </Button>
   );
 }
 
