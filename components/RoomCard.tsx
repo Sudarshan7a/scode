@@ -53,7 +53,7 @@ const RoomCard = ({
               label={button.label}
               className={`${
                 buttons.length > 1 ? "flex-1" : "w-full"
-              } cursor-pointer bg-[#ff9819] hover:bg-mysecondary-hover/80 text-[#f8f8f8] rounded-full px-4 py-2`}
+              } cursor-pointer bg-[#ff9819] hover:bg-mysecondary text-[#f8f8f8] rounded-full px-4 py-2`}
             />
           ))}
         </div>

@@ -4,9 +4,9 @@ import React from "react";
 
 function UpcomingRooms() {
   return (
-    <div className="mb-20">
+    <div className="mb-20 ">
       <TitleBackgroundCard title="Upcoming Rooms">
-        <div className="flex flex-col items-end  w-full gap-4 p-4 mx-auto">
+        <div className="flex flex-col items-end  w-full gap-4 p-4 mx-auto ">
           <button className=" pr-4 text-mysecondary-hover hover:text-sky-400">
             View All
           </button>
