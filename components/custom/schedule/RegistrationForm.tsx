@@ -48,8 +48,143 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 type RegistrationFormProps = {
-  formType: "schedule" | "host";
+  formType: "schedule" | "host" | "join";
 };
+
+export default function RegistrationForm({ formType }: RegistrationFormProps) {
+  const isJoinForm = formType === "join";
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>({
+    // Still using FormValues as the base type for the form state
+    resolver: isJoinForm ? undefined : zodResolver(formSchema), // Conditionally apply the Zod resolver
+    defaultValues: isJoinForm
+      ? { roomName: "" } // For 'join' form, only provide default for roomName
+      : {
+          // For 'schedule' or 'host' forms, provide all default values
+          roomName: "",
+          description: "",
+          date: new Date(),
+          duration: "30",
+          roomType: "interview",
+          privacyLevel: "public",
+          editorEnabled: false,
+          languagePreference: "",
+        },
+  });
+
+  const selectedDate = watch("date");
+
+  const onSubmit = (data: Partial<FormValues>) => {
+    // Type data as Partial<FormValues>
+    if (isJoinForm) {
+      // For 'join' form, formSchema validation was skipped.
+      // The 'roomName' input has its own inline validation via register options.
+
+      const joinData = {
+        roomName: data.roomName,
+        joinTimestamp: new Date().toISOString(),
+        userId: null, // Placeholder for User ID / Auth Token, replace with real value from storage later
+        // IP Address/Region: Typically requires server-side lookup.
+        // Placeholder for now, or you might integrate a service if needed.
+        ipAddressRegion: null, // Or a placeholder string e.g., "N/A (Client-side)"
+        deviceBrowserInfo: navigator.userAgent,
+      };
+      console.log("Join form submitted with details:", joinData);
+      // Implement your join logic using joinData
+    } else {
+      // For 'schedule' or 'host' forms, formSchema validation was applied.
+      // data here is expected to conform to FormValues.
+      const enrichedData = {
+        ...(data as FormValues), // Safe to cast as FormValues after Zod validation
+        userId: null, // Placeholder for User ID / Auth Token, replace with real value from storage later
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        language: navigator.language,
+        browserTime: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+      };
+      console.log("Submitted:", enrichedData);
+      // Submit to API here
+    }
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="shadow-0">
+          {formType === "schedule"
+            ? "Schedule"
+            : formType === "host"
+            ? "Host"
+            : "Join"}{" "}
+        </Button>
+      </DialogTrigger>
+      {formType !== "join" ? (
+        <DialogContent
+          className={`min-w-[60%] max-h-[90vh]  overflow-y-auto ${styles.noScrollbar}`}
+        >
+          <DialogHeader>
+            <DialogTitle className="text-title-last">
+              {formType === "schedule" ? "Schedule" : "Host"} a Session
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">
+            <RoomNameInput register={register} errors={errors} />
+            <DescriptionInput register={register} />
+            <ScheduleFields
+              formType={formType}
+              selectedDate={selectedDate}
+              setValue={setValue}
+              errors={errors}
+            />
+            <RoomTypeSelect setValue={setValue} errors={errors} />
+            <PrivacyLevelSelect setValue={setValue} errors={errors} />
+            <EditorEnabledCheckbox register={register} />
+            <Button type="submit">Confirm Schedule</Button>
+          </form>
+        </DialogContent>
+      ) : (
+        <DialogContent
+          className={`min-w-[40%] max-h-[70vh] overflow-y-auto ${styles.noScrollbar}`}
+        >
+          <DialogHeader>
+            <DialogTitle className="text-title-last">
+              Join a Session
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <Label htmlFor="joinRoomId">Room Link or ID</Label>
+              <Input
+                id="joinRoomId"
+                placeholder="Paste room link or enter room ID"
+                {...register("roomName", {
+                  required: "Room link or ID is required",
+                  minLength: {
+                    value: 3,
+                    message: "Enter at least 3 characters",
+                  },
+                })}
+                className="mt-2"
+              />
+              {errors.roomName && (
+                <p className="text-red-500 text-sm">
+                  {errors.roomName.message}
+                </p>
+              )}
+            </div>
+            <Button type="submit">Join Room</Button>
+          </form>
+        </DialogContent>
+      )}
+    </Dialog>
+  );
+}
 
 interface RoomNameInputProps {
   register: UseFormRegister<FormValues>;
@@ -243,75 +378,5 @@ function EditorEnabledCheckbox({
         Enable others to edit code (This can be changed during the session)
       </Label>
     </div>
-  );
-}
-
-export default function RegistrationForm({ formType }: RegistrationFormProps) {
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-
-    formState: { errors },
-  } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      roomName: "", // Add default for required field
-      description: "",
-      date: new Date(),
-      duration: "30", // Add default for required field
-      roomType: "interview", // Add default for required field
-      privacyLevel: "public", // Add default for required field
-      editorEnabled: false,
-      languagePreference: "",
-    },
-  });
-
-  const selectedDate = watch("date");
-
-  const onSubmit = (data: FormValues) => {
-    const enrichedData = {
-      ...data,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      language: navigator.language,
-      browserTime: new Date().toISOString(),
-      userAgent: navigator.userAgent,
-    };
-    console.log("Submitted:", enrichedData);
-    // Submit to API here
-  };
-
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="shadow-0">
-          {formType === "schedule" ? "Schedule" : "Host"}
-        </Button>
-      </DialogTrigger>
-      <DialogContent
-        className={`min-w-[60%] max-h-[90vh]  overflow-y-auto ${styles.noScrollbar}`}
-      >
-        <DialogHeader>
-          <DialogTitle className="text-title-last">
-            {formType === "schedule" ? "Schedule" : "Host"} a Session
-          </DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">
-          <RoomNameInput register={register} errors={errors} />
-          <DescriptionInput register={register} />
-          <ScheduleFields
-            formType={formType}
-            selectedDate={selectedDate}
-            setValue={setValue}
-            errors={errors}
-          />
-          <RoomTypeSelect setValue={setValue} errors={errors} />
-          <PrivacyLevelSelect setValue={setValue} errors={errors} />
-          <EditorEnabledCheckbox register={register} />
-          <Button type="submit">Confirm Schedule</Button>
-        </form>
-      </DialogContent>
-    </Dialog>
   );
 }

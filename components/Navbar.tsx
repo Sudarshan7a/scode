@@ -34,6 +34,7 @@ export default function Navbar() {
           <div className="h-full flex items-center gap-6">
             <RegistrationForm formType="schedule" />
             <RegistrationForm formType="host" />
+            <RegistrationForm formType="join" />
           </div>
           <div className="flex items-center gap-6">
             <NotificationIcon />
