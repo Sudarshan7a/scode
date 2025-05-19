@@ -2,6 +2,7 @@ import React from "react";
 import MyButton from "@/components/custom/button/MyButton";
 
 interface RoomCardProps {
+  className?: string;
   title?: string;
   description?: string;
   date?: string;
@@ -27,9 +28,12 @@ const RoomCard = ({
   date,
   username,
   buttons,
+  className,
 }: RoomCardProps) => {
   return (
-    <div className="bg-mybackground rounded-lg border-2 border-mysecondary/80 duration-300 w-[300px] p-5 flex flex-col justify-between">
+    <div
+      className={`bg-mybackground rounded-lg border-2 border-mysecondary/80 duration-300 min-w-[300px] p-5 flex flex-col justify-between ${className}`}
+    >
       <div className="space-y-2">
         <h3 className="text-xl font-semibold text-myforeground font-navbar line-clamp-2">
           {title || "Room Title"}

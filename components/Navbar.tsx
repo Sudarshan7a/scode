@@ -1,11 +1,12 @@
 "use client";
 import React from "react";
 import Logo from "./Logo";
-import { navlinks, meetingLinks } from "../constants/NavLinks";
+import { navlinks } from "../constants/NavLinks";
 import Link from "next/link";
 import NotificationIcon from "./icons/NotificationIcon";
 import AvatarIcon from "./icons/AvatarIcon";
-import { useLayoutVisibility } from "../hooks/useLayoutVisibility"; // Import the hook
+import { useLayoutVisibility } from "../hooks/useLayoutVisibility";
+import RegistrationForm from "./custom/schedule/RegistrationForm"; // Import the hook
 
 export default function Navbar() {
   const showLayout = useLayoutVisibility(["/login", "/signup", "/room"]); // Use the hook
@@ -31,15 +32,8 @@ export default function Navbar() {
         </div>
         <div className="flex items-center gap-6">
           <div className="h-full flex items-center gap-6">
-            {meetingLinks.map((link, index) => (
-              <Link
-                key={index}
-                href="#"
-                className="text-myforeground hover:text-mysecondary transition-colors duration-200"
-              >
-                {link}
-              </Link>
-            ))}
+            <RegistrationForm formType="schedule" />
+            <RegistrationForm formType="host" />
           </div>
           <div className="flex items-center gap-6">
             <NotificationIcon />
