@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -129,9 +130,14 @@ export default function RegistrationForm({ formType }: RegistrationFormProps) {
           className={`min-w-[60%] max-h-[90vh]  overflow-y-auto ${styles.noScrollbar}`}
         >
           <DialogHeader>
-            <DialogTitle className="text-title-last">
+            <DialogTitle className="text-title-last font-semibold">
               {formType === "schedule" ? "Schedule" : "Host"} a Session
             </DialogTitle>
+            <DialogDescription>
+              {formType === "schedule"
+                ? "Fill in the details below to schedule a new session."
+                : "Fill in the details below to host a session immediately."}
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">
             <RoomNameInput register={register} errors={errors} />
@@ -156,6 +162,9 @@ export default function RegistrationForm({ formType }: RegistrationFormProps) {
             <DialogTitle className="text-title-last">
               Join a Session
             </DialogTitle>
+            <DialogDescription>
+              Enter the room link or ID to join an existing session.
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
