@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import LeftTools from "./LeftTools";
+import RightEditor from "./RightEditor";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -10,5 +12,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <div>hellow{children}</div>;
+  return (
+    <div className="flex h-screen w-full justify-between">
+      <LeftTools />
+      {children}
+      <RightEditor />
+    </div>
+  );
 }
