@@ -1,5 +1,5 @@
 import React from "react";
-import Notes from "./notes/Notes";
+import NotesPage from "./notes/NotesPage";
 import Call from "./call/call";
 import AiChat from "./gemmini/AiChat";
 
@@ -9,9 +9,9 @@ type MainContentProps = {
 
 function MainContent({ renderTab }: MainContentProps) {
   return (
-    <div className="h-7">
+    <div>
       {renderTab === "Notes" ? (
-        <Notes />
+        <NotesPage sessionId="new session" />
       ) : renderTab === "Call" ? (
         <Call />
       ) : (
