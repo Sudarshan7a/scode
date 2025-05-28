@@ -4,9 +4,13 @@ import React from "react";
 import { useLayoutVisibility } from "../hooks/useLayoutVisibility"; // Import the hook
 import Link from "next/link";
 import Logo from "./Logo";
-import FooterLinkList from "./footer/FooterLinkList"; // Import the new component
-import FooterTextSection from "./footer/FooterTextSection"; // Import the new component
-import FooterBottomSection from "./footer/FooterBottomSection"; // Import the new bottom section component
+import FooterLinkList from "./Footer/FooterLinkList";
+import FooterTextSection from "./Footer/FooterTextSection";
+import FooterBottomSection from "./Footer/FooterBottomSection";
+
+// import FooterLinkList from "./footer/FooterLinkList"; // Import the new component
+// import FooterTextSection from "./footer/FooterTextSection"; // Import the new component
+// import FooterBottomSection from "./footer/FooterBottomSection"; // Import the new bottom section component
 import {
   supportLinks,
   navigationLinks,
