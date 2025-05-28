@@ -50,9 +50,13 @@ type FormValues = z.infer<typeof formSchema>;
 
 type RegistrationFormProps = {
   formType: "schedule" | "host" | "join";
+  buttonUnderlineStyle?: string; // Optional prop for custom underline style
 };
 
-export default function RegistrationForm({ formType }: RegistrationFormProps) {
+export default function RegistrationForm({
+  formType,
+  buttonUnderlineStyle,
+}: RegistrationFormProps) {
   const isJoinForm = formType === "join";
 
   const {
@@ -117,7 +121,10 @@ export default function RegistrationForm({ formType }: RegistrationFormProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className="shadow-0">
+        <Button
+          variant="link"
+          className={` text-foreground ${buttonUnderlineStyle}`}
+        >
           {formType === "schedule"
             ? "Schedule"
             : formType === "host"

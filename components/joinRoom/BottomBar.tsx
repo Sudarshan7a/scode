@@ -2,7 +2,7 @@ import React from "react";
 
 function BottomBar() {
   return (
-    <div className="font-navbar text-2xl font-normal h-[8vh] flex  border-t-1 border-t-myforeground bg-mybackground">
+    <div className="font-navbar text-xl font-normal h-[6vh] flex  border-t-1 border-t-myforeground bg-mybackground">
       <div className=" flex-1 flex items-center justify-center my-auto h-9/12  border-r-1 border-r-myforeground text-center">
         <p>Notes</p>
       </div>

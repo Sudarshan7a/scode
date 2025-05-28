@@ -3,10 +3,14 @@ import React from "react";
 import Logo from "./Logo";
 import { navlinks } from "../constants/NavLinks";
 import Link from "next/link";
-import NotificationIcon from "./icons/NotificationIcon";
 import AvatarIcon from "./icons/AvatarIcon";
 import { useLayoutVisibility } from "../hooks/useLayoutVisibility";
 import RegistrationForm from "./custom/schedule/RegistrationForm"; // Import the hook
+import MyNotifications from "./custom/MyNotification";
+import { Button } from "./ui/button";
+
+const buttonUnderlineTailwind =
+  "hover:no-underline  relative after:content-[''] after:absolute after:w-full after:h-[1px] after:bottom-1 after:left-0 after:bg-current after:origin-left after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:ease-out after:duration-200";
 
 export default function Navbar() {
   const showLayout = useLayoutVisibility(["/login", "/signup", "/room"]); // Use the hook
@@ -23,23 +27,39 @@ export default function Navbar() {
               <Link
                 key={link.id}
                 href={link.path}
-                className="text-myforeground hover:text-mysecondary transition-colors duration-200"
+                className=" transition-colors duration-200"
               >
-                {link.name}
+                <Button
+                  variant="link"
+                  className={`text-foreground ${buttonUnderlineTailwind}`}
+                >
+                  {link.name}
+                </Button>
               </Link>
             ))}
           </div>
         </div>
         <div className="flex items-center gap-6">
           <div className="h-full flex items-center gap-6">
-            <RegistrationForm formType="schedule" />
-            <RegistrationForm formType="host" />
-            <RegistrationForm formType="join" />
+            <RegistrationForm
+              formType="schedule"
+              buttonUnderlineStyle={buttonUnderlineTailwind}
+            />
+            <RegistrationForm
+              formType="host"
+              buttonUnderlineStyle={buttonUnderlineTailwind}
+            />
+            <RegistrationForm
+              formType="join"
+              buttonUnderlineStyle={buttonUnderlineTailwind}
+            />
           </div>
           <div className="flex items-center gap-6">
-            <NotificationIcon />
+            <MyNotifications />
             <Link href="/profile">
-              <AvatarIcon />
+              <Button variant="link" className="hover:bg-mysecondary/20 ">
+                <AvatarIcon className="scale-175" />
+              </Button>
             </Link>
           </div>
         </div>

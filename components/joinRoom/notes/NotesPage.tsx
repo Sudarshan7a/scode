@@ -8,7 +8,7 @@ interface NotesPageProps {
 
 function NotesPage({ sessionId }: NotesPageProps) {
   return (
-    <div className="flex text-center h-[92vh] ">
+    <div className="flex text-center h-[94vh] ">
       <Pages />
       <Note sessionId={sessionId} />
     </div>
