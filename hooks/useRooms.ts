@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { mockRooms } from "../constants/mockRooms";
+import { mockRoomsData } from "../constants/mockRooms";
 
 type RoomStatus = "live" | "scheduled" | "ended";
 
@@ -12,7 +12,7 @@ export function useRooms(options: UseRoomsOptions = {}) {
   const { privacy = "both", status } = options;
 
   const rooms = useMemo(() => {
-    return mockRooms.filter((room) => {
+    return mockRoomsData.filter((room) => {
       // Privacy filter
       let matchPrivacy = false;
       if (privacy === "both") {

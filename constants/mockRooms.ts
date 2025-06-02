@@ -1,7 +1,11 @@
-export const mockRooms = [
+import { mockRooms } from "@/types/roomsTypes";
+
+export const mockRoomsData: mockRooms[] = [
   {
     id: "room_001",
     title: "Frontend System Design",
+    description:
+      "Deep dive into scalable frontend architectures, component design patterns, and state management strategies for large applications.",
     language: "JavaScript",
     status: "live", // live | scheduled | ended
     isPrivate: false,
@@ -17,6 +21,8 @@ export const mockRooms = [
   {
     id: "room_002",
     title: "ML Case Interview Prep",
+    description:
+      "Practice machine learning case study interviews with real-world scenarios, model selection, and feature engineering discussions.",
     language: "Python",
     status: "scheduled",
     isPrivate: false,
@@ -32,6 +38,8 @@ export const mockRooms = [
   {
     id: "room_003",
     title: "Backend with Rust",
+    description:
+      "Explore high-performance backend development using Rust, covering memory safety, concurrency, and web frameworks like Actix.",
     language: "Rust",
     status: "live",
     isPrivate: true,
@@ -47,6 +55,8 @@ export const mockRooms = [
   {
     id: "room_004",
     title: "DSA Mock Interview",
+    description:
+      "Intensive data structures and algorithms interview preparation with coding challenges, optimization techniques, and complexity analysis.",
     language: "C++",
     status: "scheduled",
     isPrivate: false,
@@ -62,6 +72,8 @@ export const mockRooms = [
   {
     id: "room_005",
     title: "AI Ethics Roundtable",
+    description:
+      "Open discussion on ethical implications of AI development, bias in algorithms, privacy concerns, and responsible AI practices.",
     language: "General",
     status: "ended",
     isPrivate: false,

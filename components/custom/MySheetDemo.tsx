@@ -34,7 +34,12 @@ export function MySheetDemo({
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline">{title}</Button>
+        <Button
+          variant="outline"
+          className="shadow-mysecondary border-mysecondary"
+        >
+          {title}
+        </Button>
       </SheetTrigger>
       <SheetContent className="flex flex-col justify-start">
         <SheetHeader>
