@@ -18,7 +18,12 @@ import {
 } from "@/constants/FooterLInks";
 
 export default function Footer() {
-  const showLayout = useLayoutVisibility(["/login", "/signup", "/room"]); // Use the hook
+  const showLayout = useLayoutVisibility([
+    "/login",
+    "/signup",
+    "/room",
+    "/profile",
+  ]); // Use the hook
 
   return (
     showLayout && (
