@@ -2,6 +2,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+export const dynamic = "force-dynamic";
 function VerifyUser() {
   const params = useParams<{ token: string }>();
 
