@@ -6,19 +6,19 @@ import { loginSchema } from "@/types/authTypes";
 import { Collection } from "mongodb";
 import { User } from "@/types/mongodbTypes";
 import { generateVerifyToken } from "@/lib/verifyToken";
-// import { getIP } from "@/lib/getIp";
-// import { loginLimiter } from "@/lib/rateLimiter";
+import { getIP } from "@/lib/getIp";
+import { loginLimiter } from "@/lib/rateLimiter";
 
 export async function POST(req: NextRequest) {
-  // const ip = getIP(req);
-  // const { success } = await loginLimiter.limit(ip);
+  const ip = getIP(req);
+  const { success } = await loginLimiter.limit(ip);
 
-  // if (!success) {
-  //   return NextResponse.json(
-  //     { message: "Too many login attempts. Please try in 5 minutes." },
-  //     { status: 429 }
-  //   );
-  // }
+  if (!success) {
+    return NextResponse.json(
+      { message: "Too many login attempts. Please try in 5 minutes." },
+      { status: 429 }
+    );
+  }
 
   try {
     const body = await req.json();

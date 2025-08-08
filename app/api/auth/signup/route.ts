@@ -9,19 +9,19 @@ import {
   isEmailDomainAllowed,
   allowedEmailDomains,
 } from "@/types/mogodbValidation";
-// import { getIP } from "@/lib/getIp";
-// import { signupLimiter } from "@/lib/rateLimiter";
+import { getIP } from "@/lib/getIp";
+import { signupLimiter } from "@/lib/rateLimiter";
 
 export async function POST(req: NextRequest) {
-  // const ip = getIP(req);
-  // const { success } = await signupLimiter.limit(ip);
+  const ip = getIP(req);
+  const { success } = await signupLimiter.limit(ip);
 
-  // if (!success) {
-  //   return NextResponse.json(
-  //     { message: "Too many login attempts. Please try in 10 minutes." },
-  //     { status: 429 }
-  //   );
-  // }
+  if (!success) {
+    return NextResponse.json(
+      { message: "Too many signup attempts. Please try in 10 minutes." },
+      { status: 429 }
+    );
+  }
 
   try {
     const body = await req.json();
