@@ -22,7 +22,7 @@ export function generateEmailTemplate(type: string, data: string): string {
       "We received a request to reset your password. Click the button below to continue.";
   }
 
-  const actionUrl = `${process.env.MY_DOMAIN}${middlePath}/${data}`;
+  const actionUrl = `${process.env.MY_DOMAIN}/${middlePath}/${data}`;
 
   return `
 <div style="background-color: #f4f4f4; padding: 20px; font-family: Arial, sans-serif;">
