@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "../styles/globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Toaster } from "@/components/ui/sonner";
+import { RootAuthGuard } from "@/components/auth/RootAuthGuard";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,11 +18,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
-
-        {children}
-
-        <Footer />
+        <RootAuthGuard>
+          <Navbar />
+          {children}
+          <Toaster position="top-center" className=" rounded-sm" />
+          <Footer />
+        </RootAuthGuard>
       </body>
     </html>
   );

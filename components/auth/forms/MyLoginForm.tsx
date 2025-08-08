@@ -1,24 +1,58 @@
 "use client";
 
 import React from "react";
-import { LoginFormValues } from "./EmailPasswordForm";
+import { LoginFormValues } from "@/types/authTypes";
 import OAuthSection from "../common/OAuthSection";
 import FormDivider from "../common/FormDivider";
 import EmailPasswordForm from "./EmailPasswordForm";
 import TermsAndPrivacy from "../common/TermsAndPrivacy";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+// import { logIn } from "@/auth/nextjs/actions";
 
 export function MyLoginForm() {
+  const router = useRouter();
   // Handler for OAuth login
-  const handleOAuthLogin = (providerId: string): void => {
-    console.log(`Initiating ${providerId} OAuth login flow`);
+  const handleOAuthLogin = (_providerId: string): void => {
+    console.log("OAuth login with provider:", _providerId);
+    // TODO: Implement OAuth login flow
     // Here you would implement the actual OAuth flow
     // For example, with NextAuth.js you might use signIn(providerId)
   };
 
   // Handler for email/password login
-  const handleEmailPasswordSubmit = (values: LoginFormValues): void => {
-    console.log("Login submitted:", values);
+  const handleEmailPasswordSubmit = async (
+    values: LoginFormValues
+  ): Promise<void> => {
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        toast.error(result.message);
+        // Optionally show this in UI
+        return;
+      } else {
+        toast.success(result.message);
+      }
+
+      // Redirect or show success message
+      if (result.redirect) {
+        router.push(result.redirect);
+      }
+    } catch {
+      // Handle unexpected signup error silently or with toast notification
+    }
     // Add authentication logic here
+    // logIn(values);
   };
 
   return (

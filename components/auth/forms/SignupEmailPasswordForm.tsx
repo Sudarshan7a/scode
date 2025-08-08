@@ -2,7 +2,6 @@
 
 import React from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -12,32 +11,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
-// Signup form schema
-const signupSchema = z
-  .object({
-    username: z
-      .string()
-      .min(2, { message: "Username must be at least 2 characters." }),
-    email: z.string().email({ message: "Invalid email address." }),
-    password: z
-      .string()
-      .min(6, { message: "Password must be at least 6 characters." }),
-    confirmPassword: z
-      .string()
-      .min(6, { message: "Please confirm your password." }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match.",
-    path: ["confirmPassword"],
-  });
-
-export type SignupFormValues = z.infer<typeof signupSchema>;
-
-interface SignupEmailPasswordFormProps {
-  onSubmit: (values: SignupFormValues) => void;
-  buttonText: string;
-}
+import {
+  signupSchema,
+  SignupFormValues,
+  SignupEmailPasswordFormProps,
+} from "@/types/authTypes";
 
 export function SignupEmailPasswordForm({
   onSubmit,
@@ -53,13 +31,36 @@ export function SignupEmailPasswordForm({
     },
   });
 
-  const handleSubmit = (values: SignupFormValues) => {
-    onSubmit(values);
+  const handleSubmit = async (values: SignupFormValues) => {
+    // Clear previous server-side errors
+    form.clearErrors();
+    const result = await onSubmit(values);
+    if (!result.ok) {
+      // Show field errors if provided
+      if (result.fieldErrors) {
+        Object.entries(result.fieldErrors).forEach(([key, msg]) => {
+          if (!msg) return;
+          if (key === "root") {
+            form.setError("root", { type: "server", message: msg });
+          } else {
+            form.setError(key as keyof SignupFormValues, {
+              type: "server",
+              message: msg,
+            });
+          }
+        });
+      }
+    }
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        {form.formState.errors.root?.message && (
+          <div className="text-red-500 text-sm">
+            {form.formState.errors.root.message}
+          </div>
+        )}
         <FormField
           control={form.control}
           name="username"

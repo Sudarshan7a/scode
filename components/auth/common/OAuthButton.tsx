@@ -20,8 +20,7 @@ export default function OAuthButton({
     if (onClick) {
       onClick();
     } else {
-      console.log(`Authenticating with ${provider}`);
-      // Default OAuth logic could go here
+      // TODO: Default OAuth logic could go here
     }
   };
 

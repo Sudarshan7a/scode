@@ -1,36 +1,169 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## S‑code
 
-## Getting Started
+S‑code is a collaborative, cloud-based coding platform built with Next.js that blends real-time interview preparation with social coding to make learning more engaging and less isolating. It offers a secure, streamlined authentication system, role-based room access, and a scalable architecture for collaborative code editing.
 
-First, run the development server:
+### Core vision
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Code with friends. Learn faster. Ace interviews. S‑code makes coding practice feel like multiplayer gaming — secure, fast, and frustration-free.
+
+## Tech stack
+
+- Next.js 15 + TypeScript (App Router)
+- MongoDB Node driver (centralized connection in `lib/mongodb.ts`)
+- Upstash Redis (verification tokens, rate limiting)
+- Resend (email delivery)
+- Zod + react-hook-form (form validation)
+- bcrypt (password hashing), jose/jwt (access tokens)
+- (Upcoming) Monaco Editor + Y.js for real-time collaboration
+
+## Security & authentication
+
+Privacy-first auth and token hygiene:
+
+- Email/password signup with domain restriction
+- Email verification with short‑lived tokens (stored in Redis)
+- Secure, HttpOnly refresh tokens in cookies (no access tokens in localStorage)
+- Middleware-protected routes with server-side refresh validation
+- Rate limiting hooks in place to prevent brute-force attacks
+- Strong password hashing (bcrypt)
+- Extensible foundation for MFA and session management
+
+## Features (MVP)
+
+- User accounts with email verification before first login
+- Allowed-domain signup rules
+  - Domain list: `types/mogodbValidation.ts` (`allowedEmailDomains`)
+  - Mongo collection validator enforces the same rule
+- Secure login/logout and refresh‑token based session management
+- Automatic access‑token refresh in background (from refresh token)
+- Protected routes (middleware checks before dashboard/rooms)
+- Configurable rules (e.g., update allowed domains, adjust verification link expiry)
+- Clear API responses `{ ok, message, ... }` for predictable handling
+
+## Roadmap
+
+In progress
+
+- Real-time collaborative code rooms (Monaco + Y.js)
+- Room roles & permissions
+- Explore page for public coding sessions
+
+Planned
+
+- OAuth integrations (GitHub, Google)
+- Session management UI
+- MFA (TOTP) & device-based trust
+- Invite-only and public room modes
+- Integrated notes & code history
+
+## Getting started
+
+1. Install dependencies
+
+```powershell
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Configure environment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create `.env.local` with at least:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```dotenv
+# Mongo
+MONGODB_URI=mongodb+srv://<user>:<pass>@<cluster>/<db>?retryWrites=true&w=majority
+MONGODB_DB=scode                 # optional override of database name
 
-## Learn More
+# JWT
+JWT_SECRET=replace-with-a-long-random-string
 
-To learn more about Next.js, take a look at the following resources:
+# Redis (Upstash)
+UPSTASH_REDIS_REST_URL=...
+UPSTASH_REDIS_REST_TOKEN=...
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Email
+RESEND_API_KEY=...
+MY_DOMAIN=http://localhost:3000   # used to build verify links
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Run the dev server
 
-## Deploy on Vercel
+```powershell
+pnpm dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Open http://localhost:3000.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Auth flows
+
+Signup
+
+- Client validates with Zod; server validates again
+- Email domains must be in `allowedEmailDomains` (e.g. gmail.com, outlook.com, ...)
+- On success, user is created with `emailVerified=false` and a verification email is sent
+
+Verify email
+
+- Route: `GET /api/auth/verify?token=...`
+- Token stored in Redis with 10-minute TTL; upon success, user `emailVerified=true`
+- UI page: `app/verify-email/[token]/page.tsx` shows status and redirects to login
+
+Login
+
+- Verifies `passwordHash` against input
+- If `emailVerified=false`, blocks login and resends a verification email
+- On success, issues refresh token (Mongo `refreshTokens` collection) and sets cookies
+
+Tokens
+
+- Refresh token: stored in Mongo with fields `{ userId, token, createdAt, expiresAt }`
+- Access token: short-lived JWT issued on demand from refresh token
+
+## Collections & validation
+
+Central types: `types/mongodbTypes.ts`
+
+Mongo validators (typed as TS constants): `types/mogodbValidation.ts`
+
+- Users: letters-only `name`, allowed email domains, `emailVerified` boolean
+- Refresh tokens: camelCase fields (`userId`, `createdAt`, `expiresAt`)
+- Rooms, saved notes/code, user activity: basic shapes provided
+
+Connection: `lib/mongodb.ts`
+
+- Exposes camelCase collection handles (e.g. `usersCollection`)
+- Honors `MONGODB_DB` if set; logs connected DB in dev
+
+## Project structure
+
+```
+app/              # Next.js App Router pages
+lib/              # Database, auth, and utility helpers
+types/            # TypeScript types & validators
+components/       # UI and feature components
+public/           # Static assets
+```
+
+## Configuration tips
+
+- Allowed domains: update `allowedEmailDomains` in `types/mogodbValidation.ts`
+- Email template: `lib/EmailTemplate.ts` (copy, CTA, expiry note)
+- Verification token TTL: `lib/verifyToken.ts` (Redis set with EX 600)
+
+## Troubleshooting
+
+- Domain not allowed on signup
+  - Error appears under the email field: update `allowedEmailDomains` to include your domain
+- “Document failed validation” on user insert
+  - `name` must be letters-only (A–Z); ensure username sanitization or adjust validator
+- No verification email
+  - Check `RESEND_API_KEY` and `MY_DOMAIN` URL; Resend may require a verified sender domain
+- Refresh token errors / redirects to login
+  - Verify middleware and `/api/auth/verify-refresh-token` endpoint; check token `expiresAt`
+
+## Commit history helper (optional)
+
+See `realistic-commit-plan.md` for a batch script that stages and backdates a realistic series of commits across the past weeks.
+
+---
+
+Made with Next.js App Router, MongoDB, and a secure, explicit auth flow.

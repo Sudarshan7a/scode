@@ -2,7 +2,6 @@
 
 import React from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -12,23 +11,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
-// Login form schema
-const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters." }),
-});
-
-export type LoginFormValues = z.infer<typeof loginSchema>;
-
-interface EmailPasswordFormProps {
-  onSubmit: (values: LoginFormValues) => void;
-  buttonText: string;
-  showRememberMe?: boolean;
-  showForgotPassword?: boolean;
-}
+import {
+  loginSchema,
+  LoginFormValues,
+  EmailPasswordFormProps,
+} from "@/types/authTypes";
 
 export function EmailPasswordForm({
   onSubmit,

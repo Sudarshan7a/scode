@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 
 export function useLayoutVisibility(pathsToHideOn: string[] = ["/room"]) {
   const pathname = usePathname();
-  console.log("Current pathname:", pathname); // Debugging line
 
   if (!pathname) {
     return true; // Or handle appropriately if pathname can be null/undefined

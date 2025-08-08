@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { LoginFormValues } from "../../auth/forms/EmailPasswordForm";
+import { LoginFormValues } from "@/types/authTypes";
 import OAuthSection from "./OAuthSection";
 import FormDivider from "./FormDivider";
 import EmailPasswordForm from "../../auth/forms/EmailPasswordForm";
