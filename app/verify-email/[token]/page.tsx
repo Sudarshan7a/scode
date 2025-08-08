@@ -14,6 +14,14 @@ function VerifyUser() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const fixed = window.location.pathname.replace(/^\/+/, "/");
+      if (fixed !== window.location.pathname) {
+        router.replace(fixed); // same-origin safe
+        return;
+      }
+    }
+
     const verifyEmail = async () => {
       if (!token) {
         setStatus("error");
