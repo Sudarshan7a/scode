@@ -23,7 +23,10 @@ export async function GET(req: NextRequest) {
         { status: 500 }
       );
     }
-    if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    if (
+      !process.env.UPSTASH_REDIS_REST_URL ||
+      !process.env.UPSTASH_REDIS_REST_TOKEN
+    ) {
       console.error("[verify] Missing Upstash Redis env vars");
       return NextResponse.json(
         { message: "Server not configured. Please try again later." },
