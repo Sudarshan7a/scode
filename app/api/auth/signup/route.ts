@@ -57,6 +57,7 @@ export async function POST(req: NextRequest) {
     }
 
     const userResult = await createUser(email, password, username);
+
     if ("error" in userResult) {
       console.error("User creation error:", userResult.error);
       const status = userResult.status ?? 400;

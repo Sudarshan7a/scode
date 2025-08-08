@@ -36,13 +36,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  const { pathname, search } = req.nextUrl;
-  const normalized = pathname.replace(/\/{2,}/g, "/");
-  if (normalized !== pathname) {
-    const url = req.nextUrl.clone();
-    url.pathname = normalized;
-    return NextResponse.redirect(`${url.pathname}${search}`, 308);
-  }
   return NextResponse.next();
 }
 
