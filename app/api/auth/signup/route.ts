@@ -13,7 +13,6 @@ import {
 // import { signupLimiter } from "@/lib/rateLimiter";
 
 export async function POST(req: NextRequest) {
-  console.log("Received signup request");
   // const ip = getIP(req);
   // const { success } = await signupLimiter.limit(ip);
 
@@ -26,16 +25,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    console.log("Request body:", body);
     const { email, password, username } = signupSchema.parse(body);
-    console.log(
-      "Signup attempt with email:",
-      email,
-      " password:",
-      password,
-      " username:",
-      username
-    );
 
     if (!email || !password) {
       return NextResponse.json(
@@ -104,7 +94,6 @@ export async function POST(req: NextRequest) {
     return res;
   } catch (error) {
     if (error instanceof Error && error.name === "ZodError") {
-      console.log("Validation error:", error);
       return NextResponse.json(
         { ok: false, message: "Invalid input data" },
         { status: 400 }

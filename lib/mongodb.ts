@@ -30,11 +30,6 @@ export async function connectToMongo(): Promise<{
     db = dbNameFromEnv
       ? globalWithMongo._mongoClient.db(dbNameFromEnv)
       : globalWithMongo._mongoClient.db();
-    if (process.env.NODE_ENV !== "production") {
-      // Helpful log in dev only
-      // This will print the resolved DB name, which helps detect s_code vs scode
-      console.log("[Mongo] Connected DB:", db.databaseName);
-    }
   }
 
   return {

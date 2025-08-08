@@ -13,11 +13,11 @@ import { toast } from "sonner";
 export function MyLoginForm() {
   const router = useRouter();
   // Handler for OAuth login
-  const handleOAuthLogin = (providerId: string): void => {
+  const handleOAuthLogin = (_providerId: string): void => {
+    console.log("OAuth login with provider:", _providerId);
     // TODO: Implement OAuth login flow
     // Here you would implement the actual OAuth flow
     // For example, with NextAuth.js you might use signIn(providerId)
-    console.log(`OAuth login with provider: ${providerId}`);
   };
 
   // Handler for email/password login

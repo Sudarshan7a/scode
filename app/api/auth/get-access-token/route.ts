@@ -25,7 +25,6 @@ export async function POST() {
       { status: 403 }
     );
   }
-  console.log("User ID on getting:", tokenRecord.userId, ".");
   const accessToken = await generateAccessToken(tokenRecord.userId);
 
   return NextResponse.json({ accessToken });

@@ -12,9 +12,9 @@ export function MySignupForm() {
   const router = useRouter();
 
   // Handler for OAuth signup
-  const handleOAuthSignup = (providerId: string): void => {
+  const handleOAuthSignup = (_providerId: string): void => {
+    console.log("OAuth signup with provider:", _providerId);
     // TODO: Implement OAuth signup flow
-    console.log(`OAuth signup requested for provider: ${providerId}`);
     // Implement actual OAuth flow here (e.g., signIn(providerId))
   };
 

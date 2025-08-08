@@ -40,7 +40,8 @@ ${
 <div style="margin: 30px 0;">
   <a href="${actionUrl}" aria-label="${buttonText}" style="background-color: #007bff; color: #ffffff; padding: 15px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
     ${buttonText}
-    </br>
+  </a>
+</div>
     
 <p style="color: #555555; font-size: 14px;">
   If you're having trouble clicking the button, copy and paste the URL below into your web browser:
@@ -48,7 +49,7 @@ ${
 
 <p style="word-break: break-all;">
   <a href="${actionUrl}" style="color: #007bff; text-decoration: none;">${actionUrl}</a>
-  </p>
+</p>
 
 <hr style="border: 0; border-top: 1px solid #eeeeee; margin: 20px 0;">
 
@@ -62,9 +63,6 @@ ${
   <br><br>
   &copy; 2025 s-code. All rights reserved.
 </p>
-  </a>
-</div>
-
 </div>
 </div>`;
 }

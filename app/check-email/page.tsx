@@ -10,12 +10,12 @@ export default function CheckEmail() {
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Check Your Email</h1>
           <p className="text-gray-600">
-            We've sent a verification link to your email address. Please check your inbox and click the link to verify your account.
+            We&apos;ve sent a verification link to your email address. Please check your inbox and click the link to verify your account.
           </p>
         </div>
         
         <div className="text-sm text-gray-500">
-          <p>Didn't receive the email? Check your spam folder or contact support.</p>
+          <p>Didn&apos;t receive the email? Check your spam folder or contact support.</p>
         </div>
       </div>
     </div>
