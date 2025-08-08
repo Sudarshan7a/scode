@@ -2,7 +2,19 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-export const redis = Redis.fromEnv();
+// Some platforms (or dashboard inputs) accidentally wrap env values in quotes.
+// Normalize by trimming and removing surrounding single/double quotes.
+const sanitizeEnv = (v?: string) => v?.trim().replace(/^['"]+|['"]+$/g, "");
+
+const url = sanitizeEnv(process.env.UPSTASH_REDIS_REST_URL);
+const token = sanitizeEnv(process.env.UPSTASH_REDIS_REST_TOKEN);
+
+// Initialize Upstash Redis with explicit, sanitized values to avoid
+// errors like: "Upstash Redis client was passed an invalid URL ... Received: ""https://..."""
+export const redis = new Redis({
+  url: url as string,
+  token: token as string,
+});
 
 export const loginLimiter = new Ratelimit({
   redis,
