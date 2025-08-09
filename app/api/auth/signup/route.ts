@@ -12,6 +12,20 @@ import {
 import { getIP } from "@/lib/getIp";
 import { signupLimiter } from "@/lib/rateLimiter";
 
+// Centralized messages to reduce string literal noise in function bodies
+const MSG_RATE_LIMIT = "Too many signup attempts. Please try in 10 minutes.";
+const MSG_EMAIL_PASSWORD_REQUIRED = "Email and password are required";
+const MSG_EMAIL_REQUIRED = "Email is required";
+const MSG_PASSWORD_REQUIRED = "Password is required";
+const MSG_UNSUPPORTED_DOMAIN = "We only support specific email domains";
+const MSG_ACCOUNT_EXISTS = "An account with this email already exists";
+const MSG_EMAIL_REGISTERED = "Email is already registered";
+const MSG_GENERIC_CREATE_FAIL = "Failed to create account";
+const MSG_INVALID_INPUT = "Invalid input data";
+const MSG_INTERNAL_ERROR = "Internal server error";
+const MSG_SIGNUP_SUCCESS =
+  "Account created successfully. Please check your email to verify your account.";
+
 type SignupSuccess = {
   ok: true;
   message: string;
@@ -33,13 +47,7 @@ async function rateLimit(req: NextRequest) {
   const ip = getIP(req);
   const { success } = await signupLimiter.limit(ip);
   if (!success) {
-    return respond(
-      {
-        ok: false,
-        message: "Too many signup attempts. Please try in 10 minutes.",
-      },
-      429
-    );
+    return respond({ ok: false, message: MSG_RATE_LIMIT }, 429);
   }
   return null;
 }
@@ -49,10 +57,10 @@ function validateParsedInput(email?: string, password?: string) {
     return respond(
       {
         ok: false,
-        message: "Email and password are required",
+        message: MSG_EMAIL_PASSWORD_REQUIRED,
         fieldErrors: {
-          email: !email ? "Email is required" : undefined,
-          password: !password ? "Password is required" : undefined,
+          email: !email ? MSG_EMAIL_REQUIRED : undefined,
+          password: !password ? MSG_PASSWORD_REQUIRED : undefined,
         },
       },
       400
@@ -67,7 +75,7 @@ function validateDomain(email: string) {
     return respond(
       {
         ok: false,
-        message: "We only support specific email domains",
+        message: MSG_UNSUPPORTED_DOMAIN,
         fieldErrors: { email: `We only support these domains: ${domainList}` },
       },
       400
@@ -82,15 +90,15 @@ function mapUserCreationError(userResult: { error: string; status?: number }) {
     status === 409
       ? {
           ok: false,
-          message: "An account with this email already exists",
-          fieldErrors: { email: "Email is already registered" },
+          message: MSG_ACCOUNT_EXISTS,
+          fieldErrors: { email: MSG_EMAIL_REGISTERED },
         }
       : {
           ok: false,
           message:
             typeof userResult.error === "string"
               ? userResult.error
-              : "Failed to create account",
+              : MSG_GENERIC_CREATE_FAIL,
         };
   return respond(body, status);
 }
@@ -122,8 +130,7 @@ export async function POST(req: NextRequest) {
 
     const success: SignupSuccess = {
       ok: true,
-      message:
-        "Account created successfully. Please check your email to verify your account.",
+      message: MSG_SIGNUP_SUCCESS,
       user: { id: userId, name: user.name },
       redirect: "/check-email",
     };
@@ -132,10 +139,10 @@ export async function POST(req: NextRequest) {
     return res;
   } catch (error) {
     if (error instanceof Error && error.name === "ZodError") {
-      return respond({ ok: false, message: "Invalid input data" }, 400);
+      return respond({ ok: false, message: MSG_INVALID_INPUT }, 400);
     }
     console.error("Signup error:", error);
-    return respond({ ok: false, message: "Internal server error" }, 500);
+    return respond({ ok: false, message: MSG_INTERNAL_ERROR }, 500);
   }
 }
 
