@@ -56,24 +56,39 @@ export function MyLoginForm() {
   };
 
   return (
-    <div className="min-w-md mx-auto bg-myforeground shadow-sm rounded-md p-6">
-      {/* OAuth Provider Section */}
-      <OAuthSection onOAuthLogin={handleOAuthLogin} />
-
-      {/* Divider */}
-      <FormDivider text="or continue with email" />
-
-      {/* Email/Password Form */}
-      <EmailPasswordForm
-        onSubmit={handleEmailPasswordSubmit}
-        buttonText="Log In"
-        showRememberMe={true}
-        showForgotPassword={true}
+    <div
+      className="min-w-md mx-auto rounded-xl p-6 border backdrop-blur-md relative overflow-hidden
+      border-[var(--color-mysecondary)]/25 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.15)]
+      bg-white/85 dark:bg-[#1f1f1f]/85"
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 rounded-xl"
+        style={{
+          background:
+            "linear-gradient(135deg, rgba(60,141,227,0.18), rgba(255,152,25,0.16))",
+          mask: "linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.9))",
+        }}
       />
+      <div className="relative z-10">
+        {/* OAuth Provider Section */}
+        <OAuthSection onOAuthLogin={handleOAuthLogin} />
 
-      {/* Terms & Privacy */}
-      <div className="mt-6">
-        <TermsAndPrivacy text="By logging in, you agree to our" />
+        {/* Divider */}
+        <FormDivider text="or continue with email" />
+
+        {/* Email/Password Form */}
+        <EmailPasswordForm
+          onSubmit={handleEmailPasswordSubmit}
+          buttonText="Log In"
+          showRememberMe={true}
+          showForgotPassword={true}
+        />
+
+        {/* Terms & Privacy */}
+        <div className="mt-6 text-xs text-muted-foreground">
+          <TermsAndPrivacy text="By logging in, you agree to our" />
+        </div>
       </div>
     </div>
   );
