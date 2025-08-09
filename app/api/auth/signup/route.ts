@@ -12,100 +12,130 @@ import {
 import { getIP } from "@/lib/getIp";
 import { signupLimiter } from "@/lib/rateLimiter";
 
-export async function POST(req: NextRequest) {
+type SignupSuccess = {
+  ok: true;
+  message: string;
+  redirect: string;
+  user: { id: string; name: string };
+};
+
+type SignupFailure = {
+  ok: false;
+  message: string;
+  fieldErrors?: Record<string, string | undefined>;
+};
+
+function respond(json: SignupSuccess | SignupFailure, status = 200) {
+  return NextResponse.json(json, { status });
+}
+
+async function rateLimit(req: NextRequest) {
   const ip = getIP(req);
   const { success } = await signupLimiter.limit(ip);
-
   if (!success) {
-    return NextResponse.json(
-      { message: "Too many signup attempts. Please try in 10 minutes." },
-      { status: 429 }
+    return respond(
+      {
+        ok: false,
+        message: "Too many signup attempts. Please try in 10 minutes.",
+      },
+      429
     );
   }
+  return null;
+}
+
+function validateParsedInput(email?: string, password?: string) {
+  if (!email || !password) {
+    return respond(
+      {
+        ok: false,
+        message: "Email and password are required",
+        fieldErrors: {
+          email: !email ? "Email is required" : undefined,
+          password: !password ? "Password is required" : undefined,
+        },
+      },
+      400
+    );
+  }
+  return null;
+}
+
+function validateDomain(email: string) {
+  if (!isEmailDomainAllowed(email)) {
+    const domainList = allowedEmailDomains.join(", ");
+    return respond(
+      {
+        ok: false,
+        message: "We only support specific email domains",
+        fieldErrors: { email: `We only support these domains: ${domainList}` },
+      },
+      400
+    );
+  }
+  return null;
+}
+
+function mapUserCreationError(userResult: { error: string; status?: number }) {
+  const status = userResult.status ?? 400;
+  const body: SignupFailure =
+    status === 409
+      ? {
+          ok: false,
+          message: "An account with this email already exists",
+          fieldErrors: { email: "Email is already registered" },
+        }
+      : {
+          ok: false,
+          message:
+            typeof userResult.error === "string"
+              ? userResult.error
+              : "Failed to create account",
+        };
+  return respond(body, status);
+}
+
+export async function POST(req: NextRequest) {
+  const rateLimitRes = await rateLimit(req);
+  if (rateLimitRes) return rateLimitRes;
 
   try {
     const body = await req.json();
     const { email, password, username } = signupSchema.parse(body);
 
-    if (!email || !password) {
-      return NextResponse.json(
-        {
-          ok: false,
-          message: "Email and password are required",
-          fieldErrors: {
-            email: !email ? "Email is required" : undefined,
-            password: !password ? "Password is required" : undefined,
-          },
-        },
-        { status: 400 }
-      );
-    }
+    const inputValidation = validateParsedInput(email, password);
+    if (inputValidation) return inputValidation;
 
-    // Enforce allowed email domains before attempting to create user
-    if (!isEmailDomainAllowed(email)) {
-      const domainList = allowedEmailDomains.join(", ");
-      return NextResponse.json(
-        {
-          ok: false,
-          message: "We only support specific email domains",
-          fieldErrors: {
-            email: `We only support these domains: ${domainList}`,
-          },
-        },
-        { status: 400 }
-      );
-    }
+    const domainValidation = validateDomain(email);
+    if (domainValidation) return domainValidation;
 
     const userResult = await createUser(email, password, username);
-
     if ("error" in userResult) {
-      console.error("User creation error:", userResult.error);
-      const status = userResult.status ?? 400;
-      const response =
-        status === 409
-          ? {
-              ok: false,
-              message: "An account with this email already exists",
-              fieldErrors: { email: "Email is already registered" },
-            }
-          : {
-              ok: false,
-              message:
-                typeof userResult.error === "string"
-                  ? userResult.error
-                  : "Failed to create account",
-            };
-      return NextResponse.json(response, { status });
+      const failure = userResult as { error: string; status?: number };
+      console.error("User creation error:", failure.error);
+      return mapUserCreationError(failure);
     }
 
     const { userId, user } = userResult;
     const refreshToken = await createRefreshToken(userId);
-
     await generateVerifyToken(userId, user.email);
 
-    const res = NextResponse.json({
+    const success: SignupSuccess = {
       ok: true,
       message:
         "Account created successfully. Please check your email to verify your account.",
       user: { id: userId, name: user.name },
       redirect: "/check-email",
-    });
-
+    };
+    const res = respond(success, 200);
     setAuthCookies(res, refreshToken, userId);
     return res;
   } catch (error) {
     if (error instanceof Error && error.name === "ZodError") {
-      return NextResponse.json(
-        { ok: false, message: "Invalid input data" },
-        { status: 400 }
-      );
+      return respond({ ok: false, message: "Invalid input data" }, 400);
     }
-
     console.error("Signup error:", error);
-    return NextResponse.json(
-      { ok: false, message: "Internal server error" },
-      { status: 500 }
-    );
+    return respond({ ok: false, message: "Internal server error" }, 500);
   }
 }
 
