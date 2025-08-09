@@ -23,19 +23,22 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { email, password } = loginSchema.parse(body);
-
     return await handleLoginRequest(email, password);
   } catch (error) {
     if (error instanceof Error && error.name === "ZodError") {
       return NextResponse.json(
-        { error: "Invalid input data", details: error.message },
+        {
+          ok: false,
+          message: "Invalid input data",
+          fieldErrors: undefined,
+          details: error.message,
+        },
         { status: 400 }
       );
     }
-
     console.error("Login error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { ok: false, message: "Internal server error" },
       { status: 500 }
     );
   }
