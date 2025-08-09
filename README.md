@@ -105,17 +105,18 @@ Verify email
 
 - Route: `GET /api/auth/verify?token=...`
 - Token stored in Redis with 10-minute TTL; upon success, user `emailVerified=true`
-- UI page: `app/verify-email/[token]/page.tsx` shows status and redirects to login
+- A refresh session is now issued automatically and the user is redirected straight to the dashboard
+- UI page: `app/verify-email/[token]/page.tsx` handles status + redirect
 
 Login
 
 - Verifies `passwordHash` against input
 - If `emailVerified=false`, blocks login and resends a verification email
-- On success, issues refresh token (Mongo `refreshTokens` collection) and sets cookies
+- On success, issues (rotated) refresh token via centralized `issueRefreshSession` util and sets cookies
 
 Tokens
 
-- Refresh token: stored in Mongo with fields `{ userId, token, createdAt, expiresAt }`
+- Refresh token: stored in Mongo with fields `{ userId, token, createdAt, expiresAt }` (issued & optionally rotated by `lib/refreshSession.ts`)
 - Access token: short-lived JWT issued on demand from refresh token
 
 ## Collections & validation
