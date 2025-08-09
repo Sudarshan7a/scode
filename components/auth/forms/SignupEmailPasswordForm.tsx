@@ -53,6 +53,44 @@ export function SignupEmailPasswordForm({
     }
   };
 
+  // Config-driven fields to keep render small & consistent
+  const fields: Array<{
+    name: keyof SignupFormValues;
+    label: string;
+    type: string;
+    placeholder: string;
+  }> = [
+    {
+      name: "username",
+      label: "Username",
+      type: "text",
+      placeholder: "Enter your username",
+    },
+    {
+      name: "email",
+      label: "Email",
+      type: "email",
+      placeholder: "Enter your email",
+    },
+    {
+      name: "password",
+      label: "Password",
+      type: "password",
+      placeholder: "Enter your password",
+    },
+    {
+      name: "confirmPassword",
+      label: "Confirm Password",
+      type: "password",
+      placeholder: "Confirm your password",
+    },
+  ];
+
+  const inputClasses =
+    "w-full rounded-md px-3 py-2 bg-white/70 dark:bg-white/5 border border-black/10 dark:border-white/10 text-neutral-800 dark:text-neutral-100 placeholder:text-neutral-500 dark:placeholder:text-neutral-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-mysecondary/50 focus:border-mysecondary transition";
+  const labelClasses =
+    "text-neutral-700 dark:text-neutral-200 text-sm font-medium";
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
@@ -61,84 +99,31 @@ export function SignupEmailPasswordForm({
             {form.formState.errors.root.message}
           </div>
         )}
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-mybackground">Username</FormLabel>
-              <FormControl>
-                <input
-                  type="text"
-                  placeholder="Enter your username"
-                  className="text-mybackground w-full border border-mybtext-mybackground rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-mysecondary"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-mybackground">Email</FormLabel>
-              <FormControl>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="text-mybackground w-full border border-mybtext-mybackground rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-mysecondary"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-mybackground">Password</FormLabel>
-              <FormControl>
-                <input
-                  type="password"
-                  placeholder="Enter your password"
-                  className="text-mybackground w-full border border-mybtext-mybackground rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-mysecondary"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-mybackground">
-                Confirm Password
-              </FormLabel>
-              <FormControl>
-                <input
-                  type="password"
-                  placeholder="Confirm your password"
-                  className="text-mybackground w-full border border-mybtext-mybackground rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-mysecondary"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {fields.map((f) => (
+          <FormField
+            key={f.name}
+            control={form.control}
+            name={f.name}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className={labelClasses}>{f.label}</FormLabel>
+                <FormControl>
+                  <input
+                    type={f.type}
+                    placeholder={f.placeholder}
+                    className={inputClasses}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ))}
 
         <button
           type="submit"
-          className="w-full bg-mysecondary text-white rounded-md py-2 hover:bg-mysecondary/90 hover:cursor-pointer transition-colors"
+          className="w-full bg-mysecondary text-white rounded-md py-2 hover:bg-mysecondary-hover hover:cursor-pointer transition-colors shadow-sm"
         >
           {buttonText}
         </button>

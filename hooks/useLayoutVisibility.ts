@@ -3,7 +3,13 @@
 import { usePathname } from "next/navigation";
 
 export function useLayoutVisibility(
-  pathsToHideOn: string[] = ["/room", "/check-email", "/signup", "/login"]
+  pathsToHideOn: string[] = [
+    "/login",
+    "/signup",
+    "/room",
+    "/verify-email",
+    "/check-email",
+  ]
 ) {
   const pathname = usePathname();
 
