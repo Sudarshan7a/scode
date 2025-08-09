@@ -1,8 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { hashPassword } from "@/auth/core/passwordHasher";
-import { generateRefreshToken } from "@/auth/utils/generateRefreshToken";
-import { connectToMongo } from "@/lib/mongodb";
-import { User } from "@/types/mongodbTypes";
+// Implementation details split into service + message modules for clarity
+import { createUser, createRefreshToken } from "./service";
+import type { SignupSuccess, SignupFailure } from "./types";
+import {
+  MSG_RATE_LIMIT,
+  MSG_EMAIL_PASSWORD_REQUIRED,
+  MSG_EMAIL_REQUIRED,
+  MSG_PASSWORD_REQUIRED,
+  MSG_UNSUPPORTED_DOMAIN,
+  MSG_ACCOUNT_EXISTS,
+  MSG_EMAIL_REGISTERED,
+  MSG_GENERIC_CREATE_FAIL,
+  MSG_INVALID_INPUT,
+  MSG_INTERNAL_ERROR,
+  MSG_SIGNUP_SUCCESS,
+} from "./messages";
 import { signupSchema } from "@/types/authTypes";
 import { generateVerifyToken } from "@/lib/verifyToken";
 import {
@@ -11,33 +23,6 @@ import {
 } from "@/types/mogodbValidation";
 import { getIP } from "@/lib/getIp";
 import { signupLimiter } from "@/lib/rateLimiter";
-
-// Centralized messages to reduce string literal noise in function bodies
-const MSG_RATE_LIMIT = "Too many signup attempts. Please try in 10 minutes.";
-const MSG_EMAIL_PASSWORD_REQUIRED = "Email and password are required";
-const MSG_EMAIL_REQUIRED = "Email is required";
-const MSG_PASSWORD_REQUIRED = "Password is required";
-const MSG_UNSUPPORTED_DOMAIN = "We only support specific email domains";
-const MSG_ACCOUNT_EXISTS = "An account with this email already exists";
-const MSG_EMAIL_REGISTERED = "Email is already registered";
-const MSG_GENERIC_CREATE_FAIL = "Failed to create account";
-const MSG_INVALID_INPUT = "Invalid input data";
-const MSG_INTERNAL_ERROR = "Internal server error";
-const MSG_SIGNUP_SUCCESS =
-  "Account created successfully. Please check your email to verify your account.";
-
-type SignupSuccess = {
-  ok: true;
-  message: string;
-  redirect: string;
-  user: { id: string; name: string };
-};
-
-type SignupFailure = {
-  ok: false;
-  message: string;
-  fieldErrors?: Record<string, string | undefined>;
-};
 
 function respond(json: SignupSuccess | SignupFailure, status = 200) {
   return NextResponse.json(json, { status });
@@ -144,59 +129,6 @@ export async function POST(req: NextRequest) {
     console.error("Signup error:", error);
     return respond({ ok: false, message: MSG_INTERNAL_ERROR }, 500);
   }
-}
-
-async function createUser(email: string, password: string, username: string) {
-  const { usersCollection } = await connectToMongo();
-
-  const existingUser = await usersCollection.findOne({ email });
-  if (existingUser) {
-    return { error: "User already exists", status: 409 };
-  }
-
-  const hashedPassword = await hashPassword(password);
-  // Enforce letters-only username to satisfy DB validator
-  const lettersOnlyName = (username || "").replace(/[^A-Za-z]/g, "").trim();
-  if (!lettersOnlyName || lettersOnlyName.length < 2) {
-    return {
-      error:
-        "Username must contain only letters (A-Z) and be at least 2 characters",
-      status: 400,
-    };
-  }
-  const newUser: User = {
-    email,
-    passwordHash: hashedPassword,
-    name: lettersOnlyName,
-    role: "user" as const,
-    emailVerified: false,
-    createdAt: new Date(),
-  };
-
-  try {
-    const result = await usersCollection.insertOne(newUser);
-    return { userId: result.insertedId.toString(), user: newUser };
-  } catch (err) {
-    return {
-      error: `Failed to create user ${email} due to error: ${err}`,
-      status: 500,
-    };
-  }
-}
-
-async function createRefreshToken(userId: string) {
-  const { refreshTokensCollection } = await connectToMongo();
-  const refreshToken = await generateRefreshToken(userId, 12);
-
-  const newToken = {
-    userId: userId,
-    token: refreshToken,
-    createdAt: new Date(),
-    expiresAt: new Date(Date.now() + 60 * 60 * 24 * 1000 * 7), // 7 days
-  };
-
-  await refreshTokensCollection.insertOne(newToken);
-  return refreshToken;
 }
 
 function setAuthCookies(
