@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToMongo } from "@/lib/mongodb";
+import { issueRefreshSession, setAuthCookies } from "@/lib/refreshSession";
 import { redis } from "@/lib/rateLimiter";
 import { ObjectId } from "mongodb";
 
@@ -100,16 +101,20 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-      // await redis.del(`verify:${token}`);
+      await redis.del(`verify:${token}`);
     } catch (e) {
       console.warn("[verify] Failed to clean up token in redis:", e);
     }
 
-    return NextResponse.json({
+    // Auto-issue refresh session & auth cookies so user goes straight to dashboard
+    const refreshToken = await issueRefreshSession(userIdResult, { rotate: true });
+    const res = NextResponse.json({
       ok: true,
       message: "Email verified successfully",
-      redirect: "/login",
+      redirect: "/dashboard",
     });
+    setAuthCookies(res, refreshToken, userIdResult);
+    return res;
   } catch (error) {
     console.error("[verify] Email verification unhandled error:", error);
     return NextResponse.json(
