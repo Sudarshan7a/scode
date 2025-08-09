@@ -107,7 +107,9 @@ export async function GET(req: NextRequest) {
     }
 
     // Auto-issue refresh session & auth cookies so user goes straight to dashboard
-    const refreshToken = await issueRefreshSession(userIdResult, { rotate: true });
+    const refreshToken = await issueRefreshSession(userIdResult, {
+      rotate: true,
+    });
     const res = NextResponse.json({
       ok: true,
       message: "Email verified successfully",

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 // Implementation details split into service + message modules for clarity
-import { createUser, createRefreshToken } from "./service";
+import { createUser } from "./service";
 import type { SignupSuccess, SignupFailure } from "./types";
 import {
   MSG_RATE_LIMIT,
@@ -23,6 +23,7 @@ import {
 } from "@/types/mogodbValidation";
 import { getIP } from "@/lib/getIp";
 import { signupLimiter } from "@/lib/rateLimiter";
+import { issueRefreshSession, setAuthCookies } from "@/lib/refreshSession";
 
 function respond(json: SignupSuccess | SignupFailure, status = 200) {
   return NextResponse.json(json, { status });
@@ -110,7 +111,7 @@ export async function POST(req: NextRequest) {
     }
 
     const { userId, user } = userResult;
-    const refreshToken = await createRefreshToken(userId);
+    const refreshToken = await issueRefreshSession(userId, { rotate: true });
     await generateVerifyToken(userId, user.email);
 
     const success: SignupSuccess = {
@@ -131,19 +132,4 @@ export async function POST(req: NextRequest) {
   }
 }
 
-function setAuthCookies(
-  response: NextResponse,
-  refreshToken: string,
-  userId: string
-) {
-  const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict" as const,
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: "/",
-  };
-
-  response.cookies.set("refreshToken", refreshToken, cookieOptions);
-  response.cookies.set("userId", userId, cookieOptions);
-}
+// setAuthCookies now imported from lib/refreshSession
