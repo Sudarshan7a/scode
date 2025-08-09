@@ -2,7 +2,9 @@
 
 import { usePathname } from "next/navigation";
 
-export function useLayoutVisibility(pathsToHideOn: string[] = ["/room"]) {
+export function useLayoutVisibility(
+  pathsToHideOn: string[] = ["/room", "/check-email", "/signup", "/login"]
+) {
   const pathname = usePathname();
 
   if (!pathname) {
