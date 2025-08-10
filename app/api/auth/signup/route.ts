@@ -112,7 +112,11 @@ export async function POST(req: NextRequest) {
 
     const { userId, user } = userResult;
     const refreshToken = await issueRefreshSession(userId, { rotate: true });
-  await sendActionToken({ action: "verification", userId, email: user.email });
+    await sendActionToken({
+      action: "verification",
+      userId,
+      email: user.email,
+    });
 
     const success: SignupSuccess = {
       ok: true,

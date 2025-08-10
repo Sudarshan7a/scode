@@ -88,7 +88,11 @@ async function handleLoginRequest(email: string, password: string) {
 
   // If email not verified, send a fresh verification email and block login
   if (!user.emailVerified) {
-  await sendActionToken({ action: "verification", userId: user._id.toString(), email: user.email });
+    await sendActionToken({
+      action: "verification",
+      userId: user._id.toString(),
+      email: user.email,
+    });
     return NextResponse.json(
       {
         ok: false,
