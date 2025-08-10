@@ -1,12 +1,12 @@
 import { PasswordResetForm } from "./PasswordResetForm";
 import Logo from "@/components/Logo";
 
-interface Props {
-  params: { token: string };
-  searchParams?: Record<string, string | string[] | undefined>;
-}
-
-export default async function ResetPasswordPage({ params }: Props) {
+// Adapt to Next.js 15 PageProps expecting params: Promise<any>
+export default async function ResetPasswordPage({
+  params,
+}: {
+  params: Promise<{ token: string }>;
+}) {
   const { token } = await params;
 
   return (
@@ -31,7 +31,13 @@ export default async function ResetPasswordPage({ params }: Props) {
             Your new password must be 8+ characters and include upper & lower
             case letters and a number.
           </p>
-          <PasswordResetForm token={token} />
+          {token?.length ? (
+            <PasswordResetForm token={token} />
+          ) : (
+            <div className="rounded-md border border-black/10 dark:border-white/10 bg-white/70 dark:bg-white/[0.05] p-4 text-sm text-neutral-600 dark:text-neutral-300">
+              Invalid reset link. Please request a new one.
+            </div>
+          )}
           <div className="text-xs text-neutral-500 dark:text-neutral-400 text-center mt-6">
             Problems? Request a new link from the{" "}
             <a
