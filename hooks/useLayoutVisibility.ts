@@ -10,6 +10,7 @@ export function useLayoutVisibility(
     "/verify-email",
     "/check-email",
     "/forgot-password",
+    "/reset-password",
   ]
 ) {
   const pathname = usePathname();
