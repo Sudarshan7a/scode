@@ -3,7 +3,7 @@ import Logo from "@/components/Logo";
 
 interface Props {
   params: { token: string };
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams?: Record<string, string | string[] | undefined>;
 }
 
 export default async function ResetPasswordPage({ params }: Props) {
