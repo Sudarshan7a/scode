@@ -9,7 +9,15 @@ export function RootAuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   // Public routes that don't require authentication
-  const publicRoutes = ["/", "/login", "/signup", "/how-it-works"];
+  const publicRoutes = [
+    "/",
+    "/login",
+    "/signup",
+    "/how-it-works",
+    "/forgot-password",
+    "/verify-email",
+    "/check-email",
+  ];
 
   // Check for dynamic routes
   const isDynamicVerifyRoute = pathname.startsWith("/verify-email/");

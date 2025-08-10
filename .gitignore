@@ -36,6 +36,9 @@ yarn-error.log*
 .env.production
 .env.staging*
 
+#github // copilot instructions
+.github/
+
 # vercel
 .vercel
 

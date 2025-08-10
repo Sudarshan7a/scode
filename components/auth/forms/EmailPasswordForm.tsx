@@ -98,7 +98,7 @@ export function EmailPasswordForm({
             {showForgotPassword && (
               <div className="text-sm">
                 <a
-                  href="#"
+                  href="/forgot-password"
                   className="font-medium text-mysecondary hover:text-mysecondary-hover"
                 >
                   Forgot password?
