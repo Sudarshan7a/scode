@@ -16,14 +16,15 @@ export const redis = new Redis({
   token: token as string,
 });
 
+// TEMP: Raised limits for testing (restore to lower production values later)
 export const loginLimiter = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(5, "1 m"), // 5 requests per minute
+  limiter: Ratelimit.slidingWindow(50, "1 m"), // was 5/min
   analytics: true,
 });
 
 export const signupLimiter = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(3, "10 m"), // 3 requests per 10 minutes
+  limiter: Ratelimit.slidingWindow(50, "10 m"), // was 3 / 10min
   analytics: true,
 });
