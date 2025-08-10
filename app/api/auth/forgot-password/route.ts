@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     });
     return NextResponse.json({
       ok: true,
-      message: "If that email exists, a reset link was sent",
+      message: "A reset link was sent to your email address",
     });
   } catch {
     return NextResponse.json(
