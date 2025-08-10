@@ -59,16 +59,11 @@ export function MyLoginForm() {
     <div
       className="min-w-md mx-auto rounded-xl p-6 border backdrop-blur-md relative overflow-hidden
       border-[var(--color-mysecondary)]/25 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.15)]
-      bg-white/85 dark:bg-[#1f1f1f]/85"
+      bg-background"
     >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 rounded-xl"
-        style={{
-          background:
-            "linear-gradient(135deg, rgba(60,141,227,0.18), rgba(255,152,25,0.16))",
-          mask: "linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.9))",
-        }}
       />
       <div className="relative z-10">
         {/* OAuth Provider Section */}
