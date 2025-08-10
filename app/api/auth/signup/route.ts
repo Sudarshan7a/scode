@@ -16,7 +16,7 @@ import {
   MSG_SIGNUP_SUCCESS,
 } from "./messages";
 import { signupSchema } from "@/types/authTypes";
-import { generateVerifyToken } from "@/lib/verifyToken";
+import { sendActionToken } from "@/lib/sendActionToken";
 import {
   isEmailDomainAllowed,
   allowedEmailDomains,
@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
 
     const { userId, user } = userResult;
     const refreshToken = await issueRefreshSession(userId, { rotate: true });
-    await generateVerifyToken(userId, user.email);
+  await sendActionToken({ action: "verification", userId, email: user.email });
 
     const success: SignupSuccess = {
       ok: true,

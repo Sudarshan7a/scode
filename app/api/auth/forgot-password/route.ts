@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { connectToMongo } from "@/lib/mongodb";
-import { redis } from "@/lib/rateLimiter";
-import { nanoid } from "nanoid";
-import { Resend } from "resend";
-import { generateEmailTemplate } from "@/lib/EmailTemplate";
+import { sendActionToken } from "@/lib/sendActionToken";
 
 const schema = z.object({ email: z.string().trim().email() });
 
@@ -35,21 +32,12 @@ export async function POST(req: Request) {
         { status: 404 }
       );
     }
-    // generate reset token
-    const token = nanoid(32);
-    await redis.set(`pwreset:${token}`, String(user._id), { ex: 900 }); // 15 min
-    // send email
-    try {
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      await resend.emails.send({
-        from: "reset@s-code.live",
-        to: email,
-        subject: "Reset Your Password",
-        html: generateEmailTemplate("password-reset", token),
-      });
-    } catch {
-      // If email send fails we still respond success to avoid enumeration detail
-    }
+    // generate + send reset token (best-effort)
+    await sendActionToken({
+      action: "forgotPassword",
+      userId: String(user._id),
+      email,
+    });
     return NextResponse.json({
       ok: true,
       message: "If that email exists, a reset link was sent",

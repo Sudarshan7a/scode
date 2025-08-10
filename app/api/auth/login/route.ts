@@ -4,7 +4,7 @@ import { connectToMongo } from "@/lib/mongodb";
 import { loginSchema } from "@/types/authTypes";
 import { Collection } from "mongodb";
 import { User } from "@/types/mongodbTypes";
-import { generateVerifyToken } from "@/lib/verifyToken";
+import { sendActionToken } from "@/lib/sendActionToken";
 import { getIP } from "@/lib/getIp";
 import { loginLimiter } from "@/lib/rateLimiter";
 import { issueRefreshSession, setAuthCookies } from "@/lib/refreshSession";
@@ -88,7 +88,7 @@ async function handleLoginRequest(email: string, password: string) {
 
   // If email not verified, send a fresh verification email and block login
   if (!user.emailVerified) {
-    await generateVerifyToken(user._id.toString(), user.email);
+  await sendActionToken({ action: "verification", userId: user._id.toString(), email: user.email });
     return NextResponse.json(
       {
         ok: false,
