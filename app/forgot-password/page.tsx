@@ -124,8 +124,7 @@ export default function ForgotPasswordPage() {
                   Check your inbox
                 </h2>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                  If an account exists for that email you will receive a reset
-                  link shortly.
+                  You will receive a password reset link shortly.
                 </p>
               </div>
               <button
