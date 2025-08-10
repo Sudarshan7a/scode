@@ -72,8 +72,8 @@ export default function ForgotPasswordPage() {
             Reset your password
           </h1>
           <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-6 leading-relaxed max-w-prose">
-            Enter the email tied to your account. If it exists we will send a
-            secure link to reset your password.
+            Enter the email tied to your account. We will send a secure link to
+            reset your password.
           </p>
           {!submitted && (
             <form
