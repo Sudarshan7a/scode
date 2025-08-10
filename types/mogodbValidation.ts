@@ -11,8 +11,8 @@ export const usersCollectionValidation = {
       email: {
         bsonType: "string",
         pattern:
-          "^.+@(gmail|outlook|hotmail|yahoo|icloud|aol|mail|protonmail|zoho|gmx)\\.com$",
-        description: "Only major trusted domains",
+          "^.+@((gmail|outlook|hotmail|yahoo|icloud|aol|mail|protonmail|zoho|gmx)\\.com|sdit\\.ac\\.in)$",
+        description: "Only approved domains (major .com providers or sdit.ac.in)",
       },
       passwordHash: { bsonType: "string" },
       role: { enum: ["user", "admin"] },
@@ -39,6 +39,7 @@ export const allowedEmailDomains = [
   "protonmail.com",
   "zoho.com",
   "gmx.com",
+  "sdit.ac.in",
 ] as const;
 
 export function isEmailDomainAllowed(email: string): boolean {
