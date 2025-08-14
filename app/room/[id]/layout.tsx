@@ -20,12 +20,11 @@ export default function RootLayout({
   return (
     <div className="flex h-screen w-full justify-between">
       <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel>
-          One
+        <ResizablePanel minSize={30} defaultSize={50}>
           <LeftTools />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel>
+        <ResizablePanel minSize={30} defaultSize={50}>
           <RightEditor />
         </ResizablePanel>
       </ResizablePanelGroup>{" "}
