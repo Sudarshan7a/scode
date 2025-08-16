@@ -25,6 +25,7 @@
     "@radix-ui/react-tooltip": "^1.2.7",
     "@upstash/ratelimit": "^2.0.6",
     "@upstash/redis": "^1.35.3",
+    "@y/websocket-server": "^0.1.1",
     "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "class-variance-authority": "^0.7.1",
@@ -50,6 +51,8 @@
     "sonner": "^2.0.6",
     "tailwind-merge": "^3.3.1",
     "uuid": "^11.1.0",
+    "y-websocket": "^3.0.0",
+    "yjs": "^13.6.27",
     "zod": "^3.25.76"
   },
   "devDependencies": {
