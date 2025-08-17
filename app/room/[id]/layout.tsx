@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import LeftTools from "./LeftTools";
 import RightEditor from "./RightEditor";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,9 +19,16 @@ export default function RootLayout({
 }>) {
   return (
     <div className="flex h-screen w-full justify-between">
-      <LeftTools />
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel minSize={30} defaultSize={50}>
+          <LeftTools />
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel minSize={30} defaultSize={50}>
+          <RightEditor />
+        </ResizablePanel>
+      </ResizablePanelGroup>{" "}
       {children}
-      <RightEditor />
     </div>
   );
 }
