@@ -20,11 +20,14 @@ export default function CollaborativeEditor({ roomId }: { roomId: string }) {
   useEffect(() => () => cleanupRef.current(), []); // run stored cleanup on unmount
 
   return (
-    <div style={{ height: "80vh" }}>
+    <div style={{ height: "100vh" }}>
+      {/* <EditorNavBar /> */}{" "}
+      <div className="h-12 bg-background border-foreground border-b-1"> </div>
       <Editor
         height="100%"
         defaultLanguage="javascript"
         defaultValue="// Start coding together!"
+        theme="vs-dark"
         onMount={async (editor) => {
           editorRef.current = editor;
           // Defer heavy imports until editor is actually on the client.
@@ -49,10 +52,20 @@ export default function CollaborativeEditor({ roomId }: { roomId: string }) {
             );
 
             const provider = new WebsocketProvider(
-              process.env.MY_WEBSOCKET_DOMAIN as string,
+              process.env.NEXT_PUBLIC_MY_WEBSOCKET_DOMAIN as string,
               roomId,
               ydoc
             );
+
+            provider.on(
+              "status",
+              (event: {
+                status: "connected" | "disconnected" | "connecting";
+              }) => {
+                console.log("WebSocket status:", event.status);
+              }
+            );
+
             const ytext = ydoc.getText("monaco");
 
             const { MonacoBinding } = await import("y-monaco");

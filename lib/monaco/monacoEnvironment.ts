@@ -19,7 +19,13 @@ function buildWorker(label: string) {
   };
 
   const moduleId = workerPathMap[label] || workerPathMap.default;
-  const loaderSource = `import * as worker from 'monaco-editor/esm/${moduleId}.js'; self.MonacoEnvironment = { baseUrl: 'monaco-editor/esm/' }; for (const key in worker) { /* noop export to satisfy import */ }`;
+  const loaderSource = `
+  import * as worker from 'monaco-editor/esm/${moduleId}.js';
+  self.MonacoEnvironment = { baseUrl: 'monaco-editor/esm/' };
+  // Ensure the worker actually runs
+  self.onmessage = (event) => worker.default && worker.default(event);
+`;
+
   const blob = new Blob([loaderSource], { type: "text/javascript" });
   const url = URL.createObjectURL(blob);
   workerBlobUrlCache[label] = url;
