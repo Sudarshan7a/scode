@@ -14,7 +14,9 @@ Code with friends. Learn faster. Ace interviews. S‑code makes coding practice 
 - Resend (email delivery)
 - Zod + react-hook-form (form validation)
 - bcrypt (password hashing), jose/jwt (access tokens)
-- (Upcoming) Monaco Editor + Y.js for real-time collaboration
+- Monaco Editor + Y.js (real-time collaborative code editing)
+- WebSocket server (Y.js collaborative document synchronization)
+- IndexedDB persistence (offline content storage)
 
 ## Security & authentication
 
@@ -37,31 +39,52 @@ Privacy-first auth and token hygiene:
 - Secure login/logout and refresh‑token based session management
 - Automatic access‑token refresh in background (from refresh token)
 - Protected routes (middleware checks before dashboard/rooms)
+- **Real-time collaborative code editor**
+  - Monaco Editor with syntax highlighting for JavaScript, TypeScript, Python, Go, Java, C, and C++
+  - Real-time synchronization using Y.js CRDTs
+  - WebSocket-based collaboration with automatic conflict resolution
+  - Offline persistence with IndexedDB
+- **Room management system**
+  - Create, schedule, and join coding rooms
+  - Host and join forms with validation
+  - Room types: interview, mock interview, pair programming
+  - Privacy levels: public and private rooms
+- **Dashboard interface**
+  - Room creation and scheduling tools
+  - Session management and tracking
+  - User activity overview
 - Configurable rules (e.g., update allowed domains, adjust verification link expiry)
 - Clear API responses `{ ok, message, ... }` for predictable handling
 
 ## Roadmap
 
-In progress
+**Recently Completed**
 
-- Real-time collaborative code rooms (Monaco + Y.js)
+- ✅ Real-time collaborative code rooms (Monaco + Y.js)
+- ✅ Multi-language support (JavaScript, TypeScript, Python, Go, Java, C, C++)
+- ✅ Room creation and management system
+- ✅ Registration form refactoring with modular components
+
+**In Progress**
+
 - Room roles & permissions
 - Explore page for public coding sessions
 
-Planned
+**Planned**
 
 - OAuth integrations (GitHub, Google)
 - Session management UI
 - MFA (TOTP) & device-based trust
 - Invite-only and public room modes
 - Integrated notes & code history
+- Video/audio integration for interviews
 
 ## Getting started
 
 1. Install dependencies
 
 ```powershell
-pnpm install
+npm install --legacy-peer-deps
 ```
 
 2. Configure environment
@@ -85,10 +108,18 @@ RESEND_API_KEY=...
 MY_DOMAIN=http://localhost:3000   # used to build verify links
 ```
 
-3. Run the dev server
+3. Start the WebSocket server (for real-time collaboration)
 
 ```powershell
-pnpm dev
+cd websocket
+npm install
+node server.js
+```
+
+4. Run the dev server
+
+```powershell
+npm run dev
 ```
 
 Open http://localhost:3000.
@@ -119,6 +150,34 @@ Tokens
 - Refresh token: stored in Mongo with fields `{ userId, token, createdAt, expiresAt }` (issued & optionally rotated by `lib/refreshSession.ts`)
 - Access token: short-lived JWT issued on demand from refresh token
 
+## Collaborative Editor
+
+The real-time collaborative editor is built with Monaco Editor and Y.js for seamless multiplayer coding:
+
+**Supported Languages**
+- JavaScript
+- TypeScript  
+- Python
+- Go
+- Java
+- C
+- C++
+
+**Key Features**
+- Real-time synchronization using Y.js CRDTs (Conflict-free Replicated Data Types)
+- WebSocket-based collaboration with automatic conflict resolution
+- Offline persistence with IndexedDB
+- Language switching with syntax highlighting
+- Resizable panels for optimal workspace layout
+
+**Architecture**
+- `CollaborativeEditor.tsx`: Main editor component with language selection
+- `lib/monaco/monacoEnvironment.ts`: Monaco editor configuration
+- WebSocket server: Handles Y.js document synchronization
+- IndexedDB persistence: Stores documents locally for offline access
+
+The editor dynamically loads heavy dependencies (Monaco, Y.js workers) only when needed to maintain fast initial page loads.
+
 ## Collections & validation
 
 Central types: `types/mongodbTypes.ts`
@@ -137,11 +196,37 @@ Connection: `lib/mongodb.ts`
 ## Project structure
 
 ```
-app/              # Next.js App Router pages
-lib/              # Database, auth, and utility helpers
-types/            # TypeScript types & validators
-components/       # UI and feature components
-public/           # Static assets
+app/                    # Next.js App Router pages
+├── api/               # API routes (auth, etc.)
+├── dashboard/         # Dashboard pages
+├── room/             # Collaborative room pages
+└── ...               # Auth pages (login, signup, verify)
+
+lib/                    # Database, auth, and utility helpers
+├── monaco/           # Monaco editor environment setup
+├── mongodb.ts        # Database connection
+├── refreshSession.ts # Session management
+└── ...               # Other utilities
+
+types/                  # TypeScript types & validators
+├── mongodbTypes.ts   # Database schema types
+├── mogodbValidation.ts # Validation rules
+└── ...
+
+components/             # UI and feature components
+├── dashboard/        # Dashboard-specific components
+├── custom/
+│   └── schedule/     # Registration forms (modular)
+│       ├── dialogs/  # Form dialogs
+│       ├── fields/   # Reusable form fields
+│       ├── forms/    # Complete form components
+│       └── schemas/  # Validation schemas
+├── ui/               # Reusable UI components
+└── ...
+
+websocket/              # Y.js WebSocket server for collaboration
+
+public/                 # Static assets
 ```
 
 ## Configuration tips
@@ -149,9 +234,11 @@ public/           # Static assets
 - Allowed domains: update `allowedEmailDomains` in `types/mogodbValidation.ts`
 - Email template: `lib/EmailTemplate.ts` (copy, CTA, expiry note)
 - Verification token TTL: `lib/verifyToken.ts` (Redis set with EX 600)
+- WebSocket server port: Default is 1234, can be configured in `websocket/server.js`
 
 ## Troubleshooting
 
+**Authentication Issues**
 - Domain not allowed on signup
   - Error appears under the email field: update `allowedEmailDomains` to include your domain
 - “Document failed validation” on user insert
@@ -160,6 +247,16 @@ public/           # Static assets
   - Check `RESEND_API_KEY` and `MY_DOMAIN` URL; Resend may require a verified sender domain
 - Refresh token errors / redirects to login
   - Verify middleware and `/api/auth/verify-refresh-token` endpoint; check token `expiresAt`
+
+**Collaboration Issues**
+- Editor not syncing between users
+  - Ensure WebSocket server is running on port 1234
+  - Check browser console for connection errors
+  - Verify IndexedDB is enabled in the browser
+- Language switching not working
+  - Monaco language contributions are loaded dynamically; check network tab for failed imports
+- Editor performance issues
+  - Heavy Monaco/Y.js imports are deferred until editor mount; check for console errors during initialization
 
 ## Commit history helper (optional)
 
