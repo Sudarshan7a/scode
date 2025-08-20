@@ -14,7 +14,7 @@ export interface User {
 }
 
 export type RefreshToken = {
-  _id: ObjectId;
+  _id?: ObjectId;
   userId: string;
   token: string;
   createdAt: Date;

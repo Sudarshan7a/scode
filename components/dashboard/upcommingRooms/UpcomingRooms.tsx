@@ -1,12 +1,12 @@
 import RoomCard from "@/components/RoomCard";
 import TitleBackgroundCard from "@/components/TitleBackgroundCard";
 import { mockRoomsData } from "@/constants/mockRooms";
-import { mockRooms } from "@/types/roomsTypes";
+import { MockRoom } from "@/types/roomsTypes";
 import { formatDate } from "@/lib/dateUtils";
 import React from "react";
 
 // Function to filter and get upcoming rooms
-const getUpcomingRooms = (): mockRooms[] => {
+const getUpcomingRooms = (): MockRoom[] => {
   return mockRoomsData
     .filter((room) => room.status === "scheduled")
     .slice(0, 3);

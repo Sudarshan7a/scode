@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 async function authenticateUser(
   email: string,
   password: string,
-  usersCollection: Collection
+  usersCollection: Collection<User>
 ) {
   const result = await usersCollection.findOne({ email });
   if (!result) {

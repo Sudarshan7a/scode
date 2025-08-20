@@ -2,14 +2,14 @@ import React from "react";
 import TitleBackgroundCard from "@/components/TitleBackgroundCard";
 import RoomCard from "@/components/RoomCard";
 import { mockRoomsData } from "@/constants/mockRooms";
-import { mockRooms } from "@/types/roomsTypes";
+import { MockRoom } from "@/types/roomsTypes";
 import { formatDate } from "@/lib/dateUtils";
 
 type RoomStatus = "live" | "scheduled" | "ended" | "saved";
 
 interface ActivitySection {
   title: string;
-  rooms: mockRooms[];
+  rooms: MockRoom[];
   keyPrefix: string;
 }
 
@@ -43,15 +43,15 @@ const ActivitySection: React.FC<ActivitySection> = ({
 
 function YourActivities() {
   // Data preparation functions
-  const getRecentJoinedRooms = (): mockRooms[] =>
+  const getRecentJoinedRooms = (): MockRoom[] =>
     mockRoomsData.filter((room) => room.status === "ended").slice(0, 4);
 
-  const getHostingRooms = (): mockRooms[] =>
+  const getHostingRooms = (): MockRoom[] =>
     mockRoomsData
       .filter((room) => room.status === "live" || room.status === "scheduled")
       .slice(0, 4);
 
-  const getSavedNotesRooms = (): mockRooms[] =>
+  const getSavedNotesRooms = (): MockRoom[] =>
     mockRoomsData
       .map((room) => ({
         ...room,

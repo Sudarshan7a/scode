@@ -1,4 +1,13 @@
 import { MongoClient, Db, Collection } from "mongodb";
+import {
+  User,
+  RefreshToken,
+  Room,
+  SavedCode,
+  SavedNote,
+  SavedRoom,
+  usersActivities,
+} from "@/types/mongodbTypes";
 
 const uri = process.env.MONGODB_URI!;
 const dbNameFromEnv = process.env.MONGODB_DB; // optional override
@@ -12,13 +21,13 @@ const globalWithMongo = globalThis as typeof globalThis & {
 let db: Db;
 
 export async function connectToMongo(): Promise<{
-  usersCollection: Collection;
-  refreshTokensCollection: Collection;
-  savedRoomsCollection: Collection;
-  roomsCollection: Collection;
-  savedNotesCollection: Collection;
-  savedCodeCollection: Collection;
-  usersActivitiesCollection: Collection;
+  usersCollection: Collection<User>;
+  refreshTokensCollection: Collection<RefreshToken>;
+  savedRoomsCollection: Collection<SavedRoom>;
+  roomsCollection: Collection<Room>;
+  savedNotesCollection: Collection<SavedNote>;
+  savedCodeCollection: Collection<SavedCode>;
+  usersActivitiesCollection: Collection<usersActivities>;
 }> {
   if (!globalWithMongo._mongoClient) {
     const client = new MongoClient(uri, options);

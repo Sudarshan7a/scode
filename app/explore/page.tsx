@@ -2,10 +2,10 @@ import RoomCard from "@/components/RoomCard";
 import SearchBar from "@/components/searchBar/SearchBar";
 import TitleBackgroundCard from "@/components/TitleBackgroundCard";
 import { useRooms } from "@/hooks/useRooms";
-import { mockRooms } from "@/types/roomsTypes";
+import { MockRoom } from "@/types/roomsTypes";
 
 export default function Home() {
-  const rooms: mockRooms[] = useRooms();
+  const rooms: MockRoom[] = useRooms();
 
   return (
     <div className="flex flex-col items-center justify-center my-8">

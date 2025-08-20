@@ -21,7 +21,6 @@ export const GET = withAuth(
           email: user.email,
           name: user.name,
           role: user.role,
-          notifications: user.notifications,
           createdAt: user.createdAt,
         },
       });

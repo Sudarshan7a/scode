@@ -1,6 +1,6 @@
-import { mockRooms } from "@/types/roomsTypes";
+import { MockRoom } from "@/types/roomsTypes";
 
-export const mockRoomsData: mockRooms[] = [
+export const mockRoomsData: MockRoom[] = [
   {
     id: "room_001",
     title: "Frontend System Design",
