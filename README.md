@@ -164,6 +164,37 @@ public/           # Static assets
 
 See `realistic-commit-plan.md` for a batch script that stages and backdates a realistic series of commits across the past weeks.
 
+## 📊 Git Best Practices & Learning Tools
+
+This repository includes comprehensive tools to help beginners learn Git best practices and avoid common mistakes:
+
+### 🔍 Quick Audit
+```bash
+# Run repository health check
+npm run audit:repo
+
+# Validate a commit message
+npm run audit:commit "feat(auth): add user login validation"
+
+# View all Git learning resources
+npm run help:git
+```
+
+### 📚 Learning Resources
+- **[Git Best Practices](docs/git-best-practices.md)** - Comprehensive guide with examples
+- **[Learning Checklist](docs/learning-checklist.md)** - Progressive skill-building path
+- **[Repository Scorecard](docs/repository-scorecard.md)** - Self-assessment tool
+- **[Development Setup](docs/development-setup.md)** - Tool configuration guide
+- **[Git Examples](docs/git-examples.md)** - Before/after examples of common mistakes
+
+### 🛠️ Available Tools
+- `scripts/git-audit.sh` - Comprehensive repository health check
+- `scripts/validate-commit.js` - Commit message validation
+- Scoring system for repository hygiene
+- Educational examples and templates
+
+**Perfect for beginners** who want to learn professional Git workflows and avoid common pitfalls!
+
 ---
 
 Made with Next.js App Router, MongoDB, and a secure, explicit auth flow.
