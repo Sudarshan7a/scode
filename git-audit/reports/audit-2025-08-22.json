@@ -1,14 +1,17 @@
 {
-  "timestamp": "2025-08-22T17:31:05.650Z",
+  "timestamp": "2025-08-22T17:34:25.105Z",
   "repository": "scode",
   "results": {
     "commitHygiene": {
-      "score": 3,
-      "totalCommits": 2,
+      "score": 2,
+      "totalCommits": 3,
       "issues": [
-        "Very few commits in last 60 days - consider more frequent commits"
+        "Very few commits in last 60 days - consider more frequent commits",
+        "Found 1 large commits (>300 lines changed)"
       ],
-      "largeCommits": []
+      "largeCommits": [
+        " 15 files changed, 3453 insertions(+), 1 deletion(-)"
+      ]
     },
     "branchStrategy": {
       "score": 5,
@@ -19,9 +22,9 @@
     },
     "messageQuality": {
       "score": 3,
-      "totalMessages": 2,
-      "badMessages": 1,
-      "conventionalPercentage": 50,
+      "totalMessages": 3,
+      "badMessages": 2,
+      "conventionalPercentage": 67,
       "issues": [
         "Many commit messages need improvement (too vague, wrong format)"
       ]
@@ -40,7 +43,7 @@
     "issueIntegration": {
       "score": 3,
       "issueReferences": 0,
-      "totalCommits": 2,
+      "totalCommits": 3,
       "issues": [
         "No issue references found in commits - consider linking work to issues"
       ]
