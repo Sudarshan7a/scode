@@ -175,7 +175,37 @@ export default function CollaborativeEditor({ roomId }: { roomId: string }) {
                 .some((l) => l.id === selected.monacoId);
               if (!already) {
                 try {
-                  await import(selected.contribution);
+                  // Use literal dynamic imports via a switch so bundlers can
+                  // statically analyze dependency requests and avoid the
+                  // "Critical dependency: the request of a dependency is an expression" warning.
+                  switch (selected.contribution) {
+                    case "monaco-editor/esm/vs/basic-languages/python/python.contribution":
+                      await import(
+                        "monaco-editor/esm/vs/basic-languages/python/python.contribution"
+                      );
+                      break;
+                    case "monaco-editor/esm/vs/basic-languages/go/go.contribution":
+                      await import(
+                        "monaco-editor/esm/vs/basic-languages/go/go.contribution"
+                      );
+                      break;
+                    case "monaco-editor/esm/vs/basic-languages/java/java.contribution":
+                      await import(
+                        "monaco-editor/esm/vs/basic-languages/java/java.contribution"
+                      );
+                      break;
+                    case "monaco-editor/esm/vs/basic-languages/cpp/cpp.contribution":
+                      await import(
+                        "monaco-editor/esm/vs/basic-languages/cpp/cpp.contribution"
+                      );
+                      break;
+                    default:
+                      // Unknown contribution: warn and skip. Add new cases above as needed.
+                      console.warn(
+                        "Unknown Monaco contribution:",
+                        selected.contribution
+                      );
+                  }
                 } catch (e) {
                   console.warn(
                     "Failed to load language contribution for",
