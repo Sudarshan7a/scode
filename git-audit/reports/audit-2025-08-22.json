@@ -1,0 +1,49 @@
+{
+  "timestamp": "2025-08-22T17:31:05.650Z",
+  "repository": "scode",
+  "results": {
+    "commitHygiene": {
+      "score": 3,
+      "totalCommits": 2,
+      "issues": [
+        "Very few commits in last 60 days - consider more frequent commits"
+      ],
+      "largeCommits": []
+    },
+    "branchStrategy": {
+      "score": 5,
+      "currentBranch": "copilot/fix-dfbb286e-f227-401e-897a-02277f601b0c",
+      "totalBranches": 2,
+      "issues": [],
+      "badBranchNames": []
+    },
+    "messageQuality": {
+      "score": 3,
+      "totalMessages": 2,
+      "badMessages": 1,
+      "conventionalPercentage": 50,
+      "issues": [
+        "Many commit messages need improvement (too vague, wrong format)"
+      ]
+    },
+    "secretSafety": {
+      "score": 2,
+      "issues": [
+        "⚠️  Potential secrets found in recent commits - please review and rotate if needed"
+      ],
+      "gitignoreExists": true
+    },
+    "projectHygiene": {
+      "score": 5,
+      "issues": []
+    },
+    "issueIntegration": {
+      "score": 3,
+      "issueReferences": 0,
+      "totalCommits": 2,
+      "issues": [
+        "No issue references found in commits - consider linking work to issues"
+      ]
+    }
+  }
+}

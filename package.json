@@ -1,12 +1,17 @@
 {
   "name": "scode",
   "version": "0.1.0",
+  "description": "A collaborative, cloud-based coding platform built with Next.js that blends real-time interview preparation with social coding",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "audit:git": "node git-audit/audit.js",
+    "audit:commits": "node git-audit/commit-analyzer.js",
+    "audit:branches": "node git-audit/branch-checker.js",
+    "audit:secrets": "node git-audit/secret-scanner.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",

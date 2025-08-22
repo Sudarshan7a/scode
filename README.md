@@ -161,6 +161,29 @@ public/           # Static assets
 - Refresh token errors / redirects to login
   - Verify middleware and `/api/auth/verify-refresh-token` endpoint; check token `expiresAt`
 
+## Git Repository Hygiene Audit
+
+This repository includes a comprehensive Git audit system to help developers learn best practices:
+
+```bash
+# Run comprehensive audit
+npm run audit:git
+
+# Run specific audits
+npm run audit:commits    # Analyze commit patterns
+npm run audit:branches   # Check branch strategy  
+npm run audit:secrets    # Scan for leaked secrets
+```
+
+### Features
+- **Commit Quality Analysis** - Message clarity, frequency, and atomicity
+- **Branch Strategy Review** - Naming conventions and workflow
+- **Secret Detection** - Prevent accidentally committed credentials
+- **Educational Resources** - Learn Git best practices step by step
+- **Progress Tracking** - JSON reports and scoring system
+
+See `git-audit/README.md` for full documentation and `git-audit/educational/learning-path.md` for a beginner-friendly improvement guide.
+
 ## Commit history helper (optional)
 
 See `realistic-commit-plan.md` for a batch script that stages and backdates a realistic series of commits across the past weeks.
