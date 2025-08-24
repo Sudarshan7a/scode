@@ -62,9 +62,9 @@ export default function EditorContainer({
 
   return (
     <Editor
-  height="100%"
-  theme="vs-dark"
-  language={languageId}
+      height="100%"
+      theme="vs-dark"
+      language={languageId}
       defaultValue="// Start coding together!"
       onMount={async (editor, monaco) => {
         editorRef.current = editor as EditorLike;

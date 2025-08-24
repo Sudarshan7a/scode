@@ -58,7 +58,11 @@ export default function CollaborativeEditor({ roomId }: { roomId: string }) {
   return (
     <div style={{ height: "100vh" }}>
       <LanguageSelector />
-  <EditorContainer roomId={roomId} languages={languages} languageId={languageId} />
+      <EditorContainer
+        roomId={roomId}
+        languages={languages}
+        languageId={languageId}
+      />
     </div>
   );
 }
