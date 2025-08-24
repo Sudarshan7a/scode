@@ -11,11 +11,88 @@ export type EditorLike = { getModel: () => { uri?: unknown } | null };
 
 // Minimal shape of the Monaco API surface used by this file.
 export type MonacoLike = {
+  // Keep the shape loose since we load Monaco dynamically in the browser.
+  // We intentionally allow accessing the `typescript` namespace at runtime.
   languages: {
     getLanguages: () => Array<{ id?: string }>;
+    typescript?: unknown;
+    // allow reading other language surfaces
+    [key: string]: unknown;
   };
   editor?: { setModelLanguage?: (mdl: unknown, l: string) => void };
 };
+
+// Configure Monaco's JS/TS language service for better editor IntelliSense.
+export function configureMonacoForTsJs(monaco: MonacoLike) {
+  if (!monaco || !monaco.languages || !monaco.languages.typescript) return;
+
+  try {
+    // Minimal TS/JS surface we rely on from Monaco. Keep it local to avoid
+    // depending on Monaco types in the repo.
+    type TsNamespace = {
+      javascriptDefaults?: {
+        setCompilerOptions: (opts: Record<string, unknown>) => void;
+        setDiagnosticsOptions: (opts: Record<string, unknown>) => void;
+        setEagerModelSync?: (b: boolean) => void;
+        addExtraLib?: (code: string, uri?: string) => void;
+      };
+      typescriptDefaults?: {
+        setCompilerOptions: (opts: Record<string, unknown>) => void;
+        setDiagnosticsOptions: (opts: Record<string, unknown>) => void;
+        setEagerModelSync?: (b: boolean) => void;
+      };
+    };
+
+    const tsns = monaco.languages as unknown as TsNamespace;
+
+    // JavaScript defaults
+    if (tsns.javascriptDefaults) {
+      tsns.javascriptDefaults.setCompilerOptions({
+        allowJs: true,
+        checkJs: true,
+        jsx: "preserve",
+      });
+      tsns.javascriptDefaults.setDiagnosticsOptions({
+        noSemanticValidation: false,
+        noSyntaxValidation: false,
+      });
+      // Keep models in sync eagerly so suggestions reflect file changes quickly
+      if (typeof tsns.javascriptDefaults.setEagerModelSync === "function") {
+        tsns.javascriptDefaults.setEagerModelSync(true);
+      }
+      // Minimal extra lib so editor offers DOM/JS globals in JS files.
+      try {
+        if (typeof tsns.javascriptDefaults.addExtraLib === "function") {
+          tsns.javascriptDefaults.addExtraLib(
+            "declare const globalThis: any; declare const window: any;",
+            "inmemory://global-js.d.ts"
+          );
+        }
+      } catch {
+        // ignore if API not available in this runtime
+      }
+    }
+
+    // TypeScript defaults
+    if (tsns.typescriptDefaults) {
+      tsns.typescriptDefaults.setCompilerOptions({
+        jsx: "preserve",
+        allowJs: true,
+      });
+      tsns.typescriptDefaults.setDiagnosticsOptions({
+        noSemanticValidation: false,
+        noSyntaxValidation: false,
+      });
+      if (typeof tsns.typescriptDefaults.setEagerModelSync === "function") {
+        tsns.typescriptDefaults.setEagerModelSync(true);
+      }
+    }
+  } catch (err) {
+    // Non-fatal: if Monaco surface differs, fall back silently.
+    // Caller will still proceed with basic editor features.
+    console.warn("configureMonacoForTsJs failed:", err);
+  }
+}
 
 export const SUPPORTED_LANGUAGES: LanguageDef[] = [
   { id: "javascript", label: "JavaScript", monacoId: "javascript" },
@@ -60,7 +137,7 @@ export async function loadLanguageContribution(
   if (!selected?.contribution) return;
   const already = monaco.languages
     .getLanguages()
-    .some((l) => l.id === selected.monacoId);
+    .some((l: { id?: string }) => l.id === selected.monacoId);
   if (already) return;
   const loaders: Record<string, () => Promise<unknown>> = {
     "monaco-editor/esm/vs/basic-languages/python/python.contribution": () =>
@@ -115,6 +192,14 @@ export async function initializeEditor(opts: {
       import("y-indexeddb"),
     ]);
     setupMonacoEnvironment();
+    // Configure Monaco's JS/TS language service for better IntelliSense
+    // (this sets compilerOptions, diagnostics and eager model sync).
+    try {
+      configureMonacoForTsJs(monaco);
+    } catch (e) {
+      // non-fatal
+      console.warn("Failed to configure Monaco TS/JS defaults:", e);
+    }
 
     const ydoc = new Y.Doc();
     const persistence = new IndexeddbPersistence(roomId, ydoc);
