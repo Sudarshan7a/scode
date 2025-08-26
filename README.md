@@ -248,6 +248,7 @@ public/                 # Static assets
 - Refresh token errors / redirects to login
   - Verify middleware and `/api/auth/verify-refresh-token` endpoint; check token `expiresAt`
 
+
 **Collaboration Issues**
 - Editor not syncing between users
   - Ensure WebSocket server is running on port 1234
@@ -258,9 +259,64 @@ public/                 # Static assets
 - Editor performance issues
   - Heavy Monaco/Y.js imports are deferred until editor mount; check for console errors during initialization
 
+
+## Git Repository Hygiene Audit
+
+This repository includes a comprehensive Git audit system to help developers learn best practices:
+
+```bash
+# Run comprehensive audit
+npm run audit:git
+
+# Run specific audits
+npm run audit:commits    # Analyze commit patterns
+npm run audit:branches   # Check branch strategy  
+npm run audit:secrets    # Scan for leaked secrets
+```
+
+### Features
+- **Commit Quality Analysis** - Message clarity, frequency, and atomicity
+- **Branch Strategy Review** - Naming conventions and workflow
+- **Secret Detection** - Prevent accidentally committed credentials
+- **Educational Resources** - Learn Git best practices step by step
+- **Progress Tracking** - JSON reports and scoring system
+
+See `git-audit/README.md` for full documentation and `git-audit/educational/learning-path.md` for a beginner-friendly improvement guide.
+
 ## Commit history helper (optional)
 
 See `realistic-commit-plan.md` for a batch script that stages and backdates a realistic series of commits across the past weeks.
+
+## 📊 Git Best Practices & Learning Tools
+
+This repository includes comprehensive tools to help beginners learn Git best practices and avoid common mistakes:
+
+### 🔍 Quick Audit
+```bash
+# Run repository health check
+npm run audit:repo
+
+# Validate a commit message
+npm run audit:commit "feat(auth): add user login validation"
+
+# View all Git learning resources
+npm run help:git
+```
+
+### 📚 Learning Resources
+- **[Git Best Practices](docs/git-best-practices.md)** - Comprehensive guide with examples
+- **[Learning Checklist](docs/learning-checklist.md)** - Progressive skill-building path
+- **[Repository Scorecard](docs/repository-scorecard.md)** - Self-assessment tool
+- **[Development Setup](docs/development-setup.md)** - Tool configuration guide
+- **[Git Examples](docs/git-examples.md)** - Before/after examples of common mistakes
+
+### 🛠️ Available Tools
+- `scripts/git-audit.sh` - Comprehensive repository health check
+- `scripts/validate-commit.js` - Commit message validation
+- Scoring system for repository hygiene
+- Educational examples and templates
+
+**Perfect for beginners** who want to learn professional Git workflows and avoid common pitfalls!
 
 ---
 
