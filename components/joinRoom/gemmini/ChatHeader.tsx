@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 function ChatHeader() {
   return (
-    <header className="border-b border-border border-b-myforeground bg-card px-6 py-1 ">
+    <header className="border-b border-border border-b-myforeground bg-card px-6 py-0.5 max-h-12">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <Avatar className="w-8 h-8 bg-mysecondary">
@@ -13,7 +13,7 @@ function ChatHeader() {
             </AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-title-last font-semibold text-foreground font-secondary">
+            <h1 className="text-md font-semibold text-foreground font-secondary">
               AI Assistant
             </h1>
             <p className="text-sm text-foreground">Online • Ready to help</p>
