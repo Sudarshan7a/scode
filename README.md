@@ -105,17 +105,18 @@ Verify email
 
 - Route: `GET /api/auth/verify?token=...`
 - Token stored in Redis with 10-minute TTL; upon success, user `emailVerified=true`
-- UI page: `app/verify-email/[token]/page.tsx` shows status and redirects to login
+- A refresh session is now issued automatically and the user is redirected straight to the dashboard
+- UI page: `app/verify-email/[token]/page.tsx` handles status + redirect
 
 Login
 
 - Verifies `passwordHash` against input
 - If `emailVerified=false`, blocks login and resends a verification email
-- On success, issues refresh token (Mongo `refreshTokens` collection) and sets cookies
+- On success, issues (rotated) refresh token via centralized `issueRefreshSession` util and sets cookies
 
 Tokens
 
-- Refresh token: stored in Mongo with fields `{ userId, token, createdAt, expiresAt }`
+- Refresh token: stored in Mongo with fields `{ userId, token, createdAt, expiresAt }` (issued & optionally rotated by `lib/refreshSession.ts`)
 - Access token: short-lived JWT issued on demand from refresh token
 
 ## Collections & validation
@@ -159,6 +160,29 @@ public/           # Static assets
   - Check `RESEND_API_KEY` and `MY_DOMAIN` URL; Resend may require a verified sender domain
 - Refresh token errors / redirects to login
   - Verify middleware and `/api/auth/verify-refresh-token` endpoint; check token `expiresAt`
+
+## Git Repository Hygiene Audit
+
+This repository includes a comprehensive Git audit system to help developers learn best practices:
+
+```bash
+# Run comprehensive audit
+npm run audit:git
+
+# Run specific audits
+npm run audit:commits    # Analyze commit patterns
+npm run audit:branches   # Check branch strategy  
+npm run audit:secrets    # Scan for leaked secrets
+```
+
+### Features
+- **Commit Quality Analysis** - Message clarity, frequency, and atomicity
+- **Branch Strategy Review** - Naming conventions and workflow
+- **Secret Detection** - Prevent accidentally committed credentials
+- **Educational Resources** - Learn Git best practices step by step
+- **Progress Tracking** - JSON reports and scoring system
+
+See `git-audit/README.md` for full documentation and `git-audit/educational/learning-path.md` for a beginner-friendly improvement guide.
 
 ## Commit history helper (optional)
 

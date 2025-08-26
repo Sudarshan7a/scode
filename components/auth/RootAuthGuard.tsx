@@ -9,11 +9,24 @@ export function RootAuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   // Public routes that don't require authentication
-  const publicRoutes = ["/", "/login", "/signup", "/how-it-works"];
+  const publicRoutes = [
+    "/",
+    "/login",
+    "/signup",
+    "/how-it-works",
+    "/forgot-password",
+    "/verify-email",
+    "/check-email",
+    "/reset-password", // base (fallback) – actual page is /reset-password/[token]
+  ];
 
-  // Check for dynamic routes
+  // Dynamic route patterns
   const isDynamicVerifyRoute = pathname.startsWith("/verify-email/");
-  const isPublicRoute = publicRoutes.includes(pathname) || isDynamicVerifyRoute;
+  const isDynamicResetRoute = pathname.startsWith("/reset-password/");
+  const isPublicRoute =
+    publicRoutes.includes(pathname) ||
+    isDynamicVerifyRoute ||
+    isDynamicResetRoute;
 
   useEffect(() => {
     (async () => {

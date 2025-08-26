@@ -1,9 +1,10 @@
 {
   "name": "scode",
   "version": "0.1.0",
+  "description": "A collaborative, cloud-based coding platform built with Next.js that blends real-time interview preparation with social coding",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -12,9 +13,14 @@
     "git:check-message": "node scripts/validate-commit.js",
     "git:health": "./scripts/git-audit.sh",
     "help:git": "echo 'Git Learning Resources:\n📖 docs/git-best-practices.md\n📋 docs/learning-checklist.md\n📊 docs/repository-scorecard.md\n🛠️ docs/development-setup.md\n📝 docs/git-examples.md'"
+    "audit:git": "node git-audit/audit.js",
+    "audit:commits": "node git-audit/commit-analyzer.js",
+    "audit:branches": "node git-audit/branch-checker.js",
+    "audit:secrets": "node git-audit/secret-scanner.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
+    "@monaco-editor/react": "^4.7.0",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-checkbox": "^1.3.2",
     "@radix-ui/react-dialog": "^1.1.14",
@@ -30,6 +36,7 @@
     "@radix-ui/react-tooltip": "^1.2.7",
     "@upstash/ratelimit": "^2.0.6",
     "@upstash/redis": "^1.35.3",
+    "@y/websocket-server": "^0.1.1",
     "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "class-variance-authority": "^0.7.1",
@@ -41,6 +48,7 @@
     "jose": "^6.0.12",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.503.0",
+    "monaco-editor": "^0.52.2",
     "mongodb": "^6.18.0",
     "nanoid": "^5.1.5",
     "next": "15.3.1",
@@ -50,11 +58,16 @@
     "react-day-picker": "8.10.1",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.60.0",
+    "react-resizable-panels": "^3.0.4",
     "redis": "^5.6.0",
     "resend": "^6.0.0",
     "sonner": "^2.0.6",
     "tailwind-merge": "^3.3.1",
     "uuid": "^11.1.0",
+    "y-indexeddb": "^9.0.12",
+    "y-monaco": "^0.1.6",
+    "y-websocket": "^3.0.0",
+    "yjs": "^13.6.27",
     "zod": "^3.25.76"
   },
   "devDependencies": {

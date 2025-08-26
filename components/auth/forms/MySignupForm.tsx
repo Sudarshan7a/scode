@@ -65,22 +65,33 @@ export function MySignupForm() {
   };
 
   return (
-    <div className="min-w-md mx-auto bg-myforeground shadow-sm rounded-md p-6">
-      {/* OAuth Provider Section */}
-      <OAuthSection onOAuthLogin={handleOAuthSignup} />
-
-      {/* Divider */}
-      <FormDivider text="or continue with email" />
-
-      {/* Email/Password Signup Form */}
-      <SignupEmailPasswordForm
-        onSubmit={handleEmailPasswordSubmit}
-        buttonText="Sign Up"
+    <div
+      className=" bg-background min-w-md mx-auto rounded-xl p-6 border backdrop-blur-md relative overflow-hidden
+      border-[var(--color-mysecondary)]/25 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.15)]
+      "
+    >
+      {/* soft themed gradient overlay */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 rounded-xl"
       />
+      <div className="relative z-10">
+        {/* OAuth Provider Section */}
+        <OAuthSection onOAuthLogin={handleOAuthSignup} />
 
-      {/* Terms & Privacy */}
-      <div className="mt-6">
-        <TermsAndPrivacy text="By signing up, you agree to our" />
+        {/* Divider */}
+        <FormDivider text="or continue with email" />
+
+        {/* Email/Password Signup Form */}
+        <SignupEmailPasswordForm
+          onSubmit={handleEmailPasswordSubmit}
+          buttonText="Sign Up"
+        />
+
+        {/* Terms & Privacy */}
+        <div className="mt-6 text-xs text-white">
+          <TermsAndPrivacy text="By signing up, you agree to our" />
+        </div>
       </div>
     </div>
   );

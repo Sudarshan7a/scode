@@ -16,6 +16,7 @@ import {
   LoginFormValues,
   EmailPasswordFormProps,
 } from "@/types/authTypes";
+import { authInputClasses, authLabelClasses } from "./formStyles";
 
 export function EmailPasswordForm({
   onSubmit,
@@ -43,12 +44,12 @@ export function EmailPasswordForm({
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-mybackground">Email</FormLabel>
+              <FormLabel className={authLabelClasses}>Email</FormLabel>
               <FormControl>
                 <input
                   type="email"
                   placeholder="Enter your email"
-                  className="text-mybackground w-full border border-mybtext-mybackground rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-mysecondary"
+                  className={authInputClasses}
                   {...field}
                 />
               </FormControl>
@@ -61,12 +62,12 @@ export function EmailPasswordForm({
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-mybackground">Password</FormLabel>
+              <FormLabel className={authLabelClasses}>Password</FormLabel>
               <FormControl>
                 <input
                   type="password"
                   placeholder="Enter your password"
-                  className="text-mybackground w-full border border-mybtext-mybackground rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-mysecondary"
+                  className={authInputClasses}
                   {...field}
                 />
               </FormControl>
@@ -87,7 +88,7 @@ export function EmailPasswordForm({
                 />
                 <label
                   htmlFor="remember-me"
-                  className="ml-2 block text-sm text-mybackground"
+                  className="ml-2 block text-sm text-neutral-700 dark:text-neutral-300"
                 >
                   Remember me
                 </label>
@@ -97,7 +98,7 @@ export function EmailPasswordForm({
             {showForgotPassword && (
               <div className="text-sm">
                 <a
-                  href="#"
+                  href="/forgot-password"
                   className="font-medium text-mysecondary hover:text-mysecondary-hover"
                 >
                   Forgot password?
@@ -109,7 +110,7 @@ export function EmailPasswordForm({
 
         <button
           type="submit"
-          className="w-full bg-mysecondary text-white rounded-md py-2 hover:bg-mysecondary/90 hover:cursor-pointer transition-colors"
+          className="w-full bg-mysecondary text-white rounded-md py-2 hover:bg-mysecondary-hover hover:cursor-pointer transition-colors shadow-sm"
         >
           {buttonText}
         </button>

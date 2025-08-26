@@ -16,6 +16,7 @@ export const redis = new Redis({
   token: token as string,
 });
 
+// TEMP: Raised limits for testing (restore to lower production values later)
 export const loginLimiter = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(5, "1 m"), // 5 requests per minute

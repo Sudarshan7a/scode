@@ -1,6 +1,8 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import EmailStatusCard from "@/components/auth/EmailStatusCard";
+import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 function VerifyUser() {
@@ -60,15 +62,48 @@ function VerifyUser() {
         } else {
           setMessage("Verification failed. Please try again.");
         }
-        console.error("Verification error:", error);
       }
     };
 
     verifyEmail();
   }, [token, router]);
-  if (status === "loading") return <div>Verifying email...</div>;
-  if (status === "error") return <div>Error: {message}</div>;
-  return <div>Success: {message}</div>;
+  const base = {
+    subtle: status === "success" ? "Redirecting you shortly..." : undefined,
+  };
+
+  if (status === "loading")
+    return (
+      <EmailStatusCard
+        title="Verifying your email"
+        message="Hold on a moment while we confirm your verification link."
+        variant="info"
+        loading
+        icon={<Loader2 className="animate-spin" />}
+        {...base}
+      />
+    );
+  if (status === "error")
+    return (
+      <EmailStatusCard
+        title="Verification Failed"
+        message={message || "The link is invalid or expired."}
+        variant="error"
+        icon={<XCircle className="text-destructive" />}
+        actionHref="/check-email"
+        actionLabel="Resend Link"
+      />
+    );
+  return (
+    <EmailStatusCard
+      title="Email Verified"
+      message={message || "Your email has been confirmed."}
+      variant="success"
+      icon={<CheckCircle2 className="text-green-500" />}
+      actionHref="/dashboard"
+      actionLabel="Go to Dashboard"
+      {...base}
+    />
+  );
 }
 
 export default VerifyUser;

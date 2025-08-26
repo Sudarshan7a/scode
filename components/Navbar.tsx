@@ -36,12 +36,7 @@ export default function Navbar() {
       router.push(result.redirect);
     }
   }
-  const showLayout = useLayoutVisibility([
-    "/login",
-    "/signup",
-    "/room",
-    "/verify-email/.*/",
-  ]); // Use the hook
+  const showLayout = useLayoutVisibility(); // Use the hook
 
   return (
     showLayout && (

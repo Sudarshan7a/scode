@@ -51,7 +51,13 @@ function Page() {
       </div>
 
       {/* Right side - Form section */}
-      <div className="flex-1 bg-[var(--color-mybackground)] flex justify-center items-center p-8">
+      <div
+        style={{
+          background:
+            "linear-gradient(135deg, rgba(60,141,227,0.18), rgba(255,152,25,0.16))",
+        }}
+        className="flex-1 bg-[var(--color-mybackground)] flex justify-center items-center p-8"
+      >
         <div className="w-full max-w-md">
           <div className="mb-8 text-center">
             <h2 className="text-2xl font-bold text-[var(--color-myforeground)]">

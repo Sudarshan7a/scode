@@ -29,7 +29,7 @@ export default function OAuthButton({
       type="button"
       variant="outline"
       onClick={handleClick}
-      className={`w-full bg-mysecondary/80 text-mybackground hover:text-mybackground flex items-center justify-center gap-2 border border-[var(--color-myforeground)]/20 hover:cursor-pointer hover:bg-mysecondary/90 hover:scale-105 ${className}`}
+      className={`w-full bg-mysecondary/80 dark:bg-mysecondary/80 text-mybackground hover:text-mybackground flex items-center justify-center gap-2 border border-[var(--color-myforeground)]/20 hover:cursor-pointer hover:bg-mysecondary-hover dark:hover:bg-mysecondary-hover ${className}`}
     >
       <div className="h-5 w-5 relative">
         <Image

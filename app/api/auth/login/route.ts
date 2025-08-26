@@ -1,13 +1,13 @@
 import { NextResponse, NextRequest } from "next/server";
 import { verifyPassword } from "@/auth/core/passwordHasher";
-import { generateRefreshToken } from "@/auth/utils/generateRefreshToken";
 import { connectToMongo } from "@/lib/mongodb";
 import { loginSchema } from "@/types/authTypes";
 import { Collection } from "mongodb";
 import { User } from "@/types/mongodbTypes";
-import { generateVerifyToken } from "@/lib/verifyToken";
+import { sendActionToken } from "@/lib/sendActionToken";
 import { getIP } from "@/lib/getIp";
 import { loginLimiter } from "@/lib/rateLimiter";
+import { issueRefreshSession, setAuthCookies } from "@/lib/refreshSession";
 
 export async function POST(req: NextRequest) {
   const ip = getIP(req);
@@ -23,19 +23,22 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { email, password } = loginSchema.parse(body);
-
     return await handleLoginRequest(email, password);
   } catch (error) {
     if (error instanceof Error && error.name === "ZodError") {
       return NextResponse.json(
-        { error: "Invalid input data", details: error.message },
+        {
+          ok: false,
+          message: "Invalid input data",
+          fieldErrors: undefined,
+          details: error.message,
+        },
         { status: 400 }
       );
     }
-
     console.error("Login error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { ok: false, message: "Internal server error" },
       { status: 500 }
     );
   }
@@ -62,49 +65,10 @@ async function authenticateUser(
 
   return { success: true, user: result };
 }
-async function createRefreshToken(
-  userId: string,
-  refreshTokensCollection: Collection
-) {
-  const refreshToken = await generateRefreshToken(userId);
-  const newToken = {
-    userId: userId,
-    token: refreshToken,
-    createdAt: new Date(),
-    expiresAt: new Date(Date.now() + 60 * 60 * 24 * 1000 * 7), // 7 days
-  };
-
-  await refreshTokensCollection.deleteMany({ userId: userId });
-  const tokenResult = await refreshTokensCollection.insertOne(newToken);
-
-  return { refreshToken, success: tokenResult.acknowledged };
-}
-
-function setAuthCookies(
-  res: NextResponse,
-  refreshToken: string,
-  userId: string
-) {
-  res.cookies.set("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: "/",
-  });
-
-  res.cookies.set("userId", userId, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 60 * 60 * 24 * 7, // 7 days to match refreshToken
-    path: "/",
-  });
-}
+// refresh token creation & cookie setting handled by shared util
 
 async function handleLoginRequest(email: string, password: string) {
-  const { usersCollection, refreshTokensCollection } = await connectToMongo();
-
+  const { usersCollection } = await connectToMongo();
   const authResult = await authenticateUser(email, password, usersCollection);
   if (!authResult.success) {
     return NextResponse.json(
@@ -124,7 +88,11 @@ async function handleLoginRequest(email: string, password: string) {
 
   // If email not verified, send a fresh verification email and block login
   if (!user.emailVerified) {
-    await generateVerifyToken(user._id.toString(), user.email);
+    await sendActionToken({
+      action: "verification",
+      userId: user._id.toString(),
+      email: user.email,
+    });
     return NextResponse.json(
       {
         ok: false,
@@ -137,14 +105,7 @@ async function handleLoginRequest(email: string, password: string) {
   }
 
   const userId = authResult.user._id.toString();
-  const tokenResult = await createRefreshToken(userId, refreshTokensCollection);
-
-  if (!tokenResult.success) {
-    return NextResponse.json(
-      { ok: false, message: "Failed to login" },
-      { status: 500 }
-    );
-  }
+  const refreshToken = await issueRefreshSession(userId, { rotate: true });
 
   const res = NextResponse.json({
     ok: true,
@@ -153,6 +114,6 @@ async function handleLoginRequest(email: string, password: string) {
     redirect: "/dashboard",
   });
 
-  setAuthCookies(res, tokenResult.refreshToken, userId);
+  setAuthCookies(res, refreshToken, userId);
   return res;
 }
