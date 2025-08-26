@@ -12,7 +12,7 @@
     "audit:commit": "node scripts/validate-commit.js",
     "git:check-message": "node scripts/validate-commit.js",
     "git:health": "./scripts/git-audit.sh",
-    "help:git": "echo 'Git Learning Resources:\n📖 docs/git-best-practices.md\n📋 docs/learning-checklist.md\n📊 docs/repository-scorecard.md\n🛠️ docs/development-setup.md\n📝 docs/git-examples.md'"
+    "help:git": "echo 'Git Learning Resources:\n📖 docs/git-best-practices.md\n📋 docs/learning-checklist.md\n📊 docs/repository-scorecard.md\n🛠️ docs/development-setup.md\n📝 docs/git-examples.md'",
     "audit:git": "node git-audit/audit.js",
     "audit:commits": "node git-audit/commit-analyzer.js",
     "audit:branches": "node git-audit/branch-checker.js",
