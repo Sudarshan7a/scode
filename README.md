@@ -1,22 +1,83 @@
 ## S‑code
 
+<div align="center">
+
+**🚀 A collaborative, cloud-based coding platform for interview preparation and social coding**
+
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue?logo=typescript)](https://typescriptlang.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-green?logo=mongodb)](https://mongodb.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+[🌐 Live Demo](https://scode-app.vercel.app) • [📖 Documentation](#getting-started) • [🐛 Report Bug](https://github.com/Sudarshan7a/scode/issues) • [💡 Request Feature](https://github.com/Sudarshan7a/scode/issues)
+
+</div>
+
+---
+
+## 📋 Table of Contents
+
+- [About](#about)
+- [Features](#features-mvp)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Collaborative Editor](#collaborative-editor)
+- [Authentication](#auth-flows)
+- [Roadmap](#roadmap)
+- [Project Structure](#project-structure)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#support--contributing)
+
+---
+
+## 🎯 About
+
 S‑code is a collaborative, cloud-based coding platform built with Next.js that blends real-time interview preparation with social coding to make learning more engaging and less isolating. It offers a secure, streamlined authentication system, role-based room access, and a scalable architecture for collaborative code editing.
 
-### Core vision
+### Core Vision
 
-Code with friends. Learn faster. Ace interviews. S‑code makes coding practice feel like multiplayer gaming — secure, fast, and frustration-free.
+**Code with friends. Learn faster. Ace interviews.**
+
+S‑code makes coding practice feel like multiplayer gaming — secure, fast, and frustration-free. Whether you're preparing for technical interviews, practicing algorithms, or collaborating on projects, S‑code provides the tools you need to succeed together.
 
 ## Tech stack
 
-- Next.js 15 + TypeScript (App Router)
-- MongoDB Node driver (centralized connection in `lib/mongodb.ts`)
-- Upstash Redis (verification tokens, rate limiting)
-- Resend (email delivery)
-- Zod + react-hook-form (form validation)
-- bcrypt (password hashing), jose/jwt (access tokens)
-- Monaco Editor + Y.js (real-time collaborative code editing)
-- WebSocket server (Y.js collaborative document synchronization)
-- IndexedDB persistence (offline content storage)
+**Frontend & Framework**
+
+- [Next.js 15](https://nextjs.org/) + TypeScript (App Router)
+- [React 19](https://react.dev/) with modern hooks
+- [Tailwind CSS](https://tailwindcss.com/) + [Radix UI](https://radix-ui.com/) for styling
+- [Monaco Editor](https://microsoft.github.io/monaco-editor/) for code editing
+
+**Backend & Database**
+
+- [MongoDB](https://mongodb.com/) with Node.js driver (centralized connection)
+- [Upstash Redis](https://upstash.com/) for caching, rate limiting, and token storage
+- RESTful API design with Next.js API routes
+
+**Real-time Collaboration**
+
+- [Y.js](https://docs.yjs.dev/) for Conflict-free Replicated Data Types (CRDTs)
+- WebSocket server for real-time document synchronization
+- [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) for offline persistence
+
+**Authentication & Security**
+
+- [bcrypt](https://github.com/kelektiv/node.bcrypt.js) for password hashing
+- [jose](https://github.com/panva/jose) for JWT token management
+- HttpOnly cookies for secure token storage
+- [Zod](https://zod.dev/) + [react-hook-form](https://react-hook-form.com/) for validation
+
+**Email & Communication**
+
+- [Resend](https://resend.com/) for transactional emails
+- Email verification system with Redis-backed tokens
+
+**Development Tools**
+
+- [ESLint](https://eslint.org/) for code linting
+- [TypeScript](https://typescriptlang.org/) for type safety
+- [pnpm](https://pnpm.io/) for efficient package management
 
 ## Security & authentication
 
@@ -32,97 +93,168 @@ Privacy-first auth and token hygiene:
 
 ## Features (MVP)
 
-- User accounts with email verification before first login
-- Allowed-domain signup rules
-  - Domain list: `types/mogodbValidation.ts` (`allowedEmailDomains`)
-  - Mongo collection validator enforces the same rule
-- Secure login/logout and refresh‑token based session management
-- Automatic access‑token refresh in background (from refresh token)
-- Protected routes (middleware checks before dashboard/rooms)
-- **Real-time collaborative code editor**
-  - Monaco Editor with syntax highlighting for JavaScript, TypeScript, Python, Go, Java, C, and C++
-  - Real-time synchronization using Y.js CRDTs
-  - WebSocket-based collaboration with automatic conflict resolution
-  - Offline persistence with IndexedDB
-- **Room management system**
-  - Create, schedule, and join coding rooms
-  - Host and join forms with validation
-  - Room types: interview, mock interview, pair programming
-  - Privacy levels: public and private rooms
-- **Dashboard interface**
-  - Room creation and scheduling tools
-  - Session management and tracking
-  - User activity overview
-- Configurable rules (e.g., update allowed domains, adjust verification link expiry)
-- Clear API responses `{ ok, message, ... }` for predictable handling
+### 🔐 Authentication System
+
+- **Secure Registration**: Email/password signup with domain restrictions
+- **Email Verification**: Short-lived tokens stored in Redis for verification
+- **Session Management**: HttpOnly refresh tokens with automatic rotation
+- **Protected Routes**: Middleware-based route protection
+- **Rate Limiting**: Brute-force attack prevention
+- **Password Security**: Strong bcrypt hashing
+
+### 👥 Collaborative Code Editor
+
+- **Real-time Synchronization**: Y.js CRDTs for conflict-free collaboration
+- **Multi-language Support**: JavaScript, TypeScript, Python, Go, Java, C, C++
+- **Monaco Editor**: Full-featured code editor with syntax highlighting
+- **Offline Persistence**: IndexedDB storage for working offline
+- **WebSocket Integration**: Seamless real-time updates
+- **Auto-save**: Continuous document synchronization
+
+### 🏠 Room Management
+
+- **Room Creation**: Schedule and create coding sessions
+- **Room Types**: Interview prep, mock interviews, pair programming
+- **Privacy Controls**: Public and private room options
+- **Join System**: Easy room joining with validation
+- **Host Controls**: Manage participants and session settings
+
+### 📊 Dashboard Interface
+
+- **Session Overview**: Track your coding activities
+- **Room Management**: Create, schedule, and join rooms
+- **User Profile**: Manage account settings and preferences
+- **Activity Tracking**: Monitor your coding progress
+- **Quick Access**: Easy navigation to recent rooms
+
+### ⚙️ Developer Features
+
+- **Type Safety**: Full TypeScript implementation
+- **Form Validation**: Zod schemas with react-hook-form
+- **Error Handling**: Comprehensive error management
+- **API Design**: RESTful API with predictable responses
+- **Responsive Design**: Mobile-friendly interface
 
 ## Roadmap
 
-**Recently Completed**
+### ✅ Recently Completed
 
-- ✅ Real-time collaborative code rooms (Monaco + Y.js)
-- ✅ Multi-language support (JavaScript, TypeScript, Python, Go, Java, C, C++)
-- ✅ Room creation and management system
-- ✅ Registration form refactoring with modular components
+- Real-time collaborative code rooms (Monaco + Y.js)
+- Multi-language support (JavaScript, TypeScript, Python, Go, Java, C, C++)
+- Room creation and management system
+- Registration form refactoring with modular components
+- Secure authentication system with email verification
+- Dashboard interface with session tracking
 
-**In Progress**
+### 🚧 In Progress
 
-- Room roles & permissions
-- Explore page for public coding sessions
+- Room roles & permissions system
+- Explore page for discovering public coding sessions
+- Enhanced UI/UX improvements
+- Performance optimizations
 
-**Planned**
+### 📋 Planned Features
 
-- OAuth integrations (GitHub, Google)
-- Session management UI
-- MFA (TOTP) & device-based trust
-- Invite-only and public room modes
-- Integrated notes & code history
-- Video/audio integration for interviews
+- **Authentication Enhancements**
+  - OAuth integrations (GitHub, Google, Discord)
+  - Multi-factor authentication (TOTP)
+  - Device-based trust and session management
+- **Collaboration Features**
+  - Voice/video integration for interviews
+  - Screen sharing capabilities
+  - Real-time chat system
+  - Code review and commenting
+- **Room Management**
+  - Advanced room templates
+  - Automated interview scheduling
+  - Recording and playback
+  - Custom coding challenges
+- **Developer Experience**
+  - Docker containerization
+  - CI/CD pipeline setup
+  - Mobile responsive design
+  - PWA capabilities
+- **Analytics & Insights**
+  - Coding session analytics
+  - Performance metrics
+  - Learning progress tracking
+  - Interview feedback system
 
 ## Getting started
 
-1. Install dependencies
+### Prerequisites
 
-```powershell
-npm install --legacy-peer-deps
+- Node.js 18+
+- pnpm (recommended) or npm
+- MongoDB database (local or cloud)
+- Redis instance (Upstash recommended)
+
+### Installation
+
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/Sudarshan7a/scode.git
+cd scode
 ```
 
-2. Configure environment
+2. **Install dependencies**
 
-Create `.env.local` with at least:
+```bash
+# Using pnpm (recommended)
+pnpm install
+
+# Or using npm
+npm install
+```
+
+3. **Configure environment**
+
+Create `.env.local` in the root directory:
 
 ```dotenv
-# Mongo
+# Database
 MONGODB_URI=mongodb+srv://<user>:<pass>@<cluster>/<db>?retryWrites=true&w=majority
-MONGODB_DB=scode                 # optional override of database name
+MONGODB_DB=scode
 
-# JWT
-JWT_SECRET=replace-with-a-long-random-string
+# Authentication
+JWT_SECRET=your-super-secure-jwt-secret-key-here
 
-# Redis (Upstash)
-UPSTASH_REDIS_REST_URL=...
-UPSTASH_REDIS_REST_TOKEN=...
+# Redis (for rate limiting and token storage)
+UPSTASH_REDIS_REST_URL=https://your-redis-url.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your-redis-token
 
-# Email
-RESEND_API_KEY=...
-MY_DOMAIN=http://localhost:3000   # used to build verify links
+# Email Service
+RESEND_API_KEY=your-resend-api-key
+MY_DOMAIN=http://localhost:3000
+
+# Optional: Custom settings
+NEXT_PUBLIC_WS_URL=ws://localhost:1234
 ```
 
-3. Start the WebSocket server (for real-time collaboration)
+4. **Start the WebSocket server** (for real-time collaboration)
 
-```powershell
+```bash
 cd websocket
-npm install
-node server.js
+pnpm install
+npx y-websocket
 ```
 
-4. Run the dev server
+5. **Run the development server**
 
-```powershell
-npm run dev
+```bash
+# In the root directory
+pnpm dev
 ```
 
-Open http://localhost:3000.
+6. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+### Quick Setup with Docker (Coming Soon)
+
+```bash
+docker-compose up -d
+```
 
 ## Auth flows
 
@@ -155,8 +287,9 @@ Tokens
 The real-time collaborative editor is built with Monaco Editor and Y.js for seamless multiplayer coding:
 
 **Supported Languages**
+
 - JavaScript
-- TypeScript  
+- TypeScript
 - Python
 - Go
 - Java
@@ -164,6 +297,7 @@ The real-time collaborative editor is built with Monaco Editor and Y.js for seam
 - C++
 
 **Key Features**
+
 - Real-time synchronization using Y.js CRDTs (Conflict-free Replicated Data Types)
 - WebSocket-based collaboration with automatic conflict resolution
 - Offline persistence with IndexedDB
@@ -171,6 +305,7 @@ The real-time collaborative editor is built with Monaco Editor and Y.js for seam
 - Resizable panels for optimal workspace layout
 
 **Architecture**
+
 - `CollaborativeEditor.tsx`: Main editor component with language selection
 - `lib/monaco/monacoEnvironment.ts`: Monaco editor configuration
 - WebSocket server: Handles Y.js document synchronization
@@ -239,6 +374,7 @@ public/                 # Static assets
 ## Troubleshooting
 
 **Authentication Issues**
+
 - Domain not allowed on signup
   - Error appears under the email field: update `allowedEmailDomains` to include your domain
 - “Document failed validation” on user insert
@@ -248,17 +384,20 @@ public/                 # Static assets
 - Refresh token errors / redirects to login
   - Verify middleware and `/api/auth/verify-refresh-token` endpoint; check token `expiresAt`
 
-
 **Collaboration Issues**
-- Editor not syncing between users
-  - Ensure WebSocket server is running on port 1234
-  - Check browser console for connection errors
-  - Verify IndexedDB is enabled in the browser
-- Language switching not working
-  - Monaco language contributions are loaded dynamically; check network tab for failed imports
-- Editor performance issues
-  - Heavy Monaco/Y.js imports are deferred until editor mount; check for console errors during initialization
 
+- Room connection fails
+  - Ensure WebSocket server is running: `cd websocket && npx y-websocket`
+  - Check if port 1234 is available
+  - Verify network connectivity
+- Unable to join room
+  - Check room ID is correct
+  - Ensure room exists and is accessible
+  - Try refreshing the page
+- Performance issues in large rooms
+  - Close unnecessary browser tabs
+  - Check browser DevTools for memory usage
+  - Consider limiting concurrent users per room
 
 ## Git Repository Hygiene Audit
 
@@ -270,11 +409,12 @@ npm run audit:git
 
 # Run specific audits
 npm run audit:commits    # Analyze commit patterns
-npm run audit:branches   # Check branch strategy  
+npm run audit:branches   # Check branch strategy
 npm run audit:secrets    # Scan for leaked secrets
 ```
 
 ### Features
+
 - **Commit Quality Analysis** - Message clarity, frequency, and atomicity
 - **Branch Strategy Review** - Naming conventions and workflow
 - **Secret Detection** - Prevent accidentally committed credentials
@@ -292,6 +432,7 @@ See `realistic-commit-plan.md` for a batch script that stages and backdates a re
 This repository includes comprehensive tools to help beginners learn Git best practices and avoid common mistakes:
 
 ### 🔍 Quick Audit
+
 ```bash
 # Run repository health check
 npm run audit:repo
@@ -304,6 +445,7 @@ npm run help:git
 ```
 
 ### 📚 Learning Resources
+
 - **[Git Best Practices](docs/git-best-practices.md)** - Comprehensive guide with examples
 - **[Learning Checklist](docs/learning-checklist.md)** - Progressive skill-building path
 - **[Repository Scorecard](docs/repository-scorecard.md)** - Self-assessment tool
@@ -311,6 +453,7 @@ npm run help:git
 - **[Git Examples](docs/git-examples.md)** - Before/after examples of common mistakes
 
 ### 🛠️ Available Tools
+
 - `scripts/git-audit.sh` - Comprehensive repository health check
 - `scripts/validate-commit.js` - Commit message validation
 - Scoring system for repository hygiene
@@ -321,3 +464,48 @@ npm run help:git
 ---
 
 Made with Next.js App Router, MongoDB, and a secure, explicit auth flow.
+
+## 📞 Support & Contributing
+
+### 🤝 Contributing
+
+We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting PRs.
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes and add tests
+4. Commit using conventional commits: `git commit -m "feat: add amazing feature"`
+5. Push to your branch: `git push origin feature/amazing-feature`
+6. Open a Pull Request
+
+### 🐛 Bug Reports
+
+Found a bug? Please [open an issue](https://github.com/Sudarshan7a/scode/issues) with:
+
+- Steps to reproduce
+- Expected vs actual behavior
+- Browser/OS information
+- Console errors (if any)
+
+### 💡 Feature Requests
+
+Have an idea? We'd love to hear it! Open a [feature request](https://github.com/Sudarshan7a/scode/issues) with:
+
+- Use case description
+- Proposed solution
+- Alternative solutions considered
+
+### 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+### 🙏 Acknowledgments
+
+- [Monaco Editor](https://microsoft.github.io/monaco-editor/) for the excellent code editor
+- [Y.js](https://docs.yjs.dev/) for real-time collaboration
+- [Next.js](https://nextjs.org/) for the amazing React framework
+- [Radix UI](https://radix-ui.com/) for accessible UI components
+
+---
+
+**⭐ Star this repository if you find it helpful!**
