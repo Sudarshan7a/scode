@@ -15,7 +15,7 @@ import {
   supportLinks,
   navigationLinks,
   socialLinks,
-} from "../constants/FooterLinks.ts";
+} from "../constants/FooterLinks";
 
 export default function Footer() {
   const showLayout = useLayoutVisibility(); // Use the hook
