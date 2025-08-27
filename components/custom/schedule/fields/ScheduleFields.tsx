@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@radix-ui/react-select";
 import { Calendar24 } from "../../MyDateAndTimePicker";
 import { ScheduleFormValues } from "../schemas/formSchemas";
 

@@ -41,13 +41,14 @@ export function MyLoginForm() {
         // Optionally show this in UI
         return;
       } else {
-        toast.success(result.message);
+        toast.success(result.message || "Login successful!");
       }
 
-      // Redirect or show success message
-      if (result.redirect) {
-        router.push(result.redirect);
-      }
+      // Always redirect to dashboard on successful login
+      // Use API response redirect if provided, otherwise default to dashboard
+      const redirectPath = result.redirect || "/dashboard";
+      console.log("Login successful, redirecting to:", redirectPath);
+      router.push(redirectPath);
     } catch {
       // Handle unexpected signup error silently or with toast notification
     }
