@@ -1,5 +1,5 @@
 export type mockRooms = {
-  id: string;
+  _id: { $oid: string };
   title: string;
   description: string;
   language: string;
@@ -9,8 +9,16 @@ export type mockRooms = {
     name: string;
     avatar: string;
   };
-  scheduledAt: null | string;
-  startedAt: null | string;
+  ownerId: { $oid: string };
+  collaborators: {
+    userId: { $oid: string };
+    role: "host" | "participant";
+    joinedAt: { $date: string };
+  }[];
+  createdAt: { $date: string };
+  scheduledAt: null | { $date: string };
+  startedAt: null | { $date: string };
+  duration: number;
   participants: number;
   maxParticipants: number;
 };
