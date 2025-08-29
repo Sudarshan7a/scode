@@ -1,6 +1,6 @@
 import React from "react";
-import MyButton from "@/components/custom/button/MyButton";
-import { mockRooms } from "@/types/roomsTypes";
+import MyButton from "./custom/button/MyButton";
+import { mockRooms } from "../types/roomsTypes";
 
 interface RoomCardProps {
   recreate?: boolean;
