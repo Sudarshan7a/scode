@@ -1,7 +1,7 @@
 "use client";
-import MyDropdown from "@/components/custom/MyDrowdown";
-import RoomCard from "@/components/RoomCard";
-import { mockRoomsData } from "@/constants/mockRooms";
+import MyDropdown from "../../../components/custom/MyDrowdown";
+import RoomCard from "../../../components/RoomCard";
+import { mockRoomsData } from "../../../constants/mockRooms";
 import React, { useState } from "react";
 
 function Page() {
