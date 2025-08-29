@@ -3,9 +3,6 @@ import TitleBackgroundCard from "@/components/TitleBackgroundCard";
 import RoomCard from "@/components/RoomCard";
 import { mockRoomsData } from "@/constants/mockRooms";
 import { mockRooms } from "@/types/roomsTypes";
-import { formatDate } from "@/lib/dateUtils";
-
-type RoomStatus = "live" | "scheduled" | "ended" | "saved";
 
 interface ActivitySection {
   title: string;
