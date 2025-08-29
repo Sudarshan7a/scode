@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { connectToMongo } from "@/lib/mongodb";
-import { generateRefreshToken } from "@/auth/utils/generateRefreshToken";
+import { connectToMongo } from "./mongodb";
+import { generateRefreshToken } from "../auth/utils/generateRefreshToken";
 
 interface IssueOptions {
   rotate?: boolean; // delete existing tokens

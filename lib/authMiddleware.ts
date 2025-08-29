@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
-import { getAccessTokenFromHeader } from "@/lib/tokenUtils";
+import { getAccessTokenFromHeader } from "./tokenUtils";
 
 export interface AuthValidationResult {
   success: boolean;

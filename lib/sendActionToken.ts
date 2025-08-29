@@ -1,4 +1,4 @@
-import { redis } from "@/lib/rateLimiter";
+import { redis } from "./rateLimiter";
 import { nanoid } from "nanoid";
 import { Resend } from "resend";
 import { generateEmailTemplate } from "./EmailTemplate";
