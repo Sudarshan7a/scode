@@ -18,14 +18,7 @@ function UpcomingRooms() {
     <div className="mb-40">
       <TitleBackgroundCard title="Upcoming Rooms" noShadow={true}>
         {upcomingRooms.map((room) => (
-          <RoomCard
-            key={room.id}
-            title={room.title}
-            description={room.description}
-            scheduledAt={formatDate(room.scheduledAt)}
-            status={room.status}
-            host={room.host}
-          />
+          <RoomCard key={room._id.$oid} room={room} />
         ))}
       </TitleBackgroundCard>
     </div>

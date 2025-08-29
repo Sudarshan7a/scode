@@ -1,4 +1,4 @@
-import { mockRooms } from "@/types/roomsTypes";
+import { mockRooms } from "../types/roomsTypes";
 
 export const mockRoomsData: mockRooms[] = [
   {

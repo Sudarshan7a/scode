@@ -1,22 +1,11 @@
 import React from "react";
 import MyButton from "@/components/custom/button/MyButton";
+import { mockRooms } from "@/types/roomsTypes";
 
 interface RoomCardProps {
   recreate?: boolean;
   className?: string;
-  title?: string;
-  description?: string;
-  language?: string;
-  status: "live" | "scheduled" | "ended" | "saved";
-  isPrivate?: boolean;
-  scheduledAt?: null | string;
-  startedAt?: null | string;
-  participants?: number;
-  maxParticipants?: number;
-  host?: {
-    name: string;
-    avatar: string;
-  };
+  room: mockRooms;
 }
 
 interface ButtonProps {
@@ -25,15 +14,38 @@ interface ButtonProps {
   onClick?: () => void;
 }
 
-const RoomCard = ({
-  recreate = false,
-  title,
-  description,
-  scheduledAt,
-  status,
-  host,
-  className,
-}: RoomCardProps) => {
+const RoomCard = ({ recreate = false, room, className }: RoomCardProps) => {
+  const {
+    title,
+    description,
+    language,
+    status,
+    isPrivate,
+    host,
+    scheduledAt,
+    startedAt,
+    participants,
+    maxParticipants,
+    duration,
+  } = room;
+
+  // Format date for display
+  const formatDate = (dateObj: { $date: string } | null) => {
+    if (!dateObj) return null;
+    return new Date(dateObj.$date).toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const displayDate = scheduledAt
+    ? formatDate(scheduledAt)
+    : startedAt
+    ? formatDate(startedAt)
+    : "Date not set";
+
   const buttons: Record<"live" | "scheduled" | "ended" | "saved", ButtonProps> =
     {
       live: { label: "Join Now", variant: "default" },
@@ -51,15 +63,31 @@ const RoomCard = ({
       }`}
     >
       <div className="space-y-2">
-        <h3 className="text-xl font-semibold text-myforeground font-navbar line-clamp-2">
-          {title || "Room Title"}
-        </h3>
-        <p className="text-sm text-gray-500 line-clamp-3">
-          {description || "Short description about the room or session."}
-        </p>
-        <div className="text-xs text-gray-500 mt-2">
-          <p>{scheduledAt || "Weekday, DD/MM/YYYY"}</p>
-          <p>by {host?.name || "username"}</p>
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-semibold text-myforeground font-navbar line-clamp-2">
+            {title}
+          </h3>
+          <div className="flex items-center gap-2">
+            <span className="text-xs px-2 py-1 bg-mysecondary/20 rounded-full text-mysecondary">
+              {language}
+            </span>
+            {isPrivate && (
+              <span className="text-xs px-2 py-1 bg-red-100 text-red-600 rounded-full">
+                Private
+              </span>
+            )}
+          </div>
+        </div>
+        <p className="text-sm text-gray-500 line-clamp-3">{description}</p>
+        <div className="text-xs text-gray-500 mt-2 space-y-1">
+          <p>{displayDate}</p>
+          <p>by {host.name}</p>
+          <div className="flex items-center justify-between">
+            <p>
+              {participants}/{maxParticipants} participants
+            </p>
+            <p>{duration} min</p>
+          </div>
         </div>
       </div>
 

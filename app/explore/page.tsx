@@ -16,7 +16,7 @@ export default function Home() {
         noShadow={true}
       >
         {rooms.map((room) => (
-          <RoomCard key={room.id} {...room} />
+          <RoomCard key={room._id.$oid} room={room} />
         ))}
       </TitleBackgroundCard>
     </div>

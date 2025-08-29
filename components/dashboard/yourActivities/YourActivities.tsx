@@ -28,14 +28,7 @@ const ActivitySection: React.FC<ActivitySection> = ({
     </div>
     <div className="flex items-center justify-between gap-4 w-full mx-auto">
       {rooms.slice(0, 3).map((room) => (
-        <RoomCard
-          key={`${keyPrefix}-${room.id}`}
-          title={room.title}
-          description={room.description}
-          scheduledAt={formatDate(room.scheduledAt || room.startedAt)}
-          status={room.status as RoomStatus}
-          host={room.host}
-        />
+        <RoomCard key={`${keyPrefix}-${room._id.$oid}`} room={room} />
       ))}
     </div>
   </div>
