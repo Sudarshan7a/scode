@@ -1,8 +1,8 @@
 import React from "react";
-import TitleBackgroundCard from "@/components/TitleBackgroundCard";
-import RoomCard from "@/components/RoomCard";
-import { mockRoomsData } from "@/constants/mockRooms";
-import { mockRooms } from "@/types/roomsTypes";
+import TitleBackgroundCard from "../../TitleBackgroundCard";
+import RoomCard from "../../RoomCard";
+import { mockRoomsData } from "../../../constants/mockRooms";
+import { mockRooms } from "../../../types/roomsTypes";
 
 interface ActivitySection {
   title: string;

@@ -1,7 +1,7 @@
-import RoomCard from "@/components/RoomCard";
-import TitleBackgroundCard from "@/components/TitleBackgroundCard";
-import { mockRoomsData } from "@/constants/mockRooms";
-import { mockRooms } from "@/types/roomsTypes";
+import RoomCard from "../../RoomCard";
+import TitleBackgroundCard from "../../TitleBackgroundCard";
+import { mockRoomsData } from "../../../constants/mockRooms";
+import { mockRooms } from "../../../types/roomsTypes";
 import React from "react";
 
 // Function to filter and get upcoming rooms
