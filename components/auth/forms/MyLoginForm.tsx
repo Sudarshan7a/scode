@@ -44,11 +44,29 @@ export function MyLoginForm() {
         toast.success(result.message || "Login successful!");
       }
 
-      // Always redirect to dashboard on successful login
-      // Use API response redirect if provided, otherwise default to dashboard
+      // Always redirect after successful login. Use a full navigation to ensure
+      // the refresh token cookie set by the server is sent on the next request.
       const redirectPath = result.redirect || "/dashboard";
       console.log("Login successful, redirecting to:", redirectPath);
-      router.push(redirectPath);
+      try {
+        // Prefer router.replace for SPA navigation, then force full navigation
+        // only if needed to ensure cookies are present.
+        router.replace(redirectPath);
+        // As an extra measure, ensure browser performs a full navigation so
+        // cookies set in the response are available immediately.
+        if (typeof window !== "undefined") {
+          // Small timeout to allow router.replace to run; fallback to location.assign
+          setTimeout(() => {
+            if (window.location.pathname !== redirectPath) {
+              window.location.assign(redirectPath);
+            }
+          }, 150);
+        }
+      } catch {
+        if (typeof window !== "undefined") {
+          window.location.assign(redirectPath);
+        }
+      }
     } catch {
       // Handle unexpected signup error silently or with toast notification
     }

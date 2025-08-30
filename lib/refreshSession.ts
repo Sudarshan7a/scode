@@ -39,8 +39,9 @@ export function setAuthCookies(
   const maxAge = ttlDays * 24 * 60 * 60; // seconds
   const base = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict" as const,
+  secure: process.env.NODE_ENV === "production",
+  // Use 'lax' so the cookie is available on top-level navigations after login
+  sameSite: "lax" as const,
     maxAge,
     path: "/",
   };
