@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "audit:repo": "./scripts/git-audit.sh",
     "audit:commit": "node scripts/validate-commit.js",
     "git:check-message": "node scripts/validate-commit.js",
