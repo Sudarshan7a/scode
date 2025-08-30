@@ -6,7 +6,7 @@ import { Toaster } from "./../components/ui/sonner";
 import { RootAuthGuard } from "./../components/auth/RootAuthGuard";
 
 export const metadata: Metadata = {
-  title: "S|code",
+  title: "S code",
   description: "Real time code collaboration platform",
 };
 

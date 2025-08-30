@@ -31,25 +31,32 @@ export function SignupEmailPasswordForm({
     },
   });
 
+  const [isLoading, setIsLoading] = React.useState(false);
+
   const handleSubmit = async (values: SignupFormValues) => {
     // Clear previous server-side errors
     form.clearErrors();
-    const result = await onSubmit(values);
-    if (!result.ok) {
-      // Show field errors if provided
-      if (result.fieldErrors) {
-        Object.entries(result.fieldErrors).forEach(([key, msg]) => {
-          if (!msg) return;
-          if (key === "root") {
-            form.setError("root", { type: "server", message: msg });
-          } else {
-            form.setError(key as keyof SignupFormValues, {
-              type: "server",
-              message: msg,
-            });
-          }
-        });
+    setIsLoading(true);
+    try {
+      const result = await onSubmit(values);
+      if (!result.ok) {
+        // Show field errors if provided
+        if (result.fieldErrors) {
+          Object.entries(result.fieldErrors).forEach(([key, msg]) => {
+            if (!msg) return;
+            if (key === "root") {
+              form.setError("root", { type: "server", message: msg });
+            } else {
+              form.setError(key as keyof SignupFormValues, {
+                type: "server",
+                message: msg,
+              });
+            }
+          });
+        }
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -123,9 +130,39 @@ export function SignupEmailPasswordForm({
 
         <button
           type="submit"
-          className="w-full bg-mysecondary text-white rounded-md py-2 hover:bg-mysecondary-hover hover:cursor-pointer transition-colors shadow-sm"
+          disabled={isLoading}
+          aria-busy={isLoading}
+          className={`w-full bg-mysecondary text-white rounded-md py-2 hover:bg-mysecondary-hover hover:cursor-pointer transition-colors shadow-sm ${
+            isLoading ? "opacity-70 cursor-wait" : ""
+          }`}
         >
-          {buttonText}
+          {isLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg
+                className="animate-spin h-4 w-4 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                />
+              </svg>
+              Creating...
+            </span>
+          ) : (
+            buttonText
+          )}
         </button>
       </form>
     </Form>
