@@ -12,7 +12,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "./../components/ui/popover";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
