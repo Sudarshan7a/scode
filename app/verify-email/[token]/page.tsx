@@ -2,7 +2,9 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import EmailStatusCard from "@/components/auth/EmailStatusCard";
-import { CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle } from "lucide-react";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 
 export const dynamic = "force-dynamic";
 function VerifyUser() {
@@ -78,7 +80,11 @@ function VerifyUser() {
         message="Hold on a moment while we confirm your verification link."
         variant="info"
         loading
-        icon={<Loader2 className="animate-spin" />}
+        icon={
+          <Box sx={{ display: "flex" }}>
+            <CircularProgress color="inherit" />
+          </Box>
+        }
         {...base}
       />
     );
