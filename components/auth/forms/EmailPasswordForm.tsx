@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -41,7 +41,10 @@ export function EmailPasswordForm({
       setIsLoading(true);
       // support both sync and async onSubmit handlers
       const maybePromise = onSubmit(values) as unknown;
-      if (maybePromise && typeof (maybePromise as Promise<unknown>).then === "function") {
+      if (
+        maybePromise &&
+        typeof (maybePromise as Promise<unknown>).then === "function"
+      ) {
         await maybePromise;
       }
     } finally {
@@ -130,7 +133,14 @@ export function EmailPasswordForm({
           }`}
         >
           {isLoading ? (
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 1,
+              }}
+            >
               <CircularProgress size={18} color="inherit" />
               <span>Processing...</span>
             </Box>
