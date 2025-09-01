@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { SignupFormValues } from "@/types/authTypes";
+import { SignupFormValues } from "../../../types/authTypes";
 import OAuthSection from "../common/OAuthSection";
 import FormDivider from "../common/FormDivider";
 import SignupEmailPasswordForm from "./SignupEmailPasswordForm";
