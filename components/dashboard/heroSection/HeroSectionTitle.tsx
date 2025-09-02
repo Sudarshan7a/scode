@@ -1,3 +1,5 @@
+"use client";
+
 import { axiosInstance } from "@/lib/axiosInstance";
 
 import React, { useEffect } from "react";
