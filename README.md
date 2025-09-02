@@ -12,7 +12,6 @@
 [🌐 Live Demo](https://scode-app.vercel.app) • [📖 Documentation](#getting-started) • [🐛 Report Bug](https://github.com/Sudarshan7a/scode/issues) • [💡 Request Feature](https://github.com/Sudarshan7a/scode/issues)
 
 </div>
-Shashank
 ---
 
 ## 📋 Table of Contents
