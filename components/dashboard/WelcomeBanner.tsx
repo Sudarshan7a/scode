@@ -1,7 +1,5 @@
 import Image from "next/image";
 import React from "react";
-import { useEffect, useState } from "react";
-import { axiosInstance } from "@/lib/axiosInstance";
 
 function WelcomeBanner({ username = "Username" }: { username: string }) {
   return (
