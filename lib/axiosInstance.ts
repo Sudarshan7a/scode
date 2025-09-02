@@ -38,13 +38,6 @@ axiosInstance.interceptors.request.use(async (config) => {
         {},
         { withCredentials: true }
       );
-      if (process.env.NODE_ENV !== "production") {
-        // eslint-disable-next-line no-console
-        console.debug("axiosInstance: refresh response", {
-          status: res.status,
-          data: res.data,
-        });
-      }
       token = res.data?.accessToken;
       if (token) {
         setAccessToken(token);
