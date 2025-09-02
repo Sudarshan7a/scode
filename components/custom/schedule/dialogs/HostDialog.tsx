@@ -38,7 +38,7 @@ export function HostDialog({
           <DialogTitle className="text-title-last font-semibold">
             Host a Session
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-foreground">
             Fill in the details below to host a session immediately.
           </DialogDescription>
         </DialogHeader>
