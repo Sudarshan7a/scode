@@ -32,12 +32,20 @@ axiosInstance.interceptors.request.use(async (config) => {
 
   if (!token) {
     try {
+      // Request a fresh access token using the refresh cookie
       const res = await axios.post(
         "/api/auth/get-access-token",
         {},
         { withCredentials: true }
       );
-      token = res.data.accessToken;
+      if (process.env.NODE_ENV !== "production") {
+        // eslint-disable-next-line no-console
+        console.debug("axiosInstance: refresh response", {
+          status: res.status,
+          data: res.data,
+        });
+      }
+      token = res.data?.accessToken;
       if (token) {
         setAccessToken(token);
       }

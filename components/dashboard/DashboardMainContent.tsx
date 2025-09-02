@@ -1,3 +1,5 @@
+"use client";
+
 import HeroSection from "./heroSection/HeroSection";
 import UpcomingRooms from "./upcommingRooms/UpcomingRooms";
 import YourActivities from "./yourActivities/YourActivities";
@@ -8,10 +10,10 @@ function DashboardMainContent() {
 
   return (
     <div>
-      <WelcomeBanner username="Username" />
+      <WelcomeBanner username={username} />
       <HeroSection />
-      <UpcomingRooms />
-      <YourActivities />
+      <UpcomingRooms rooms={upcomingRooms} />
+      <YourActivities activities={activities} />
     </div>
   );
 }
