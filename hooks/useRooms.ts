@@ -1,7 +1,7 @@
-import { useMemo } from "react";
-import { mockRoomsData } from "../constants/mockRooms";
+"use client";
+import { useEffect, useMemo, useState } from "react";
 
-type RoomStatus = "live" | "scheduled" | "ended";
+type RoomStatus = "live" | "scheduled" | "ended" | "saved";
 
 type UseRoomsOptions = {
   privacy?: "private" | "public" | "both"; // Filter for private, public, or both rooms
@@ -10,9 +10,28 @@ type UseRoomsOptions = {
 
 export function useRooms(options: UseRoomsOptions = {}) {
   const { privacy = "both", status } = options;
+  const [allRooms, setAllRooms] = useState<any[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchRooms = async () => {
+      try {
+        const res = await fetch("/api/rooms");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (mounted) setAllRooms(data.rooms || []);
+      } catch (e) {
+        // ignore
+      }
+    };
+    fetchRooms();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const rooms = useMemo(() => {
-    return mockRoomsData.filter((room) => {
+    return allRooms.filter((room) => {
       // Privacy filter
       let matchPrivacy = false;
       if (privacy === "both") {
@@ -31,7 +50,7 @@ export function useRooms(options: UseRoomsOptions = {}) {
 
       return matchPrivacy && matchStatus;
     });
-  }, [privacy, status]);
+  }, [allRooms, privacy, status]);
 
   return rooms;
 }

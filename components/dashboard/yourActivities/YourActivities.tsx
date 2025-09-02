@@ -1,7 +1,7 @@
 import React from "react";
 import TitleBackgroundCard from "../../TitleBackgroundCard";
 import RoomCard from "../../RoomCard";
-import { mockRoomsData } from "../../../constants/mockRooms";
+import { getUpcomingRooms, getOldRooms } from "@/lib/getMongoData";
 import { mockRooms } from "../../../types/roomsTypes";
 
 interface ActivitySection {
@@ -31,43 +31,34 @@ const ActivitySection: React.FC<ActivitySection> = ({
   </div>
 );
 
-function YourActivities() {
-  // Data preparation functions
-  const getRecentJoinedRooms = (): mockRooms[] =>
-    mockRoomsData.filter((room) => room.status === "ended").slice(0, 4);
+export default async function YourActivities() {
+  const upcoming = await getUpcomingRooms();
+  const oldRooms = await getOldRooms();
 
-  const getHostingRooms = (): mockRooms[] =>
-    mockRoomsData
-      .filter((room) => room.status === "live" || room.status === "scheduled")
-      .slice(0, 4);
-
-  const getSavedNotesRooms = (): mockRooms[] =>
-    mockRoomsData
-      .map((room) => ({
-        ...room,
-        status: "saved" as const,
-        title: `${room.title} - Notes`,
-      }))
-      .slice(0, 4);
-
-  // Activity sections configuration
   const activitySections: ActivitySection[] = [
     {
       title: "Recent joined rooms",
-      rooms: getRecentJoinedRooms(),
+      rooms: oldRooms.slice(0, 4),
       keyPrefix: "joined",
     },
     {
       title: "You hosting rooms",
-      rooms: getHostingRooms(),
+      rooms: upcoming.slice(0, 4),
       keyPrefix: "hosting",
     },
     {
       title: "Your saved notes",
-      rooms: getSavedNotesRooms(),
+      rooms: upcoming
+        .slice(0, 4)
+        .map((room) => ({
+          ...room,
+          status: "saved" as const,
+          title: `${room.title} - Notes`,
+        })),
       keyPrefix: "saved",
     },
   ];
+
   return (
     <div className="mb-20">
       <TitleBackgroundCard title="Your Activities" hidebutton={true}>
@@ -84,4 +75,4 @@ function YourActivities() {
   );
 }
 
-export default YourActivities;
+// export default YourActivities; (removed duplicate export)

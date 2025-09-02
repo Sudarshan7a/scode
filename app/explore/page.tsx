@@ -1,8 +1,10 @@
-import RoomCard from "../../components/RoomCard";
-import SearchBar from "../../components/searchBar/SearchBar";
-import TitleBackgroundCard from "../../components/TitleBackgroundCard";
-import { useRooms } from "../../hooks/useRooms";
-import { mockRooms } from "../../types/roomsTypes";
+"use client";
+
+import RoomCard from "@/components/RoomCard";
+import SearchBar from "@/components/searchBar/SearchBar";
+import TitleBackgroundCard from "@/components/TitleBackgroundCard";
+import { useRooms } from "@/hooks/useRooms";
+import { mockRooms } from "@/types/roomsTypes";
 
 export default function Home() {
   const rooms: mockRooms[] = useRooms();

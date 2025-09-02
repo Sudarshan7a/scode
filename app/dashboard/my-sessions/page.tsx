@@ -1,11 +1,21 @@
 "use client";
+import { mockRooms } from "@/types/roomsTypes";
 import MyDropdown from "../../../components/custom/MyDrowdown";
 import RoomCard from "../../../components/RoomCard";
-import { mockRoomsData } from "../../../constants/mockRooms";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function Page() {
-  const [sessions, setSessions] = useState(mockRoomsData); // Use mockRoomsData instead of sampleSessions
+  const [sessions, setSessions] = useState<Array<mockRooms>>([]);
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      const res = await fetch("/api/rooms");
+      if (!res.ok) return;
+      const data = await res.json();
+      setSessions(data.rooms || []);
+    };
+    fetchRooms();
+  }, []);
 
   // Removed unused state and functions for now
   // We'll implement these when connecting to real data
