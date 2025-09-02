@@ -1,30 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectToMongo } from "@/lib/mongodb";
 import { withAuth } from "@/lib/authMiddleware";
+import { connectToMongo } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
 export const GET = withAuth(
-  async (request: NextRequest, userId: string): Promise<NextResponse> => {
+  async (_request: NextRequest, userId: string): Promise<NextResponse> => {
     try {
-      // Get user from database
       const { usersCollection } = await connectToMongo();
-
       const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
-
-      if (!user) {
+      if (!user)
         return NextResponse.json({ error: "User not found" }, { status: 404 });
-      }
 
-      // Return user data (excluding password)
       return NextResponse.json({
-        user: {
-          id: user._id.toString(),
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          notifications: user.notifications,
-          createdAt: user.createdAt,
-        },
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        role: user.role,
       });
     } catch {
       return NextResponse.json(
