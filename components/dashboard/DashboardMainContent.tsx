@@ -17,7 +17,6 @@ async function getUser(): Promise<DashboardUser> {
   try {
     const userDoc = await getUserFromDb(userId);
     if (!userDoc) return { id: null, name: "Guest" };
-    console.log(userDoc);
     return {
       id: userDoc.id,
       name: userDoc.name,

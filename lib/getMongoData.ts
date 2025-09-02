@@ -1,6 +1,7 @@
-import { User } from "@/types/user";
+import { User } from "../types/user";
 import { connectToMongo } from "./mongodb";
 import { ObjectId, WithId, Document } from "mongodb";
+import { mockRooms } from "../types/roomsTypes";
 
 export async function getUser(userId: string): Promise<User> {
   const { usersCollection } = await connectToMongo();
@@ -18,12 +19,93 @@ export async function getUser(userId: string): Promise<User> {
   };
 }
 
-export async function getUpcomingRooms() {
+export async function getUpcomingRooms(): Promise<mockRooms[]> {
   const { roomsCollection } = await connectToMongo();
-  return roomsCollection.find({ startTime: { $gt: new Date() } }).toArray();
+  // Return rooms that are scheduled
+  return (await roomsCollection
+    .find({ status: "scheduled" })
+    .toArray()) as unknown as mockRooms[];
 }
 
 export async function getOldRooms() {
   const { roomsCollection } = await connectToMongo();
-  return roomsCollection.find({ endTime: { $lt: new Date() } }).toArray();
+  return (await roomsCollection
+    .find({ endTime: { $lt: new Date() } })
+    .toArray()) as unknown as mockRooms[];
 }
+
+//room validation mongo db
+
+// {
+//   $jsonSchema: {
+//     bsonType: 'object',
+//     required: [
+//       'title',
+//       'ownerId',
+//       'isPrivate',
+//       'createdAt',
+//       'duration'
+//     ],
+//     properties: {
+//       title: {
+//         bsonType: 'string',
+//         description: 'Title of the room'
+//       },
+//       ownerId: {
+//         bsonType: 'objectId',
+//         description: 'Creator of the room'
+//       },
+//       collaborators: {
+//         bsonType: 'array',
+//         items: {
+//           bsonType: 'object',
+//           properties: {
+//             userId: {
+//               bsonType: 'objectId'
+//             },
+//             role: {
+//               'enum': [
+//                 'host',
+//                 'participant'
+//               ]
+//             },
+//             joinedAt: {
+//               bsonType: 'date'
+//             }
+//           }
+//         },
+//         description: 'Optional list of collaborators'
+//       },
+//       isPrivate: {
+//         bsonType: 'bool'
+//       },
+//       createdAt: {
+//         bsonType: 'date'
+//       },
+//       duration: {
+//         bsonType: [
+//           'int',
+//           'double'
+//         ],
+//         description: 'Duration of the room in minutes'
+//       },
+//       scheduledFor: {
+//         bsonType: 'date',
+//         description: 'Exact date+time when room starts'
+//       },
+//       description: {
+//         bsonType: 'string',
+//         description: 'Short description of the room/session'
+//       },
+//       language: {
+//         bsonType: 'string'
+//       },
+//       savedCodeId: {
+//         bsonType: 'objectId'
+//       },
+//       endedAt: {
+//         bsonType: 'date'
+//       }
+//     }
+//   }
+// }
