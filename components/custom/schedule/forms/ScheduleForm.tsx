@@ -4,7 +4,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { ScheduleFormValues, scheduleFormSchema } from "../schemas/formSchemas";
+import { CreateRoomSchema, createRoomSchema } from "../schemas/formSchemas";
 import { RoomNameInput } from "../fields/RoomNameInput";
 import { DescriptionInput } from "../fields/DescriptionInput";
 import { ScheduleFields } from "../fields/ScheduleFields";
@@ -13,7 +13,7 @@ import { PrivacyLevelSelect } from "../fields/PrivacyLevelSelect";
 import { EditorEnabledCheckbox } from "../fields/EditorEnabledCheckbox";
 
 interface ScheduleFormProps {
-  onSubmit: (data: ScheduleFormValues) => void;
+  onSubmit: (data: CreateRoomSchema) => void;
 }
 
 export function ScheduleForm({ onSubmit }: ScheduleFormProps) {
@@ -23,8 +23,8 @@ export function ScheduleForm({ onSubmit }: ScheduleFormProps) {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<ScheduleFormValues>({
-    resolver: zodResolver(scheduleFormSchema),
+  } = useForm<CreateRoomSchema>({
+    resolver: zodResolver(createRoomSchema),
     defaultValues: {
       title: "",
       isPrivate: false,
@@ -41,7 +41,7 @@ export function ScheduleForm({ onSubmit }: ScheduleFormProps) {
     },
   });
 
-  const selectedDate = watch("scheduledFor");
+  const selectedDate = watch("scheduledAt");
 
   return (
     <form className="space-y-4">
