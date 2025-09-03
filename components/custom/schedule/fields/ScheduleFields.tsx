@@ -24,20 +24,22 @@ export function ScheduleFields({
 }: ScheduleFieldsProps) {
   return (
     <div>
-      <Label htmlFor="date">Select Date and Time</Label>
+      <Label htmlFor="scheduledAt">Select Date and Time</Label>
       <div className="mt-2 border-mysecondary">
         <Calendar24
           selected={selectedDate}
           onChangeDate={(date: Date) => {
-            setValue("date", date, { shouldValidate: true });
+            setValue("scheduledAt", date, { shouldValidate: true });
           }}
           onChangeTime={(time: string) => {
             setValue("time", time, { shouldValidate: true });
           }}
         />
       </div>
-      {errors.date && (
-        <p className="text-red-500 text-sm">{errors.date.message as string}</p>
+      {errors.scheduledAt && (
+        <p className="text-red-500 text-sm">
+          {errors.scheduledAt.message as string}
+        </p>
       )}
       <div className="mt-2">
         <Label htmlFor="duration">Duration in minutes</Label>

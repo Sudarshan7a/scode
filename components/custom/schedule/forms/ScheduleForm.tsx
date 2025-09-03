@@ -27,22 +27,16 @@ export function ScheduleForm({ onSubmit }: ScheduleFormProps) {
     resolver: zodResolver(scheduleFormSchema),
     defaultValues: {
       title: "",
-      // ownerId is optional in the UI; server requires an ObjectId string
-      ownerId: undefined,
       isPrivate: false,
       createdAt: new Date(),
       duration: 30,
-      scheduledFor: undefined,
       description: undefined,
       language: undefined,
-      savedCodeId: undefined,
       collaborators: [],
-      endedAt: undefined,
       roomType: "interview",
       privacyLevel: "public",
       editorEnabled: false,
-      languagePreference: undefined,
-      date: undefined,
+      scheduledAt: undefined,
       time: undefined,
     },
   });

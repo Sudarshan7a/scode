@@ -65,7 +65,7 @@ export const scheduleFormSchema = scheduleRoomSchema.extend({
   editorEnabled: z.boolean().optional(),
   languagePreference: z.string().optional().nullable(),
   // helper UI-only fields
-  date: z.date().optional().nullable(),
+  scheduledAt: z.date().optional().nullable(),
   time: z.string().optional().nullable(),
 });
 

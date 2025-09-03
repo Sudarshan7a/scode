@@ -20,17 +20,13 @@ export default function RegistrationForm({
   buttonUnderlineStyle,
 }: RegistrationFormProps) {
   const handleScheduleSubmit = (data: ScheduleFormValues) => {
-    console.log("Schedule form submitted", data);
-
-    //TODO how do you get user id at client sides if they are in cookies
-    //
-    const userId = localStorage.getItem("userId");
-    console.log("User ID:", userId);
-    if (userId) {
-      data = { ...data, ownerId: userId };
-    }
-    // TODO: Handle schedule submission with enriched data
-    // Including: userId, timeZone, language, browserTime, userAgent
+    const enrichedData = {
+      ...data,
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      language: navigator.language,
+      browserTime: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+    };
   };
 
   const handleHostSubmit = (data: HostFormValues) => {
