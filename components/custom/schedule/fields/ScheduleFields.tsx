@@ -9,12 +9,12 @@ import {
   SelectValue,
 } from "@radix-ui/react-select";
 import { Calendar24 } from "../../MyDateAndTimePicker";
-import { ScheduleFormValues } from "../schemas/formSchemas";
+import { CreateRoomSchema } from "../schemas/formSchemas";
 
 interface ScheduleFieldsProps {
   selectedDate: Date;
-  setValue: UseFormSetValue<ScheduleFormValues>;
-  errors: FieldErrors<ScheduleFormValues>;
+  setValue: UseFormSetValue<CreateRoomSchema>;
+  errors: FieldErrors<CreateRoomSchema>;
 }
 
 export function ScheduleFields({
