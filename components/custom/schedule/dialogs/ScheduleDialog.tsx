@@ -11,12 +11,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScheduleForm } from "../forms/ScheduleForm";
-import { ScheduleFormValues } from "../schemas/formSchemas";
+import { CreateRoomSchema } from "../schemas/formSchemas";
 import styles from "../MyScheduleModal.module.css";
 
 interface ScheduleDialogProps {
   buttonUnderlineStyle?: string;
-  onSubmit: (data: ScheduleFormValues) => void;
+  onSubmit: (data: CreateRoomSchema) => void;
 }
 
 export function ScheduleDialog({

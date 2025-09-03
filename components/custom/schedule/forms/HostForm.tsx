@@ -4,7 +4,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { hostFormSchema, type HostFormValues } from "../schemas/formSchemas";
+import { startRoomSchema, type StartRoomSchema } from "../schemas/formSchemas";
 import { RoomNameInput } from "../fields/RoomNameInput";
 import { DescriptionInput } from "../fields/DescriptionInput";
 import { RoomTypeSelect } from "../fields/RoomTypeSelect";
@@ -12,7 +12,7 @@ import { PrivacyLevelSelect } from "../fields/PrivacyLevelSelect";
 import { EditorEnabledCheckbox } from "../fields/EditorEnabledCheckbox";
 
 interface HostFormProps {
-  onSubmit: (data: HostFormValues) => void;
+  onSubmit: (data: StartRoomSchema) => void;
 }
 
 export function HostForm({ onSubmit }: HostFormProps) {
@@ -21,8 +21,8 @@ export function HostForm({ onSubmit }: HostFormProps) {
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<HostFormValues>({
-    resolver: zodResolver(hostFormSchema),
+  } = useForm<StartRoomSchema>({
+    resolver: zodResolver(startRoomSchema),
     defaultValues: {
       roomName: "",
       description: "",
