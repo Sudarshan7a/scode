@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "./../../../../lib/authMiddleware";
 import { connectToMongo } from "./../../../../lib/mongodb";
-import { ObjectId } from "mongodb";
+import { ObjectId, Document } from "mongodb";
 
 export const POST = withAuth(async (request: NextRequest, userId?: string) => {
   try {
@@ -19,9 +19,23 @@ export const POST = withAuth(async (request: NextRequest, userId?: string) => {
 
     const { roomsCollection } = await connectToMongo();
 
-    const doc: Record<string, any> = {
+    // Build the room document with proper types
+    const doc: {
+      title: string;
+      ownerId: ObjectId | null;
+      isPrivate: boolean;
+      createdAt: Date;
+      duration: number;
+      scheduledFor: Date | null;
+      description: string | null;
+      language: string | null;
+      savedCodeId?: ObjectId;
+      collaborators: unknown[];
+      endedAt: Date | null;
+      status: string;
+    } = {
       title,
-      ownerId: new ObjectId(userId),
+      ownerId: userId ? new ObjectId(userId) : null,
       isPrivate: Boolean(body.isPrivate),
       createdAt: new Date(),
       duration,
@@ -36,18 +50,15 @@ export const POST = withAuth(async (request: NextRequest, userId?: string) => {
       status: body.status ?? "scheduled",
     };
 
-    // const result = await roomsCollection.insertOne(doc);
-    console.log(doc);
-    const result = { insertedId: "mockedId" };
+    // Insert into DB and return inserted id.
+    const result = await roomsCollection.insertOne(doc as Document);
 
     return NextResponse.json(
-      { insertedId: result?.insertedId.toString() },
+      { insertedId: result?.insertedId?.toString() ?? null },
       { status: 201 }
     );
-  } catch (err: any) {
-    return NextResponse.json(
-      { error: err?.message ?? String(err) },
-      { status: 500 }
-    );
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 });

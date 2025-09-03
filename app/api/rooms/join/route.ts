@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "./../../../../lib/authMiddleware";
 import { connectToMongo } from "./../../../../lib/mongodb";
-import { ObjectId } from "mongodb";
+import { ObjectId, Document } from "mongodb";
 
 export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
@@ -15,33 +15,24 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
     const room = await roomsCollection.findOne({ _id: new ObjectId(roomId) });
     if (!room)
       return NextResponse.json({ error: "room not found" }, { status: 404 });
-
     const participant = {
       userId: new ObjectId(userId),
-      role: body.role || "participant",
+      role: (body.role as string) || "participant",
       joinedAt: new Date(),
     };
 
-    // cast to any to avoid strict PushOperator typing issues in this helper
-    // const result = await roomsCollection.updateOne(
-    //   { _id: new ObjectId(roomId) },
-    //   { $push: { collaborators: participant } } as any
-    // );
-    console.log();
-    const result = {
-      insertedId: "mockedId",
-      matchedCount: 1,
-      modifiedCount: 1,
-    };
+    // Use a typed update for pushing collaborator
+    const updateResult = await roomsCollection.updateOne(
+      { _id: new ObjectId(roomId) },
+      { $push: { collaborators: participant } } as unknown as Document
+    );
 
     return NextResponse.json({
-      matched: result.matchedCount,
-      modified: result.modifiedCount,
+      matched: updateResult.matchedCount,
+      modified: updateResult.modifiedCount,
     });
-  } catch (err: any) {
-    return NextResponse.json(
-      { error: err?.message ?? String(err) },
-      { status: 500 }
-    );
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 });

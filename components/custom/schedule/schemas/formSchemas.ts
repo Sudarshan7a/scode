@@ -77,3 +77,14 @@ export const joinRoomSchema = z.object({
 export type CreateRoomSchema = z.infer<typeof createRoomSchema>;
 export type StartRoomSchema = z.infer<typeof startRoomSchema>;
 export type JoinRoomSchema = z.infer<typeof joinRoomSchema>;
+
+// Backwards-compatible aliases for UI form imports (some components import
+// `*Form*` names). Export aliases so existing imports keep working.
+export const joinFormSchema = joinRoomSchema;
+export type JoinFormValues = JoinRoomSchema;
+
+export const hostFormSchema = startRoomSchema;
+export type HostFormValues = StartRoomSchema;
+
+export const scheduleFormSchema = createRoomSchema;
+export type ScheduleFormValues = CreateRoomSchema;

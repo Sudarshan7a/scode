@@ -1,33 +1,39 @@
 import React from "react";
-import { UseFormRegister, FieldErrors } from "react-hook-form";
+import { UseFormRegister, FieldErrors, Path } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 
-interface RoomNameInputProps {
-  register: UseFormRegister<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-  errors: FieldErrors<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-  fieldName?: string; // allow schedule form to register `title` instead of `roomName`
+interface RoomNameInputProps<
+  TFieldValues extends Record<string, unknown> = Record<string, unknown>
+> {
+  register: UseFormRegister<TFieldValues>;
+  errors: FieldErrors<TFieldValues>;
+  fieldName?: keyof TFieldValues | string; // allow schedule form to register `title` instead of `roomName`
 }
 
-export function RoomNameInput({
+export function RoomNameInput<T extends Record<string, unknown>>({
   register,
   errors,
   fieldName = "roomName",
-}: RoomNameInputProps) {
-  const error = (errors as any)[fieldName];
+}: RoomNameInputProps<T>) {
+  const key = String(fieldName);
+  const error = (errors as unknown as Record<string, unknown>)[key];
+  type ErrorLike = { message?: string };
   const errorMessage =
-    error?.message || (typeof error === "string" ? error : "");
+    typeof error === "object" && error && "message" in (error as ErrorLike)
+      ? (error as ErrorLike).message
+      : typeof error === "string"
+      ? error
+      : "";
 
   return (
     <>
-      <Label htmlFor={fieldName}>
-        {fieldName === "roomName" ? "Room Name" : "Title"}
-      </Label>
+      <Label htmlFor={key}>{key === "roomName" ? "Room Name" : "Title"}</Label>
       <Input
-        id={fieldName}
+        id={key}
         className="mt-2"
-        placeholder={fieldName === "roomName" ? "Room name...." : "Title..."}
-        {...register(fieldName)}
+        placeholder={key === "roomName" ? "Room name...." : "Title..."}
+        {...register(key as Path<T>)}
       />
       {errorMessage && (
         <p className="text-red-500 text-sm">{String(errorMessage)}</p>
