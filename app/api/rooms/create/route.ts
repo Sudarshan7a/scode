@@ -55,8 +55,6 @@ export const POST = withAuth(async (request: NextRequest, userId?: string) => {
     // Development mode: do not write to DB yet. Log the doc and return 202.
     // When ready, re-enable insertOne:
     // const result = await roomsCollection.insertOne(doc as Document);
-    console.log("[rooms/create] doc (write disabled):", doc);
-
     return NextResponse.json(
       { message: "write-disabled", doc },
       { status: 202 }

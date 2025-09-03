@@ -7,9 +7,6 @@ import { withAuth } from "./../../../../lib/authMiddleware";
 export const POST = withAuth(async (request: NextRequest, _userId?: string) => {
   try {
     const body = await request.json();
-    const roomId = body.roomId;
-    if (!roomId)
-      return NextResponse.json({ error: "roomId required" }, { status: 400 });
 
     // DB writes are disabled during development; don't call DB helper.
     // const { roomsCollection } = await connectToMongo();
@@ -25,8 +22,6 @@ export const POST = withAuth(async (request: NextRequest, _userId?: string) => {
     if (body.isPrivate !== undefined)
       update.$set.isPrivate = Boolean(body.isPrivate);
 
-    // Development: do not write to DB. Log intended update and return accepted.
-    console.log("[rooms/start] update (write-disabled):", update);
     return NextResponse.json({ matched: 1, modified: 1, writeDisabled: true });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
