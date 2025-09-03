@@ -9,6 +9,7 @@ import type {
   StartRoomSchema,
   JoinRoomSchema,
 } from "./schemas/formSchemas";
+import { axiosInstance } from "@/lib/axiosInstance";
 
 type RegistrationFormProps = {
   formType: "schedule" | "host" | "join";
@@ -39,15 +40,15 @@ export default function RegistrationForm({
       browserTime: new Date().toISOString(),
       userAgent: navigator.userAgent,
     };
-    const CreateRoomResult = await fetch("/api/rooms/schedule", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(StartRoomPayload),
-    }).then((res) => res.json());
+    const CreateRoomResult = await axiosInstance.post(
+      "/api/rooms/create",
+      StartRoomPayload
+    );
 
-    console.log("Schedule form submission result", CreateRoomResult);
+    console.log(
+      "-------- Schedule form submission result --------",
+      CreateRoomResult
+    );
   };
 
   const handleHostSubmit = async (data: StartRoomSchema) => {
@@ -58,15 +59,15 @@ export default function RegistrationForm({
       browserTime: new Date().toISOString(),
       userAgent: navigator.userAgent,
     };
-    const StartRoomResult = await fetch("/api/rooms/start", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(StartRoomPayload),
-    }).then((res) => res.json());
+    const StartRoomResult = await axiosInstance.post(
+      "/api/rooms/start",
+      StartRoomPayload
+    );
 
-    console.log("Host form submission result", StartRoomResult);
+    console.log(
+      "-------- Host form submission result --------",
+      StartRoomResult
+    );
   };
   // Including: userId, timeZone, language, browserTime, userAgent
 
@@ -76,15 +77,15 @@ export default function RegistrationForm({
       joinTimestamp: new Date().toISOString(),
       deviceBrowserInfo: getUserDeviceBrowserInfo(),
     };
-    const JoinRoomResult = await fetch("/api/rooms/join", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(JoinRoomPayload),
-    }).then((res) => res.json());
+    const JoinRoomResult = await axiosInstance.post(
+      "/api/rooms/join",
+      JoinRoomPayload
+    );
 
-    console.log("Join form submission result", JoinRoomResult);
+    console.log(
+      "-------- Join form submission result --------",
+      JoinRoomResult
+    );
   };
 
   switch (formType) {
