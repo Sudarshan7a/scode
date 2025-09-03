@@ -38,23 +38,23 @@ export function Calendar24({
   return (
     <div className="flex gap-4">
       <div className="flex flex-col gap-3">
-        <Label htmlFor="date" className="px-1">
+        <Label htmlFor="date" className="px-1 ">
           Date
         </Label>
         <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
+          <PopoverTrigger className="" asChild>
             <Button
-              variant="outline"
+              // variant="outline"
               id="date"
-              className="w-32 justify-between font-normal border-1 border-mysecondary"
+              className="w-32 justify-between bg-background font-normal border-1 border-mysecondary"
             >
               {date ? date.toLocaleDateString() : "Select date"}
-              <ChevronDownIcon />
+              <ChevronDownIcon className="" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto overflow-hidden p-0" align="start">
             <Calendar
-              className="bg-background"
+              className="bg-background border-1 border-mysecondary mt-2 rounded-md"
               mode="single"
               selected={selected}
               captionLayout="dropdown"
