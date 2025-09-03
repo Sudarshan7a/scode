@@ -25,7 +25,10 @@ const ActivitySection: React.FC<ActivitySection> = ({
     </div>
     <div className="flex items-center justify-between gap-4 w-full mx-auto">
       {rooms.slice(0, 3).map((room) => (
-        <RoomCard key={`${keyPrefix}-${room._id.$oid}`} room={room} />
+        <RoomCard
+          key={`${keyPrefix}-${(room as mockRooms)._id.toString()}`}
+          room={room}
+        />
       ))}
     </div>
   </div>
@@ -48,13 +51,11 @@ export default async function YourActivities() {
     },
     {
       title: "Your saved notes",
-      rooms: upcoming
-        .slice(0, 4)
-        .map((room) => ({
-          ...room,
-          status: "saved" as const,
-          title: `${room.title} - Notes`,
-        })),
+      rooms: upcoming.slice(0, 4).map((room) => ({
+        ...room,
+        status: "saved" as const,
+        title: `${room.title} - Notes`,
+      })),
       keyPrefix: "saved",
     },
   ];
