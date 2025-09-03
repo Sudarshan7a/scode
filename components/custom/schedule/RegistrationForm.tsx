@@ -20,19 +20,27 @@ export default function RegistrationForm({
   buttonUnderlineStyle,
 }: RegistrationFormProps) {
   const handleScheduleSubmit = (data: ScheduleFormValues) => {
-  console.log("Schedule form submitted", JSON.stringify(data, null, 2));
+    console.log("Schedule form submitted", data);
+
+    //TODO how do you get user id at client sides if they are in cookies
+    //
+    const userId = localStorage.getItem("userId");
+    console.log("User ID:", userId);
+    if (userId) {
+      data = { ...data, ownerId: userId };
+    }
     // TODO: Handle schedule submission with enriched data
     // Including: userId, timeZone, language, browserTime, userAgent
   };
 
   const handleHostSubmit = (data: HostFormValues) => {
-  console.log("Host form submitted", JSON.stringify(data, null, 2));
+    console.log("Host form submitted", data);
     // TODO: Handle host submission with enriched data
     // Including: userId, timeZone, language, browserTime, userAgent
   };
 
   const handleJoinSubmit = (data: JoinFormValues) => {
-  console.log("Join form submitted", JSON.stringify(data, null, 2));
+    console.log("Join form submitted", data);
     // TODO: Handle join submission with enriched data
     // Including: joinTimestamp, userId, ipAddressRegion, deviceBrowserInfo
   };

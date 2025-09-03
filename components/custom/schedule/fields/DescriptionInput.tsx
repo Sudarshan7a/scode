@@ -12,8 +12,8 @@ export function DescriptionInput({ register }: DescriptionInputProps) {
     <>
       <Label htmlFor="description">Description (optional)</Label>
       <Textarea
-        className="mt-2 border-1 border-mysecondary"
-        placeholder="Description (optional)"
+        className="mt-2 border-1 border-mysecondary placeholder:text-foreground"
+        placeholder="Description (optional) "
         {...register("description")}
       />
     </>

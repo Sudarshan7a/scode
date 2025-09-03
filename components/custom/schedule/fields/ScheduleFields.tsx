@@ -25,7 +25,7 @@ export function ScheduleFields({
   return (
     <div>
       <Label htmlFor="date">Select Date and Time</Label>
-      <div className="mt-2">
+      <div className="mt-2 border-mysecondary">
         <Calendar24
           selected={selectedDate}
           onChangeDate={(date: Date) => {
@@ -44,7 +44,7 @@ export function ScheduleFields({
         <Select
           defaultValue="30"
           onValueChange={(value: string) =>
-            setValue("duration", value, { shouldValidate: true })
+            setValue("duration", Number(value), { shouldValidate: true })
           }
         >
           <SelectTrigger
