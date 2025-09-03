@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "./../../../../lib/authMiddleware";
-import { connectToMongo } from "./../../../../lib/mongodb";
-import { ObjectId, Document } from "mongodb";
+// import { connectToMongo } from "./../../../../lib/mongodb";
+import { ObjectId } from "mongodb";
 
 export const POST = withAuth(async (request: NextRequest, userId?: string) => {
   try {
@@ -17,7 +17,9 @@ export const POST = withAuth(async (request: NextRequest, userId?: string) => {
       );
     }
 
-    const { roomsCollection } = await connectToMongo();
+    // DB writes are disabled during development; keep the helper import for
+    // future use but don't call it to avoid unused variable warnings.
+    // const { roomsCollection } = await connectToMongo();
 
     // Build the room document with proper types
     const doc: {
@@ -50,12 +52,14 @@ export const POST = withAuth(async (request: NextRequest, userId?: string) => {
       status: body.status ?? "scheduled",
     };
 
-    // Insert into DB and return inserted id.
-    const result = await roomsCollection.insertOne(doc as Document);
+    // Development mode: do not write to DB yet. Log the doc and return 202.
+    // When ready, re-enable insertOne:
+    // const result = await roomsCollection.insertOne(doc as Document);
+    console.log("[rooms/create] doc (write disabled):", doc);
 
     return NextResponse.json(
-      { insertedId: result?.insertedId?.toString() ?? null },
-      { status: 201 }
+      { message: "write-disabled", doc },
+      { status: 202 }
     );
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "./../../../../lib/authMiddleware";
-import { connectToMongo } from "./../../../../lib/mongodb";
-import { ObjectId, Document } from "mongodb";
+// import { connectToMongo } from "./../../../../lib/mongodb";
+import { ObjectId } from "mongodb";
 
 export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
@@ -10,27 +10,21 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
     if (!roomId)
       return NextResponse.json({ error: "roomId required" }, { status: 400 });
 
-    const { roomsCollection } = await connectToMongo();
+    // DB writes disabled; don't call connectToMongo to avoid unused vars.
+    // const { roomsCollection } = await connectToMongo();
 
-    const room = await roomsCollection.findOne({ _id: new ObjectId(roomId) });
-    if (!room)
-      return NextResponse.json({ error: "room not found" }, { status: 404 });
+    // DB writes disabled: mock that the room exists for now.
+    const _room = { _id: roomId };
     const participant = {
       userId: new ObjectId(userId),
       role: (body.role as string) || "participant",
       joinedAt: new Date(),
     };
 
-    // Use a typed update for pushing collaborator
-    const updateResult = await roomsCollection.updateOne(
-      { _id: new ObjectId(roomId) },
-      { $push: { collaborators: participant } } as unknown as Document
-    );
+    // Development: do not write to DB yet. Log attempt and return accepted.
+    console.log("[rooms/join] add participant (write-disabled):", participant);
 
-    return NextResponse.json({
-      matched: updateResult.matchedCount,
-      modified: updateResult.modifiedCount,
-    });
+    return NextResponse.json({ matched: 1, modified: 1, writeDisabled: true });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });
