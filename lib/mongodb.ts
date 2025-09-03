@@ -14,7 +14,6 @@ let db: Db;
 export async function connectToMongo(): Promise<{
   usersCollection: Collection;
   refreshTokensCollection: Collection;
-  savedRoomsCollection: Collection;
   roomsCollection: Collection;
   savedNotesCollection: Collection;
   savedCodeCollection: Collection;
@@ -37,9 +36,7 @@ export async function connectToMongo(): Promise<{
     refreshTokensCollection: globalWithMongo._mongoClient
       .db()
       .collection("refreshTokens"),
-    savedRoomsCollection: globalWithMongo._mongoClient
-      .db()
-      .collection("savedRooms"),
+
     roomsCollection: globalWithMongo._mongoClient.db().collection("rooms"),
     savedNotesCollection: globalWithMongo._mongoClient
       .db()

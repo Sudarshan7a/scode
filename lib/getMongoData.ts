@@ -33,6 +33,10 @@ export async function getOldRooms() {
     .find({ endTime: { $lt: new Date() } })
     .toArray()) as unknown as mockRooms[];
 }
+export async function getAllRooms() {
+  const { roomsCollection } = await connectToMongo();
+  return (await roomsCollection.find({}).toArray()) as unknown as mockRooms[];
+}
 
 //room validation mongo db
 
