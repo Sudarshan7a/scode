@@ -54,7 +54,10 @@ const RoomCard = ({ recreate = false, room, className }: RoomCardProps) => {
       saved: { label: "View Notes", variant: "default" },
     };
 
-  const button = buttons[status as keyof typeof buttons] || { label: "", variant: "default" };
+  const button = buttons[status as keyof typeof buttons] || {
+    label: "",
+    variant: "default",
+  };
 
   return (
     <div

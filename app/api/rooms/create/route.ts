@@ -3,21 +3,21 @@ import { withAuth } from "./../../../../lib/authMiddleware";
 // import { connectToMongo } from "./../../../../lib/mongodb";
 import { ObjectId } from "mongodb";
 import { connectToMongo } from "@/lib/mongodb";
+import { use } from "react";
 
-export const POST = withAuth(async (request: NextRequest, userId?: string) => {
+export const POST = withAuth(async (request: NextRequest) => {
   try {
     const body = await request.json();
     //get userID from request cookies (prefer middleware userId, fallback to cookie)
-    const userCookie = request.cookies.get("userId");
-    const resolvedUserId = userId ?? userCookie?.value;
+    const userCookieId = request.cookies.get("userId");
     // if no userId then return error
-    if (!resolvedUserId) {
+    if (!userCookieId?.value) {
       console.log("No userId found in cookies");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const title = (body.title || "").toString().trim();
-    const duration = Number(body.duration || 0);
+    const duration = Number(body.duration || 30);
 
     if (!title || !duration) {
       return NextResponse.json(
@@ -38,10 +38,10 @@ export const POST = withAuth(async (request: NextRequest, userId?: string) => {
       status: string;
     } = {
       title,
-      ownerId: new ObjectId(resolvedUserId),
+      ownerId: new ObjectId(userCookieId.value),
       isPrivate: Boolean(body.isPrivate),
       createdAt: new Date(),
-      duration: duration || 30,
+      duration,
       scheduledAt: body.scheduledAt ? new Date(body.scheduledAt) : null,
       description: body.description ?? null,
       language: body.language ?? null,
@@ -50,9 +50,8 @@ export const POST = withAuth(async (request: NextRequest, userId?: string) => {
 
     // now insert this to rooms collection in db
     const { roomsCollection } = await connectToMongo();
-
     const result = await roomsCollection.insertOne(doc);
-    console.log("Inserted room with id:", Number(result.insertedId.toString()));
+    console.log("Inserted room with id:", result.insertedId.toString());
     // now return response with roomid as number
 
     return NextResponse.json(
