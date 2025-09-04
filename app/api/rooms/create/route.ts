@@ -3,7 +3,6 @@ import { withAuth } from "./../../../../lib/authMiddleware";
 // import { connectToMongo } from "./../../../../lib/mongodb";
 import { ObjectId } from "mongodb";
 import { connectToMongo } from "@/lib/mongodb";
-import { use } from "react";
 
 export const POST = withAuth(async (request: NextRequest) => {
   try {

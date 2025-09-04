@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "./../../../../lib/authMiddleware";
 import { connectToMongo } from "@/lib/mongodb";
-import { ObjectId } from "mongodb";
+import { ObjectId, UpdateFilter, Document } from "mongodb";
 
 // Accept either raw id or full URL like https://yourdomain/room/<id>
 function extractRoomId(input: unknown): string | null {
@@ -104,7 +104,13 @@ export const POST = withAuth(async (request: NextRequest, userId?: string) => {
     }
 
     // otherwise add as participant if not already present
-    const collaborator = {
+    type Collaborator = {
+      userId: ObjectId;
+      role: string;
+      joinedAt: Date;
+    };
+
+    const collaborator: Collaborator = {
       userId: new ObjectId(resolvedUserId),
       role: (body.role as string) || "participant",
       joinedAt: new Date(),
@@ -113,13 +119,12 @@ export const POST = withAuth(async (request: NextRequest, userId?: string) => {
     // push to collaborators array if not present
     const existing =
       Array.isArray(room.collaborators) &&
-      room.collaborators.some(
-        (c: any) => String(c.userId) === String(resolvedUserId)
-      );
+      room.collaborators.some((c: Collaborator) => String(c.userId) === String(resolvedUserId));
     if (!existing) {
+      // cast to any/unknown to satisfy mongodb TS definitions for dynamic schema
       await roomsCollection.updateOne(
         { _id: new ObjectId(roomIdStr) },
-        { $push: { collaborators: collaborator as any } }
+  ({ $push: { collaborators: collaborator } } as unknown) as UpdateFilter<Document>
       );
     }
 
