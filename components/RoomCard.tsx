@@ -27,7 +27,7 @@ const RoomCard = ({ recreate = false, room, className }: RoomCardProps) => {
     participants,
     maxParticipants,
     duration,
-  } = room;
+  } = room || {};
 
   // Format date for display
   const formatDate = (dateObj: { $date: string } | null) => {
@@ -54,7 +54,7 @@ const RoomCard = ({ recreate = false, room, className }: RoomCardProps) => {
       saved: { label: "View Notes", variant: "default" },
     };
 
-  const button = buttons[status];
+  const button = buttons[status as keyof typeof buttons] || { label: "", variant: "default" };
 
   return (
     <div
@@ -81,12 +81,12 @@ const RoomCard = ({ recreate = false, room, className }: RoomCardProps) => {
         <p className="text-sm text-gray-500 line-clamp-3">{description}</p>
         <div className="text-xs text-gray-500 mt-2 space-y-1">
           <p>{displayDate}</p>
-          <p>by {host.name}</p>
+          <p>by {host?.name ?? "Unknown host"}</p>
           <div className="flex items-center justify-between">
             <p>
-              {participants}/{maxParticipants} participants
+              {participants ?? 0}/{maxParticipants ?? "—"} participants
             </p>
-            <p>{duration} min</p>
+            <p>{duration ?? "—"} min</p>
           </div>
         </div>
       </div>
