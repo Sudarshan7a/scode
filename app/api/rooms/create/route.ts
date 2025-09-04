@@ -2,10 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "./../../../../lib/authMiddleware";
 // import { connectToMongo } from "./../../../../lib/mongodb";
 import { ObjectId } from "mongodb";
+import { connectToMongo } from "@/lib/mongodb";
 
 export const POST = withAuth(async (request: NextRequest, userId?: string) => {
   try {
     const body = await request.json();
+    //get userID from request cookies (prefer middleware userId, fallback to cookie)
+    const userCookie = request.cookies.get("userId");
+    const resolvedUserId = userId ?? userCookie?.value;
+    // if no userId then return error
+    if (!resolvedUserId) {
+      console.log("No userId found in cookies");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const title = (body.title || "").toString().trim();
     const duration = Number(body.duration || 0);
@@ -17,47 +26,41 @@ export const POST = withAuth(async (request: NextRequest, userId?: string) => {
       );
     }
 
-    // DB writes are disabled during development; keep the helper import for
-    // future use but don't call it to avoid unused variable warnings.
-    // const { roomsCollection } = await connectToMongo();
-
-    // Build the room document with proper types
     const doc: {
       title: string;
-      ownerId: ObjectId | null;
+      ownerId: ObjectId;
       isPrivate: boolean;
       createdAt: Date;
       duration: number;
-      scheduledFor: Date | null;
+      scheduledAt: Date | null;
       description: string | null;
       language: string | null;
-      savedCodeId?: ObjectId;
-      collaborators: unknown[];
-      endedAt: Date | null;
       status: string;
     } = {
       title,
-      ownerId: userId ? new ObjectId(userId) : null,
+      ownerId: new ObjectId(resolvedUserId),
       isPrivate: Boolean(body.isPrivate),
       createdAt: new Date(),
-      duration,
-      scheduledFor: body.scheduledFor ? new Date(body.scheduledFor) : null,
+      duration: duration || 30,
+      scheduledAt: body.scheduledAt ? new Date(body.scheduledAt) : null,
       description: body.description ?? null,
       language: body.language ?? null,
-      savedCodeId: body.savedCodeId
-        ? new ObjectId(body.savedCodeId)
-        : undefined,
-      collaborators: [],
-      endedAt: null,
       status: body.status ?? "scheduled",
     };
 
-    // Development mode: do not write to DB yet. Log the doc and return 202.
-    // When ready, re-enable insertOne:
-    // const result = await roomsCollection.insertOne(doc as Document);
+    // now insert this to rooms collection in db
+    const { roomsCollection } = await connectToMongo();
+
+    const result = await roomsCollection.insertOne(doc);
+    console.log("Inserted room with id:", Number(result.insertedId.toString()));
+    // now return response with roomid as number
+
     return NextResponse.json(
-      { message: "write-disabled", doc },
-      { status: 202 }
+      {
+        message: "Room created successfully",
+        roomId: Number(result.insertedId.toString()),
+      },
+      { status: 201 }
     );
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
