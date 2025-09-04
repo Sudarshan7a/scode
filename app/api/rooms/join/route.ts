@@ -43,12 +43,16 @@ export const POST = withAuth(async (request: NextRequest, userId?: string) => {
 
     const parsedReq = joinSchema.safeParse(body);
     if (!parsedReq.success) {
-      return NextResponse.json({ error: parsedReq.error.flatten() }, { status: 400 });
+      return NextResponse.json(
+        { error: parsedReq.error.flatten() },
+        { status: 400 }
+      );
     }
 
     const payload = parsedReq.data;
 
-    const rawId = payload.roomId ?? payload.roomName ?? payload.url ?? payload.id;
+    const rawId =
+      payload.roomId ?? payload.roomName ?? payload.url ?? payload.id;
     const roomIdStr = extractRoomId(rawId);
     if (!roomIdStr) {
       return NextResponse.json({ error: "roomId required" }, { status: 400 });
@@ -135,13 +139,14 @@ export const POST = withAuth(async (request: NextRequest, userId?: string) => {
     // push to collaborators array if not present
     const existing =
       Array.isArray(room.collaborators) &&
-      room.collaborators.some((c: Collaborator) => String(c.userId) === String(resolvedUserId));
+      room.collaborators.some(
+        (c: Collaborator) => String(c.userId) === String(resolvedUserId)
+      );
     if (!existing) {
       // cast to any/unknown to satisfy mongodb TS definitions for dynamic schema
-      await roomsCollection.updateOne(
-        { _id: new ObjectId(roomIdStr) },
-  ({ $push: { collaborators: collaborator } } as unknown) as UpdateFilter<Document>
-      );
+      await roomsCollection.updateOne({ _id: new ObjectId(roomIdStr) }, {
+        $push: { collaborators: collaborator },
+      } as unknown as UpdateFilter<Document>);
     }
 
     return NextResponse.json(
