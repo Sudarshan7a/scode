@@ -61,3 +61,6 @@ next-env.d.ts
 # commit planning files (don't commit these)
 *commit-plan.md
 execute-commits.bat
+
+#ignore testsprite_tests
+/testsprite_tests/tmp/*
