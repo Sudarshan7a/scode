@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "./../../../../lib/authMiddleware";
+import { z } from "zod";
 import { connectToMongo } from "@/lib/mongodb";
 import { ObjectId, UpdateFilter, Document } from "mongodb";
 
@@ -32,7 +33,22 @@ export const POST = withAuth(async (request: NextRequest, userId?: string) => {
   try {
     const body = await request.json();
 
-    const rawId = body.roomId ?? body.roomName ?? body.url ?? body.id;
+    const joinSchema = z.object({
+      roomId: z.string().optional(),
+      roomName: z.string().optional(),
+      url: z.string().optional(),
+      id: z.string().optional(),
+      role: z.string().optional(),
+    });
+
+    const parsedReq = joinSchema.safeParse(body);
+    if (!parsedReq.success) {
+      return NextResponse.json({ error: parsedReq.error.flatten() }, { status: 400 });
+    }
+
+    const payload = parsedReq.data;
+
+    const rawId = payload.roomId ?? payload.roomName ?? payload.url ?? payload.id;
     const roomIdStr = extractRoomId(rawId);
     if (!roomIdStr) {
       return NextResponse.json({ error: "roomId required" }, { status: 400 });
@@ -112,7 +128,7 @@ export const POST = withAuth(async (request: NextRequest, userId?: string) => {
 
     const collaborator: Collaborator = {
       userId: new ObjectId(resolvedUserId),
-      role: (body.role as string) || "participant",
+      role: (payload.role as string) || "participant",
       joinedAt: new Date(),
     };
 

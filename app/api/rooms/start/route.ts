@@ -1,11 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "./../../../../lib/authMiddleware";
+import { z } from "zod";
 import { ObjectId } from "mongodb";
 import { connectToMongo } from "@/lib/mongodb";
 
 export const POST = withAuth(async (request: NextRequest) => {
   try {
     const body = await request.json();
+
+    const startSchema = z.object({
+      title: z.string().min(1).optional(),
+      roomName: z.string().optional(),
+      name: z.string().optional(),
+      duration: z.number().int().positive().optional(),
+      description: z.string().optional().nullable(),
+      language: z.string().optional().nullable(),
+      isPrivate: z.boolean().optional(),
+      status: z.string().optional(),
+    });
+
+    const parsed = startSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    }
+
+    const payload = parsed.data;
 
     // resolve owner id from middleware or cookie
     const userCookieID = request.cookies.get("userId");
@@ -15,16 +34,14 @@ export const POST = withAuth(async (request: NextRequest) => {
     }
 
     // accept title from common keys, and make duration optional with a default
-    const title = (body.title || body.roomName || body.name || "")
-      .toString()
-      .trim();
-    const duration = Number(body.duration ?? 30) || 30;
+    const title = (payload.title || payload.roomName || payload.name || "").toString().trim();
+    const duration = payload.duration ?? 30;
 
     if (!title) {
       return NextResponse.json({ error: "title is required" }, { status: 400 });
     }
 
-    const createdAt = new Date();
+    const startedAt = new Date();
 
     const doc: {
       title: string;
@@ -40,15 +57,15 @@ export const POST = withAuth(async (request: NextRequest) => {
     } = {
       title,
       ownerId: new ObjectId(userCookieID.value),
-      isPrivate: Boolean(body.isPrivate),
-      createdAt,
-      duration: duration,
-      // start immediately: set scheduledAt to createdAt
-      scheduledAt: createdAt,
-      startedAt: createdAt,
-      description: body.description ?? null,
-      language: body.language ?? null,
-      status: body.status ?? "live",
+  isPrivate: Boolean(payload.isPrivate),
+  createdAt: startedAt,
+  duration: duration,
+  // start immediately: set scheduledAt to startedAt
+  scheduledAt: startedAt,
+  startedAt: startedAt,
+  description: payload.description ?? null,
+  language: payload.language ?? null,
+  status: payload.status ?? "live",
     };
 
     // now insert this to rooms collection in db
@@ -56,10 +73,8 @@ export const POST = withAuth(async (request: NextRequest) => {
     const result = await roomsCollection.insertOne(doc);
     console.log("Inserted room with id:", result.insertedId.toString());
 
-    const roomId = result.insertedId.toString();
-
     return NextResponse.json(
-      { message: "Room started successfully", roomId },
+      { message: "Room started successfully", roomId: result.insertedId.toString() },
       { status: 201 }
     );
   } catch (err: unknown) {
