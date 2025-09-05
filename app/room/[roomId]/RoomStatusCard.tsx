@@ -15,6 +15,8 @@ type Props = {
   roomState?: RoomState;
   onStart?: () => void;
   onJoin?: () => void;
+  isStarting?: boolean;
+  isJoining?: boolean;
 };
 
 export default function RoomStatusCard({
@@ -26,6 +28,8 @@ export default function RoomStatusCard({
   roomState = "unknown",
   onStart,
   onJoin,
+  isStarting = false,
+  isJoining = false,
 }: Props) {
   const disabled = roomState === "scheduled" || roomState === "ended";
 
@@ -86,12 +90,14 @@ export default function RoomStatusCard({
                     label={disabled ? "Unavailable" : "Start Room"}
                     onClick={onStart}
                     disabled={disabled}
+                    loading={isStarting}
                   />
                 ) : (
                   <PrimaryAction
                     label={disabled ? "Unavailable" : "Join Room"}
                     onClick={onJoin}
                     disabled={disabled}
+                    loading={isJoining}
                   />
                 )}
 
