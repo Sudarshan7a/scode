@@ -22,6 +22,10 @@ import { SUPPORTED_LANGUAGES } from "@/app/room/editorHelpers";
 // client-only initialization steps and extracting further would add noise.
 // Disable complexity check for this orchestration component.
 export default function CollaborativeEditor({ roomId }: { roomId: string }) {
+  // render a page and check if the room exists and live if not then show 404
+  //if room schedule then show when will it start and if ended show  ended
+  // otherwise show the editor
+  // Monaco editor instance is created in EditorContainer on mount.
   // Monaco namespace subset used; the container handles editor refs and cleanup.
   // Supported languages (kept in a top-level constant for clarity)
   const languages = useMemo(() => SUPPORTED_LANGUAGES, []);
