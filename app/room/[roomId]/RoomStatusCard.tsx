@@ -1,8 +1,10 @@
 "use client";
 import type React from "react";
+import { useState } from "react";
 import TopLogo from "@/components/TopLogo";
 import PrimaryAction from "@/components/PrimaryAction";
 import { Button } from "@/components/ui/button";
+import { Copy, ExternalLink, Check } from "lucide-react";
 
 type RoomState = "live" | "scheduled" | "ended" | "saved" | "unknown";
 
@@ -17,6 +19,7 @@ type Props = {
   onJoin?: () => void;
   isStarting?: boolean;
   isJoining?: boolean;
+  roomId?: string;
 };
 
 export default function RoomStatusCard({
@@ -30,8 +33,40 @@ export default function RoomStatusCard({
   onJoin,
   isStarting = false,
   isJoining = false,
+  roomId,
 }: Props) {
+  const [copied, setCopied] = useState(false);
   const disabled = roomState === "scheduled" || roomState === "ended";
+
+  const roomUrl =
+    roomId && typeof window !== "undefined"
+      ? `${window.location.origin}/room/${roomId}`
+      : "";
+
+  const handleCopyLink = async () => {
+    if (!roomUrl) return;
+
+    try {
+      await navigator.clipboard.writeText(roomUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+      // Fallback for older browsers
+      try {
+        const textArea = document.createElement("textarea");
+        textArea.value = roomUrl;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (fallbackErr) {
+        console.error("Fallback copy failed:", fallbackErr);
+      }
+    }
+  };
 
   return (
     <div
@@ -78,6 +113,68 @@ export default function RoomStatusCard({
                 <div className="p-4 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100/50 dark:from-gray-800/50 dark:to-gray-900/50 border border-gray-200/50 dark:border-gray-700/50">
                   <div className="text-sm text-gray-700 dark:text-gray-300 font-medium">
                     {details}
+                  </div>
+                </div>
+              )}
+
+              {/* Join Link Section - Show for scheduled rooms */}
+              {roomState === "scheduled" && roomId && (
+                <div className="p-4 rounded-xl bg-gradient-to-r from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/20 border border-blue-200/50 dark:border-blue-700/50">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <ExternalLink className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                        Share this room
+                      </span>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="text-xs text-blue-600/80 dark:text-blue-400/80 font-medium">
+                        Room ID
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <code className="flex-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 rounded text-xs font-mono text-blue-800 dark:text-blue-200">
+                          {roomId}
+                        </code>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleCopyLink}
+                          className="h-8 px-2 text-xs"
+                        >
+                          {copied ? (
+                            <Check className="w-3 h-3" />
+                          ) : (
+                            <Copy className="w-3 h-3" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="text-xs text-blue-600/80 dark:text-blue-400/80 font-medium">
+                        Join Link
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          readOnly
+                          value={roomUrl}
+                          className="flex-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 rounded text-xs font-mono text-blue-800 dark:text-blue-200 truncate"
+                        />
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleCopyLink}
+                          className="h-8 px-2 text-xs"
+                        >
+                          {copied ? (
+                            <Check className="w-3 h-3" />
+                          ) : (
+                            <Copy className="w-3 h-3" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
