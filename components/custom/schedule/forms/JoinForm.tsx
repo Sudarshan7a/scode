@@ -39,7 +39,11 @@ export function JoinForm({ onSubmit, isLoading = false }: JoinFormProps) {
           <p className="text-red-500 text-sm">{errors.roomName.message}</p>
         )}
       </div>
-      <Button type="submit" disabled={isLoading}>
+      <Button
+        type="submit"
+        disabled={isLoading}
+        className="w-full py-3 bg-mysecondary hover:bg-mysecondary-hover text-white transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md font-medium"
+      >
         <div className="flex items-center justify-center gap-2">
           {isLoading && (
             <svg

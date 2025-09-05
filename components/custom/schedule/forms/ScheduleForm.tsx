@@ -40,6 +40,7 @@ export function ScheduleForm({
       roomType: "interview",
       privacyLevel: "public",
       editorEnabled: false,
+      // Remove default values for required fields to force user selection
       scheduledAt: undefined,
       time: undefined,
     },
@@ -63,6 +64,7 @@ export function ScheduleForm({
         type="button"
         onClick={handleSubmit(onSubmit)}
         disabled={isLoading}
+        className="w-full py-3 bg-mysecondary hover:bg-mysecondary-hover text-white transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md font-medium"
       >
         <div className="flex items-center justify-center gap-2">
           {isLoading && (
