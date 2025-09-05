@@ -55,9 +55,41 @@ export const createRoomSchema = scheduleRoomSchema.extend({
   privacyLevel: z.enum(["public", "private"]).optional(),
   editorEnabled: z.boolean().optional(),
   languagePreference: z.string().optional().nullable(),
-  // helper UI-only fields
-  scheduledAt: z.date().optional().nullable(),
-  time: z.string().optional().nullable(),
+  // helper UI-only fields - make scheduling date and time required
+  scheduledAt: z.date({
+    required_error: "Please select a date for your session",
+    invalid_type_error: "Please enter a valid date"
+  }).refine((date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to start of day for comparison
+    const selectedDate = new Date(date);
+    selectedDate.setHours(0, 0, 0, 0);
+    return selectedDate >= today;
+  }, {
+    message: "Please select today or a future date"
+  }),
+  time: z.string({
+    required_error: "Please select a time for your session"
+  }).min(1, "Time is required"),
+}).refine((data) => {
+  // Cross-field validation for date + time combination
+  if (!data.scheduledAt || !data.time) return true; // Let individual field validation handle missing values
+  
+  const selectedDate = new Date(data.scheduledAt);
+  const [hours, minutes] = data.time.split(':').map(Number);
+  selectedDate.setHours(hours, minutes, 0, 0);
+  
+  const now = new Date();
+  
+  // If selected date/time is in the past
+  if (selectedDate < now) {
+    return false;
+  }
+  
+  return true;
+}, {
+  message: "Please select current time or later",
+  path: ["time"] // This will show the error on the time field
 });
 
 export const startRoomSchema = z.object({

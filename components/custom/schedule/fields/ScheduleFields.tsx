@@ -24,7 +24,7 @@ export function ScheduleFields({
 }: ScheduleFieldsProps) {
   return (
     <div>
-      <Label htmlFor="scheduledAt">Select Date and Time</Label>
+      <Label htmlFor="scheduledAt">Select Date and Time *</Label>
       <div className="mt-2 border-mysecondary">
         <Calendar24
           selected={selectedDate}
@@ -40,6 +40,9 @@ export function ScheduleFields({
         <p className="text-red-500 text-sm">
           {errors.scheduledAt.message as string}
         </p>
+      )}
+      {errors.time && (
+        <p className="text-red-500 text-sm">{errors.time.message as string}</p>
       )}
       <div className="mt-2">
         <Label htmlFor="duration">Duration in minutes</Label>
