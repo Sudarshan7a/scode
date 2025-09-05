@@ -192,7 +192,8 @@ export default function RoomPage({
         />
       )}
 
-      {roomState === "scheduled" && (
+      {/* For scheduled rooms: show editor to host, status card to participants */}
+      {roomState === "scheduled" && !isHost && (
         <RoomStatusCard
           title="Room scheduled"
           subtitle={
@@ -212,6 +213,7 @@ export default function RoomPage({
           onJoin={handleJoinRoom}
           isStarting={isStarting}
           isJoining={isJoining}
+          roomId={roomId}
         />
       )}
 
@@ -240,14 +242,21 @@ export default function RoomPage({
         />
       )}
 
-      {roomState === "live" && (
+      {/* Show collaborative editor for live rooms OR scheduled rooms with host */}
+      {(roomState === "live" || (roomState === "scheduled" && isHost)) && (
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel minSize={30} defaultSize={40}>
             <LeftTools />
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel minSize={30} defaultSize={60}>
-            <CollaborativeEditor roomId={roomId} />
+            <CollaborativeEditor
+              roomId={roomId}
+              isScheduled={roomState === "scheduled"}
+              isHost={isHost}
+              onStartRoom={handleStartRoom}
+              isStarting={isStarting}
+            />
           </ResizablePanel>
         </ResizablePanelGroup>
       )}
