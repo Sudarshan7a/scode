@@ -2,7 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "./../../../../lib/authMiddleware";
 import { z } from "zod";
 import { connectToMongo } from "@/lib/mongodb";
-import { ObjectId, UpdateFilter, Document } from "mongodb";
+import { ObjectId, UpdateFilter, Document, Collection } from "mongodb";
+
+type RoomLike = Document & {
+  status?: string;
+  scheduledAt?: string | Date | null;
+  collaborators?: Array<{ userId?: ObjectId }>;
+  ownerId?: unknown;
+  _id?: unknown;
+};
 
 // Accept either raw id or full URL like https://yourdomain/room/<id>
 function extractRoomId(input: unknown): string | null {
@@ -31,15 +39,16 @@ function extractRoomId(input: unknown): string | null {
 
 // helper: find a room by id string
 async function findRoom(
-  roomsCollection: any,
+  roomsCollection: Collection<Document>,
   roomIdStr: string
 ): Promise<Document | null> {
   return await roomsCollection.findOne({ _id: new ObjectId(roomIdStr) });
 }
 
 // helper: check status and return a response if not joinable, otherwise null
-function checkRoomStatus(room: any, roomIdStr: string): NextResponse | null {
-  if (room.status === "scheduled") {
+function checkRoomStatus(room: RoomLike, roomIdStr: string): NextResponse | null {
+  const status = room.status;
+  if (status === "scheduled") {
     return NextResponse.json(
       {
         status: "scheduled",
@@ -57,7 +66,7 @@ function checkRoomStatus(room: any, roomIdStr: string): NextResponse | null {
     );
   }
 
-  if (room.status !== "live") {
+  if (status !== "live") {
     return NextResponse.json({ error: "room not joinable" }, { status: 403 });
   }
 
@@ -66,8 +75,8 @@ function checkRoomStatus(room: any, roomIdStr: string): NextResponse | null {
 
 // helper: ensure collaborator exists on the room (idempotent)
 async function ensureCollaborator(
-  roomsCollection: any,
-  room: any,
+  roomsCollection: Collection<Document>,
+  room: RoomLike,
   userIdStr: string,
   role: string | undefined
 ): Promise<void> {
@@ -85,21 +94,20 @@ async function ensureCollaborator(
 
   const existing =
     Array.isArray(room.collaborators) &&
-    room.collaborators.some(
-      (c: Collaborator) => String(c.userId) === String(userIdStr)
-    );
+    room.collaborators!.some((c) => String(c.userId) === String(userIdStr));
 
   if (!existing) {
-    await roomsCollection.updateOne({ _id: new ObjectId(String(room._id)) }, {
-      $push: { collaborators: collaborator },
-    } as unknown as UpdateFilter<Document>);
+    await roomsCollection.updateOne(
+      { _id: new ObjectId(String(room._id)) },
+      ({ $push: { collaborators: collaborator } } as unknown) as UpdateFilter<Document>
+    );
   }
 }
 
 class HttpError extends Error {
   status: number;
-  body: any;
-  constructor(status: number, body: any) {
+  body: unknown;
+  constructor(status: number, body: unknown) {
     super(typeof body === "string" ? body : JSON.stringify(body));
     this.status = status;
     this.body = body;
@@ -144,7 +152,7 @@ function getUserCookieId(request: NextRequest) {
   return String(userCookie.value);
 }
 
-async function findRoomOrThrow(roomsCollection: any, roomIdStr: string) {
+async function findRoomOrThrow(roomsCollection: Collection<Document>, roomIdStr: string) {
   const room = await findRoom(roomsCollection, roomIdStr);
   if (!room) {
     throw new HttpError(404, { error: "room not found" });
@@ -152,7 +160,7 @@ async function findRoomOrThrow(roomsCollection: any, roomIdStr: string) {
   return room;
 }
 
-export const POST = withAuth(async (request: NextRequest, userId?: string) => {
+export const POST = withAuth(async (request: NextRequest) => {
   try {
     const body = await request.json();
     const payload = validateJoinPayload(body);
