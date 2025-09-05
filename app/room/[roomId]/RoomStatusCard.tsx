@@ -82,9 +82,17 @@ export default function RoomStatusCard({
 
               <div className="space-y-3">
                 {isHost ? (
-                  <PrimaryAction label={disabled ? "Unavailable" : "Start Room"} onClick={onStart} disabled={disabled} />
+                  <PrimaryAction
+                    label={disabled ? "Unavailable" : "Start Room"}
+                    onClick={onStart}
+                    disabled={disabled}
+                  />
                 ) : (
-                  <PrimaryAction label={disabled ? "Unavailable" : "Join Room"} onClick={onJoin} disabled={disabled} />
+                  <PrimaryAction
+                    label={disabled ? "Unavailable" : "Join Room"}
+                    onClick={onJoin}
+                    disabled={disabled}
+                  />
                 )}
 
                 <Button className="w-full text-foreground/80 py-3 rounded-md border-1 border-foreground/60 transition-all duration-300 bg-foreground/5 hover:bg-mysecondary/40">
