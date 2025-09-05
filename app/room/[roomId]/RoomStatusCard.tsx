@@ -1,6 +1,7 @@
 "use client";
 import type React from "react";
 import TopLogo from "@/components/TopLogo";
+import PrimaryAction from "@/components/PrimaryAction";
 import { Button } from "@/components/ui/button";
 
 type RoomState = "live" | "scheduled" | "ended" | "saved" | "unknown";
@@ -81,47 +82,9 @@ export default function RoomStatusCard({
 
               <div className="space-y-3">
                 {isHost ? (
-                  <button
-                    onClick={onStart}
-                    disabled={disabled}
-                    className={`w-full py-3 px-4 rounded-xl font-medium text-white shadow-lg hover:shadow-xl transition-all duration-500 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-mysecondary focus:ring-offset-2 relative overflow-hidden group ${
-                      disabled ? "opacity-50 cursor-not-allowed" : ""
-                    } bg-gradient-to-r from-mysecondary to-mysecondary-hover`}
-                  >
-                    <span className="relative z-10">
-                      {disabled ? "Unavailable" : "Start Room"}
-                    </span>
-                    <div
-                      className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
-                        disabled ? "pointer-events-none" : ""
-                      }`}
-                      style={{
-                        background:
-                          "linear-gradient(135deg, var(--color-mysecondary), var(--color-mysecondary-hover))",
-                      }}
-                    />
-                  </button>
+                  <PrimaryAction label={disabled ? "Unavailable" : "Start Room"} onClick={onStart} disabled={disabled} />
                 ) : (
-                  <button
-                    onClick={onJoin}
-                    disabled={disabled}
-                    className={`w-full py-3 px-4 rounded-xl font-medium text-white shadow-lg hover:shadow-xl transition-all duration-500 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-mysecondary focus:ring-offset-2 relative overflow-hidden group ${
-                      disabled ? "opacity-50 cursor-not-allowed" : ""
-                    } bg-gradient-to-r from-mysecondary to-mysecondary-hover`}
-                  >
-                    <span className="relative z-10">
-                      {disabled ? "Unavailable" : "Join Room"}
-                    </span>
-                    <div
-                      className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
-                        disabled ? "pointer-events-none" : ""
-                      }`}
-                      style={{
-                        background:
-                          "linear-gradient(135deg, var(--color-mysecondary), var(--color-mysecondary-hover))",
-                      }}
-                    />
-                  </button>
+                  <PrimaryAction label={disabled ? "Unavailable" : "Join Room"} onClick={onJoin} disabled={disabled} />
                 )}
 
                 <Button className="w-full text-foreground/80 py-3 rounded-md border-1 border-foreground/60 transition-all duration-300 bg-foreground/5 hover:bg-mysecondary/40">
