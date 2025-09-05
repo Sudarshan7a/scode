@@ -64,3 +64,6 @@ execute-commits.bat
 
 #ignore testsprite_tests
 /testsprite_tests/tmp/*
+
+#ignore mcp.json
+/mcp.json

@@ -29,93 +29,143 @@ function extractRoomId(input: unknown): string | null {
   return null;
 }
 
+// helper: find a room by id string
+async function findRoom(
+  roomsCollection: any,
+  roomIdStr: string
+): Promise<Document | null> {
+  return await roomsCollection.findOne({ _id: new ObjectId(roomIdStr) });
+}
+
+// helper: check status and return a response if not joinable, otherwise null
+function checkRoomStatus(room: any, roomIdStr: string): NextResponse | null {
+  if (room.status === "scheduled") {
+    return NextResponse.json(
+      {
+        status: "scheduled",
+        scheduledAt: room.scheduledAt ?? null,
+        roomId: roomIdStr,
+      },
+      { status: 200 }
+    );
+  }
+
+  if (room.status === "ended") {
+    return NextResponse.json(
+      { status: "ended", roomId: roomIdStr },
+      { status: 200 }
+    );
+  }
+
+  if (room.status !== "live") {
+    return NextResponse.json({ error: "room not joinable" }, { status: 403 });
+  }
+
+  return null;
+}
+
+// helper: ensure collaborator exists on the room (idempotent)
+async function ensureCollaborator(
+  roomsCollection: any,
+  room: any,
+  userIdStr: string,
+  role: string | undefined
+): Promise<void> {
+  type Collaborator = {
+    userId: ObjectId;
+    role: string;
+    joinedAt: Date;
+  };
+
+  const collaborator: Collaborator = {
+    userId: new ObjectId(userIdStr),
+    role: (role as string) || "participant",
+    joinedAt: new Date(),
+  };
+
+  const existing =
+    Array.isArray(room.collaborators) &&
+    room.collaborators.some(
+      (c: Collaborator) => String(c.userId) === String(userIdStr)
+    );
+
+  if (!existing) {
+    await roomsCollection.updateOne({ _id: new ObjectId(String(room._id)) }, {
+      $push: { collaborators: collaborator },
+    } as unknown as UpdateFilter<Document>);
+  }
+}
+
+class HttpError extends Error {
+  status: number;
+  body: any;
+  constructor(status: number, body: any) {
+    super(typeof body === "string" ? body : JSON.stringify(body));
+    this.status = status;
+    this.body = body;
+  }
+}
+
+function validateJoinPayload(body: unknown) {
+  const joinSchema = z.object({
+    roomId: z.string().optional(),
+    roomName: z.string().optional(),
+    url: z.string().optional(),
+    id: z.string().optional(),
+    role: z.string().optional(),
+  });
+
+  const parsedReq = joinSchema.safeParse(body);
+  if (!parsedReq.success) {
+    throw new HttpError(400, { error: parsedReq.error.flatten() });
+  }
+  return parsedReq.data;
+}
+
+function getRoomIdFromPayload(payload: {
+  roomId?: string;
+  roomName?: string;
+  url?: string;
+  id?: string;
+}) {
+  const rawId = payload.roomId ?? payload.roomName ?? payload.url ?? payload.id;
+  const roomIdStr = extractRoomId(rawId);
+  if (!roomIdStr) {
+    throw new HttpError(400, { error: "roomId required" });
+  }
+  return roomIdStr;
+}
+
+function getUserCookieId(request: NextRequest) {
+  const userCookie = request.cookies.get("userId");
+  if (!userCookie?.value) {
+    throw new HttpError(401, { error: "Unauthorized" });
+  }
+  return String(userCookie.value);
+}
+
+async function findRoomOrThrow(roomsCollection: any, roomIdStr: string) {
+  const room = await findRoom(roomsCollection, roomIdStr);
+  if (!room) {
+    throw new HttpError(404, { error: "room not found" });
+  }
+  return room;
+}
+
 export const POST = withAuth(async (request: NextRequest, userId?: string) => {
   try {
     const body = await request.json();
-
-    const joinSchema = z.object({
-      roomId: z.string().optional(),
-      roomName: z.string().optional(),
-      url: z.string().optional(),
-      id: z.string().optional(),
-      role: z.string().optional(),
-    });
-
-    const parsedReq = joinSchema.safeParse(body);
-    if (!parsedReq.success) {
-      return NextResponse.json(
-        { error: parsedReq.error.flatten() },
-        { status: 400 }
-      );
-    }
-
-    const payload = parsedReq.data;
-
-    const rawId =
-      payload.roomId ?? payload.roomName ?? payload.url ?? payload.id;
-    const roomIdStr = extractRoomId(rawId);
-    if (!roomIdStr) {
-      return NextResponse.json({ error: "roomId required" }, { status: 400 });
-    }
-
-    // resolve user
-    const userCookie = request.cookies.get("userId");
-    const resolvedUserId = userId ?? userCookie?.value;
-    if (!resolvedUserId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const payload = validateJoinPayload(body);
+    const roomIdStr = getRoomIdFromPayload(payload);
+    const userCookieId = getUserCookieId(request);
 
     const { roomsCollection } = await connectToMongo();
+    const room = await findRoomOrThrow(roomsCollection, roomIdStr);
 
-    const room = await roomsCollection.findOne({
-      _id: new ObjectId(roomIdStr),
-    });
-    if (!room)
-      return NextResponse.json({ error: "room not found" }, { status: 404 });
+    const statusResp = checkRoomStatus(room, roomIdStr);
+    if (statusResp) return statusResp;
 
-    // If room is scheduled, inform client with scheduled time (don't allow join yet)
-    if (room.status === "scheduled") {
-      return NextResponse.json(
-        {
-          status: "scheduled",
-          scheduledAt: room.scheduledAt ?? null,
-          roomId: roomIdStr,
-        },
-        { status: 200 }
-      );
-    }
-
-    // If room has ended, inform client that it's ended (no join)
-    if (room.status === "ended") {
-      return NextResponse.json(
-        { status: "ended", roomId: roomIdStr },
-        { status: 200 }
-      );
-    }
-
-    // allow joining only when live
-    if (room.status !== "live") {
-      return NextResponse.json({ error: "room not joinable" }, { status: 403 });
-    }
-
-    // // check privacy: if private, ensure invited or owner
-    // if (room.isPrivate) {
-    //   const isOwner = String(room.ownerId) === String(resolvedUserId);
-    //   const invited =
-    //     Array.isArray(room.invited) &&
-    //     room.invited.some(
-    //       (id: unknown) => String(id) === String(resolvedUserId)
-    //     );
-    //   if (!isOwner && !invited) {
-    //     return NextResponse.json(
-    //       { error: "not invited to private room" },
-    //       { status: 403 }
-    //     );
-    //   }
-    // }
-
-    const isOwner = String(room.ownerId) === String(resolvedUserId);
-
+    const isOwner = String(room.ownerId) === String(userCookieId);
     if (isOwner) {
       return NextResponse.json(
         { role: "host", roomId: roomIdStr, room },
@@ -123,37 +173,16 @@ export const POST = withAuth(async (request: NextRequest, userId?: string) => {
       );
     }
 
-    // otherwise add as participant if not already present
-    type Collaborator = {
-      userId: ObjectId;
-      role: string;
-      joinedAt: Date;
-    };
-
-    const collaborator: Collaborator = {
-      userId: new ObjectId(resolvedUserId),
-      role: (payload.role as string) || "participant",
-      joinedAt: new Date(),
-    };
-
-    // push to collaborators array if not present
-    const existing =
-      Array.isArray(room.collaborators) &&
-      room.collaborators.some(
-        (c: Collaborator) => String(c.userId) === String(resolvedUserId)
-      );
-    if (!existing) {
-      // cast to any/unknown to satisfy mongodb TS definitions for dynamic schema
-      await roomsCollection.updateOne({ _id: new ObjectId(roomIdStr) }, {
-        $push: { collaborators: collaborator },
-      } as unknown as UpdateFilter<Document>);
-    }
+    await ensureCollaborator(roomsCollection, room, userCookieId, payload.role);
 
     return NextResponse.json(
       { role: "participant", roomId: roomIdStr, room },
       { status: 200 }
     );
   } catch (err: unknown) {
+    if (err instanceof HttpError) {
+      return NextResponse.json(err.body, { status: err.status });
+    }
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });
   }
