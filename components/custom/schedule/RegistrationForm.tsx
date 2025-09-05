@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { ScheduleDialog } from "./dialogs/ScheduleDialog";
 import { HostDialog } from "./dialogs/HostDialog";
 import { JoinDialog } from "./dialogs/JoinDialog";
+import { ScheduleSuccessDialog } from "./dialogs/ScheduleSuccessDialog";
 import type {
   CreateRoomSchema,
   StartRoomSchema,
@@ -36,6 +37,14 @@ export default function RegistrationForm({
   const [isHosting, setIsHosting] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
 
+  // Success dialog state for scheduling
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [successData, setSuccessData] = useState<{
+    roomId: string;
+    roomTitle: string;
+    scheduledAt?: string;
+  } | null>(null);
+
   const handleScheduleSubmit = async (data: CreateRoomSchema) => {
     setIsScheduling(true);
     try {
@@ -59,10 +68,14 @@ export default function RegistrationForm({
         CreateRoomResult
       );
 
-      // Handle success - maybe redirect or close dialog
+      // Handle success - show success dialog instead of redirecting
       if (CreateRoomResult.data && CreateRoomResult.data.roomId) {
-        console.log("Redirecting to room:", CreateRoomResult.data.roomId);
-        window.location.href = `/room/${CreateRoomResult.data.roomId}`;
+        setSuccessData({
+          roomId: CreateRoomResult.data.roomId,
+          roomTitle: data.title,
+          scheduledAt: data.scheduledAt?.toISOString(),
+        });
+        setShowSuccessDialog(true);
       } else {
         console.warn(
           "No roomId returned from schedule API",
@@ -151,11 +164,25 @@ export default function RegistrationForm({
   switch (formType) {
     case "schedule":
       return (
-        <ScheduleDialog
-          buttonUnderlineStyle={buttonUnderlineStyle}
-          onSubmit={handleScheduleSubmit}
-          isLoading={isScheduling}
-        />
+        <>
+          <ScheduleDialog
+            buttonUnderlineStyle={buttonUnderlineStyle}
+            onSubmit={handleScheduleSubmit}
+            isLoading={isScheduling}
+          />
+          {successData && (
+            <ScheduleSuccessDialog
+              isOpen={showSuccessDialog}
+              onClose={() => {
+                setShowSuccessDialog(false);
+                setSuccessData(null);
+              }}
+              roomId={successData.roomId}
+              roomTitle={successData.roomTitle}
+              scheduledAt={successData.scheduledAt}
+            />
+          )}
+        </>
       );
     case "host":
       return (
