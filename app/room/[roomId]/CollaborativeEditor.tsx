@@ -8,6 +8,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Play, Loader2 } from "lucide-react";
 
 // All heavy/editor-specific libs (monaco, yjs, y-monaco, workers) are loaded only in the onMount handler.
 // This file stays as lightweight as possible to avoid accidental SSR evaluation of browser globals.
@@ -21,7 +23,19 @@ import { SUPPORTED_LANGUAGES } from "@/app/room/editorHelpers";
 // Disable complexity lint for this component; it orchestrates several
 // client-only initialization steps and extracting further would add noise.
 // Disable complexity check for this orchestration component.
-export default function CollaborativeEditor({ roomId }: { roomId: string }) {
+export default function CollaborativeEditor({
+  roomId,
+  isScheduled = false,
+  isHost = false,
+  onStartRoom,
+  isStarting = false,
+}: {
+  roomId: string;
+  isScheduled?: boolean;
+  isHost?: boolean;
+  onStartRoom?: () => void;
+  isStarting?: boolean;
+}) {
   // render a page and check if the room exists and live if not then show 404
   //if room schedule then show when will it start and if ended show  ended
   // otherwise show the editor
@@ -55,6 +69,28 @@ export default function CollaborativeEditor({ roomId }: { roomId: string }) {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* Show Start Room button for hosts in scheduled rooms */}
+        {isScheduled && isHost && onStartRoom && (
+          <div className="ml-auto flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">
+              Room is scheduled
+            </span>
+            <Button
+              onClick={onStartRoom}
+              disabled={isStarting}
+              size="sm"
+              className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+            >
+              {isStarting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Play className="w-4 h-4" />
+              )}
+              {isStarting ? "Starting..." : "Start Room"}
+            </Button>
+          </div>
+        )}
       </div>
     );
   }
