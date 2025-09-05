@@ -15,11 +15,13 @@ import styles from "../MyScheduleModal.module.css";
 interface HostDialogProps {
   buttonUnderlineStyle?: string;
   onSubmit: (data: HostFormValues) => void;
+  isLoading?: boolean;
 }
 
 export function HostDialog({
   buttonUnderlineStyle,
   onSubmit,
+  isLoading = false,
 }: HostDialogProps) {
   return (
     <Dialog>
@@ -42,7 +44,7 @@ export function HostDialog({
             Fill in the details below to host a session immediately.
           </DialogDescription>
         </DialogHeader>
-        <HostForm onSubmit={onSubmit} />
+        <HostForm onSubmit={onSubmit} isLoading={isLoading} />
       </DialogContent>
     </Dialog>
   );

@@ -15,11 +15,13 @@ import styles from "../MyScheduleModal.module.css";
 interface JoinDialogProps {
   buttonUnderlineStyle?: string;
   onSubmit: (data: JoinFormValues) => void;
+  isLoading?: boolean;
 }
 
 export function JoinDialog({
   buttonUnderlineStyle,
   onSubmit,
+  isLoading = false,
 }: JoinDialogProps) {
   return (
     <Dialog>
@@ -40,7 +42,7 @@ export function JoinDialog({
             Enter the room link or ID to join an existing session.
           </DialogDescription>
         </DialogHeader>
-        <JoinForm onSubmit={onSubmit} />
+        <JoinForm onSubmit={onSubmit} isLoading={isLoading} />
       </DialogContent>
     </Dialog>
   );

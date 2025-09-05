@@ -17,11 +17,13 @@ import styles from "../MyScheduleModal.module.css";
 interface ScheduleDialogProps {
   buttonUnderlineStyle?: string;
   onSubmit: (data: CreateRoomSchema) => void;
+  isLoading?: boolean;
 }
 
 export function ScheduleDialog({
   buttonUnderlineStyle,
   onSubmit,
+  isLoading = false,
 }: ScheduleDialogProps) {
   return (
     <Dialog>
@@ -44,7 +46,7 @@ export function ScheduleDialog({
             Fill in the details below to schedule a new session.
           </DialogDescription>
         </DialogHeader>
-        <ScheduleForm onSubmit={onSubmit} />
+        <ScheduleForm onSubmit={onSubmit} isLoading={isLoading} />
       </DialogContent>
     </Dialog>
   );
