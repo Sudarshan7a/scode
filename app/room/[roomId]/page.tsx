@@ -10,6 +10,7 @@ import { use } from "react";
 import { useEffect, useState } from "react";
 import RoomStatusCard from "./RoomStatusCard";
 import { axiosInstance } from "@/lib/axiosInstance";
+import AsyncErrorBoundary from "@/components/AsyncErrorBoundary";
 
 export default function RoomPage({
   params,
@@ -244,21 +245,36 @@ export default function RoomPage({
 
       {/* Show collaborative editor for live rooms OR scheduled rooms with host */}
       {(roomState === "live" || (roomState === "scheduled" && isHost)) && (
-        <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel minSize={30} defaultSize={40}>
-            <LeftTools />
-          </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel minSize={30} defaultSize={60}>
-            <CollaborativeEditor
-              roomId={roomId}
-              isScheduled={roomState === "scheduled"}
-              isHost={isHost}
-              onStartRoom={handleStartRoom}
-              isStarting={isStarting}
-            />
-          </ResizablePanel>
-        </ResizablePanelGroup>
+        <AsyncErrorBoundary
+          fallbackTitle="Editor Failed to Load"
+          fallbackMessage="The collaborative editor encountered an error. Please refresh the page to continue."
+        >
+          <ResizablePanelGroup direction="horizontal">
+            <ResizablePanel minSize={30} defaultSize={40}>
+              <AsyncErrorBoundary
+                fallbackTitle="Tools Failed to Load"
+                fallbackMessage="Unable to load the sidebar tools."
+              >
+                <LeftTools />
+              </AsyncErrorBoundary>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel minSize={30} defaultSize={60}>
+              <AsyncErrorBoundary
+                fallbackTitle="Code Editor Failed to Load"
+                fallbackMessage="The code editor encountered an error. Please refresh to continue coding."
+              >
+                <CollaborativeEditor
+                  roomId={roomId}
+                  isScheduled={roomState === "scheduled"}
+                  isHost={isHost}
+                  onStartRoom={handleStartRoom}
+                  isStarting={isStarting}
+                />
+              </AsyncErrorBoundary>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </AsyncErrorBoundary>
       )}
     </div>
   );

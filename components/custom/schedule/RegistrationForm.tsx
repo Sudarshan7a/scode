@@ -11,6 +11,7 @@ import type {
   JoinRoomSchema,
 } from "./schemas/formSchemas";
 import { axiosInstance } from "@/lib/axiosInstance";
+import AsyncErrorBoundary from "@/components/AsyncErrorBoundary";
 
 type RegistrationFormProps = {
   formType: "schedule" | "host" | "join";
@@ -164,7 +165,10 @@ export default function RegistrationForm({
   switch (formType) {
     case "schedule":
       return (
-        <>
+        <AsyncErrorBoundary
+          fallbackTitle="Schedule Form Error"
+          fallbackMessage="Unable to load the scheduling form. Please refresh and try again."
+        >
           <ScheduleDialog
             buttonUnderlineStyle={buttonUnderlineStyle}
             onSubmit={handleScheduleSubmit}
@@ -182,23 +186,33 @@ export default function RegistrationForm({
               scheduledAt={successData.scheduledAt}
             />
           )}
-        </>
+        </AsyncErrorBoundary>
       );
     case "host":
       return (
-        <HostDialog
-          buttonUnderlineStyle={buttonUnderlineStyle}
-          onSubmit={handleHostSubmit}
-          isLoading={isHosting}
-        />
+        <AsyncErrorBoundary
+          fallbackTitle="Host Form Error"
+          fallbackMessage="Unable to load the host form. Please refresh and try again."
+        >
+          <HostDialog
+            buttonUnderlineStyle={buttonUnderlineStyle}
+            onSubmit={handleHostSubmit}
+            isLoading={isHosting}
+          />
+        </AsyncErrorBoundary>
       );
     case "join":
       return (
-        <JoinDialog
-          buttonUnderlineStyle={buttonUnderlineStyle}
-          onSubmit={handleJoinSubmit}
-          isLoading={isJoining}
-        />
+        <AsyncErrorBoundary
+          fallbackTitle="Join Form Error"
+          fallbackMessage="Unable to load the join form. Please refresh and try again."
+        >
+          <JoinDialog
+            buttonUnderlineStyle={buttonUnderlineStyle}
+            onSubmit={handleJoinSubmit}
+            isLoading={isJoining}
+          />
+        </AsyncErrorBoundary>
       );
     default:
       return null;

@@ -4,6 +4,7 @@ import Navbar from "./../components/Navbar";
 import Footer from "./../components/Footer";
 import { Toaster } from "./../components/ui/sonner";
 import { RootAuthGuard } from "./../components/auth/RootAuthGuard";
+import ErrorBoundary from "./../components/ErrorBoundary";
 
 export const metadata: Metadata = {
   title: "S code",
@@ -18,12 +19,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <RootAuthGuard>
-          <Navbar />
-          {children}
-          <Toaster position="top-center" className=" rounded-sm" />
-          <Footer />
-        </RootAuthGuard>
+        <ErrorBoundary>
+          <RootAuthGuard>
+            <Navbar />
+            {children}
+            <Toaster position="top-center" className=" rounded-sm" />
+            <Footer />
+          </RootAuthGuard>
+        </ErrorBoundary>
       </body>
     </html>
   );
