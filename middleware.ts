@@ -3,24 +3,39 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 async function validateRefreshToken(refreshToken: string, origin: string) {
-  const result = await fetch(`${origin}/api/auth/verify-refresh-token`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ refreshToken }),
-  });
+  try {
+    const result = await fetch(`${origin}/api/auth/verify-refresh-token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refreshToken }),
+    });
 
-  const data = await result.json();
+    // Check if the response is ok and has JSON content type
+    if (!result.ok) {
+      return false;
+    }
 
-  if (!data?.userId) {
+    const contentType = result.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      return false;
+    }
+
+    const data = await result.json();
+
+    if (!data?.userId) {
+      return false;
+    }
+    if (!data?.token || new Date(data.expiresAt) < new Date()) {
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error validating refresh token:", error);
     return false;
   }
-  if (!data?.token || new Date(data.expiresAt) < new Date()) {
-    return false;
-  }
-
-  return true;
 }
 
 export async function middleware(req: NextRequest) {
