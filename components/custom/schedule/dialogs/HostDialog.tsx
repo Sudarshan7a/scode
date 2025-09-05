@@ -10,7 +10,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { HostForm } from "../forms/HostForm";
 import { HostFormValues } from "../schemas/formSchemas";
-import styles from "../MyScheduleModal.module.css";
 
 interface HostDialogProps {
   buttonUnderlineStyle?: string;
@@ -33,13 +32,9 @@ export function HostDialog({
           Host
         </Button>
       </DialogTrigger>
-      <DialogContent
-        className={`min-w-[60%] max-h-[90vh] overflow-y-auto ${styles.noScrollbar} border-0 p-0 bg-transparent shadow-none [&>[data-slot=dialog-close]]:bg-white/80 [&>[data-slot=dialog-close]]:backdrop-blur-sm [&>[data-slot=dialog-close]]:border [&>[data-slot=dialog-close]]:border-white/20 [&>[data-slot=dialog-close]]:shadow-lg [&>[data-slot=dialog-close]_svg]:size-4`}
-      >
+      <DialogContent className="min-w-[60%] max-h-[90vh] overflow-y-auto overflow-x-hidden border-0 p-0 bg-transparent shadow-none [&>[data-slot=dialog-close]]:bg-white/80 [&>[data-slot=dialog-close]]:backdrop-blur-sm [&>[data-slot=dialog-close]]:border [&>[data-slot=dialog-close]]:border-white/20 [&>[data-slot=dialog-close]]:shadow-lg [&>[data-slot=dialog-close]_svg]:size-4">
         {/* Glassmorphism card */}
         <div className="relative w-full">
-          <div className="absolute -inset-1 rounded-2xl blur-lg opacity-20 bg-gradient-to-r from-mysecondary to-[#3c8de3]" />
-
           <div className="relative rounded-2xl bg-white/98 dark:bg-[#0f0f10]/90 border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-sm overflow-hidden">
             {/* Gradient header strip */}
             <div className="h-3 w-full bg-gradient-to-r from-orange-400 via-blue-400 to-purple-400 relative overflow-hidden">
