@@ -5,7 +5,13 @@ import { useCallback } from "react";
 
 export interface ToastOptions {
   duration?: number;
-  position?: "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right";
+  position?:
+    | "top-left"
+    | "top-center"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-center"
+    | "bottom-right";
   dismissible?: boolean;
   action?: {
     label: string;
@@ -18,7 +24,10 @@ export interface UseToastReturn {
   error: (message: string, options?: ToastOptions) => string | number;
   warning: (message: string, options?: ToastOptions) => string | number;
   info: (message: string, options?: ToastOptions) => string | number;
-  loading: (message: string, options?: Omit<ToastOptions, "action">) => string | number;
+  loading: (
+    message: string,
+    options?: Omit<ToastOptions, "action">
+  ) => string | number;
   promise: <T>(
     promise: Promise<T>,
     options: {
@@ -33,14 +42,14 @@ export interface UseToastReturn {
 
 /**
  * Enhanced toast hook with predefined styles and utility methods
- * 
+ *
  * @example
  * ```tsx
  * const { success, error, promise } = useToast();
- * 
+ *
  * // Simple success message
  * success("Room created successfully!");
- * 
+ *
  * // Error with action
  * error("Failed to join room", {
  *   action: {
@@ -48,7 +57,7 @@ export interface UseToastReturn {
  *     onClick: () => retryJoinRoom()
  *   }
  * });
- * 
+ *
  * // Promise-based toast for async operations
  * promise(
  *   createRoom(data),
@@ -60,69 +69,65 @@ export interface UseToastReturn {
  * );
  * ```
  */
-export function useToast(): UseToastReturn {
-  const success = useCallback((message: string, options?: ToastOptions) => {
-    return toast.success(message, {
-      duration: options?.duration || 4000,
+function makeHandler(
+  handler: any,
+  defaults: { duration?: number; allowAction?: boolean } = {}
+) {
+  return (message: string, options?: any) => {
+    const payload: any = {
+      duration: options?.duration ?? defaults.duration,
       position: options?.position,
       dismissible: options?.dismissible ?? true,
-      action: options?.action,
-    });
-  }, []);
+    };
 
-  const error = useCallback((message: string, options?: ToastOptions) => {
-    return toast.error(message, {
-      duration: options?.duration || 6000, // Longer duration for errors
-      position: options?.position,
-      dismissible: options?.dismissible ?? true,
-      action: options?.action,
-    });
-  }, []);
-
-  const warning = useCallback((message: string, options?: ToastOptions) => {
-    return toast.warning(message, {
-      duration: options?.duration || 5000,
-      position: options?.position,
-      dismissible: options?.dismissible ?? true,
-      action: options?.action,
-    });
-  }, []);
-
-  const info = useCallback((message: string, options?: ToastOptions) => {
-    return toast.info(message, {
-      duration: options?.duration || 4000,
-      position: options?.position,
-      dismissible: options?.dismissible ?? true,
-      action: options?.action,
-    });
-  }, []);
-
-  const loading = useCallback((message: string, options?: Omit<ToastOptions, "action">) => {
-    return toast.loading(message, {
-      duration: options?.duration || Infinity,
-      position: options?.position,
-      dismissible: options?.dismissible ?? true,
-    });
-  }, []);
-
-  const promise = useCallback(<T>(
-    promiseToResolve: Promise<T>,
-    options: {
-      loading: string;
-      success: string | ((data: T) => string);
-      error: string | ((error: Error) => string);
+    if (defaults.allowAction) {
+      payload.action = options?.action;
     }
-  ): Promise<T> => {
-    toast.promise(promiseToResolve, options);
-    return promiseToResolve;
-  }, []);
+
+    return handler(message, payload);
+  };
+}
+
+export function useToast(): UseToastReturn {
+  const success = makeHandler(toast.success, {
+    duration: 4000,
+    allowAction: true,
+  }) as UseToastReturn["success"];
+  const error = makeHandler(toast.error, {
+    duration: 6000,
+    allowAction: true,
+  }) as UseToastReturn["error"];
+  const warning = makeHandler(toast.warning, {
+    duration: 5000,
+    allowAction: true,
+  }) as UseToastReturn["warning"];
+  const info = makeHandler(toast.info, {
+    duration: 4000,
+    allowAction: true,
+  }) as UseToastReturn["info"];
+  const loading = makeHandler(toast.loading, {
+    duration: Infinity,
+    allowAction: false,
+  }) as UseToastReturn["loading"];
+
+  const promise = useCallback(
+    <T>(
+      promiseToResolve: Promise<T>,
+      options: {
+        loading: string;
+        success: string | ((data: T) => string);
+        error: string | ((error: Error) => string);
+      }
+    ): Promise<T> => {
+      toast.promise(promiseToResolve, options);
+      return promiseToResolve;
+    },
+    []
+  );
 
   const dismiss = useCallback((toastId?: string | number) => {
-    if (toastId) {
-      toast.dismiss(toastId);
-    } else {
-      toast.dismiss();
-    }
+    // sonner.toast.dismiss accepts an optional id; calling it with undefined will dismiss all
+    toast.dismiss(toastId as any);
   }, []);
 
   const dismissAll = useCallback(() => {
@@ -153,7 +158,8 @@ export const TOAST_MESSAGES = {
     SESSION_EXPIRED: "Your session has expired. Please log in again.",
     PASSWORD_RESET_SENT: "Password reset link sent to your email.",
     PASSWORD_RESET_SUCCESS: "Password updated successfully!",
-    EMAIL_VERIFICATION_SENT: "Verification email sent. Please check your inbox.",
+    EMAIL_VERIFICATION_SENT:
+      "Verification email sent. Please check your inbox.",
     EMAIL_VERIFIED: "Email verified successfully!",
   },
 

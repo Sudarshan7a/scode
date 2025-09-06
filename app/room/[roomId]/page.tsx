@@ -218,12 +218,13 @@ export default function RoomPage({
           details={
             isHost ? (
               <p>
-                Starting the room will make it live and allow participants to join the collaborative session.
+                Starting the room will make it live and allow participants to
+                join the collaborative session.
               </p>
             ) : (
               <p>
-                Join the room when it starts — you&apos;ll be able to collaborate
-                live.
+                Join the room when it starts — you&apos;ll be able to
+                collaborate live.
               </p>
             )
           }
@@ -274,11 +275,13 @@ export default function RoomPage({
           details={
             isHost ? (
               <p>
-                Click &apos;Join Room&apos; to enter the collaborative editor and start coding with your participants.
+                Click &apos;Join Room&apos; to enter the collaborative editor
+                and start coding with your participants.
               </p>
             ) : (
               <p>
-                Join the room to start collaborating with other participants in real-time.
+                Join the room to start collaborating with other participants in
+                real-time.
               </p>
             )
           }

@@ -12,16 +12,16 @@ export function NetworkStatusToast() {
 
   useEffect(() => {
     const handleOnline = () => {
-      success(TOAST_MESSAGES.SYSTEM.ONLINE, { 
+      success(TOAST_MESSAGES.SYSTEM.ONLINE, {
         duration: 3000,
-        position: "bottom-right" 
+        position: "bottom-right",
       });
     };
 
     const handleOffline = () => {
-      info(TOAST_MESSAGES.SYSTEM.OFFLINE, { 
+      info(TOAST_MESSAGES.SYSTEM.OFFLINE, {
         duration: 8000, // Longer duration for offline message
-        position: "bottom-right" 
+        position: "bottom-right",
       });
     };
 

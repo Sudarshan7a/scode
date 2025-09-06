@@ -77,7 +77,9 @@ export default function RegistrationForm({
         });
         setShowSuccessDialog(true);
       } else {
-        error("Room scheduled but no room ID was returned. Please check your dashboard.");
+        error(
+          "Room scheduled but no room ID was returned. Please check your dashboard."
+        );
       }
     } catch (err) {
       // Promise toast will handle the error message
@@ -111,7 +113,9 @@ export default function RegistrationForm({
       if (StartRoomResult.data && StartRoomResult.data.roomId) {
         window.location.href = `/room/${StartRoomResult.data.roomId}`;
       } else {
-        error("Room created but no room ID was returned. Please check your dashboard.");
+        error(
+          "Room created but no room ID was returned. Please check your dashboard."
+        );
       }
     } catch (err) {
       // Promise toast will handle the error message

@@ -3,11 +3,7 @@ import Logo from "@/components/Logo";
 
 export default function TopLogo({ className }: { className?: string }) {
   return (
-    <div
-      className={`relative z-30 pointer-events-none ${
-        className ?? ""
-      }`}
-    >
+    <div className={`relative z-30 pointer-events-none ${className ?? ""}`}>
       <div className="relative w-40 group">
         <div className="absolute -inset-2 rounded-3xl blur-xl opacity-30 bg-gradient-to-r from-orange-400 via-blue-400 to-purple-400 group-hover:opacity-40 transition-opacity duration-500 animate-pulse" />
 

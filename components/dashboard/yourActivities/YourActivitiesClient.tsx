@@ -90,41 +90,38 @@ export default function YourActivitiesClient() {
   });
 
   const fetchData = async () => {
-    // Fetch upcoming rooms
-    try {
-      setLoadingStates((prev) => ({ ...prev, upcoming: true }));
-      setErrors((prev) => ({ ...prev, upcoming: null }));
-      const upcomingResponse = await fetch("/api/rooms/upcoming");
-      if (!upcomingResponse.ok)
-        throw new Error("Failed to fetch upcoming rooms");
-      const upcomingData = await upcomingResponse.json();
-      setActivityData((prev) => ({
-        ...prev,
-        upcoming: upcomingData.rooms || [],
-      }));
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to load upcoming rooms";
-      setErrors((prev) => ({ ...prev, upcoming: errorMessage }));
-    } finally {
-      setLoadingStates((prev) => ({ ...prev, upcoming: false }));
-    }
+    const fetchRooms = async (
+      endpoint: string,
+      key: "upcoming" | "oldRooms",
+      fallbackMessage: string
+    ) => {
+      setLoadingStates((prev) => ({ ...prev, [key]: true } as typeof prev));
+      setErrors((prev) => ({ ...prev, [key]: null } as typeof prev));
 
-    // Fetch old rooms
-    try {
-      setLoadingStates((prev) => ({ ...prev, oldRooms: true }));
-      setErrors((prev) => ({ ...prev, oldRooms: null }));
-      const oldResponse = await fetch("/api/rooms/old");
-      if (!oldResponse.ok) throw new Error("Failed to fetch old rooms");
-      const oldData = await oldResponse.json();
-      setActivityData((prev) => ({ ...prev, oldRooms: oldData.rooms || [] }));
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to load recent rooms";
-      setErrors((prev) => ({ ...prev, oldRooms: errorMessage }));
-    } finally {
-      setLoadingStates((prev) => ({ ...prev, oldRooms: false }));
-    }
+      try {
+        const response = await fetch(endpoint);
+        if (!response.ok) throw new Error(`Failed to fetch ${key}`);
+        const data = await response.json();
+        setActivityData(
+          (prev) => ({ ...prev, [key]: data.rooms || [] } as typeof prev)
+        );
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : fallbackMessage;
+        setErrors((prev) => ({ ...prev, [key]: errorMessage } as typeof prev));
+      } finally {
+        setLoadingStates((prev) => ({ ...prev, [key]: false } as typeof prev));
+      }
+    };
+
+    await Promise.all([
+      fetchRooms(
+        "/api/rooms/upcoming",
+        "upcoming",
+        "Failed to load upcoming rooms"
+      ),
+      fetchRooms("/api/rooms/old", "oldRooms", "Failed to load recent rooms"),
+    ]);
   };
 
   useEffect(() => {

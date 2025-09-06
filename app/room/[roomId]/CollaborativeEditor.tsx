@@ -21,11 +21,7 @@ import { SUPPORTED_LANGUAGES } from "@/app/room/editorHelpers";
 // Disable complexity lint for this component; it orchestrates several
 // client-only initialization steps and extracting further would add noise.
 // Disable complexity check for this orchestration component.
-export default function CollaborativeEditor({
-  roomId,
-}: {
-  roomId: string;
-}) {
+export default function CollaborativeEditor({ roomId }: { roomId: string }) {
   // render a page and check if the room exists and live if not then show 404
   //if room schedule then show when will it start and if ended show  ended
   // otherwise show the editor
