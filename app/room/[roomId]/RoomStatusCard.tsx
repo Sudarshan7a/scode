@@ -74,16 +74,20 @@ export default function RoomStatusCard({
         background:
           "linear-gradient(135deg, rgba(255,152,25,0.06), rgba(60,141,227,0.06), rgba(147,51,234,0.04))",
       }}
-      className="flex items-center justify-center min-h-screen w-full px-4 py-12 relative overflow-hidden"
+      className="flex flex-col items-center min-h-screen w-full px-4 relative overflow-hidden"
     >
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-orange-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-blue-400/10 to-purple-400/10 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
 
-      <TopLogo />
+      {/* Logo positioned at top with reduced spacing */}
+      <div className="pt-8 pb-4 relative z-30">
+        <TopLogo />
+      </div>
 
-      <div className="w-full max-w-lg flex flex-col items-center relative z-10">
+      {/* Main content with flex-1 to take remaining space and center vertically */}
+      <div className="flex-1 w-full max-w-lg flex flex-col items-center justify-center relative z-10 pb-8">
         <div className="mb-8 transform hover:scale-105 transition-transform duration-300">
           {/* <Logo className="scale-150 drop-shadow-lg mt-2" /> */}
         </div>

@@ -4,7 +4,7 @@ import Logo from "@/components/Logo";
 export default function TopLogo({ className }: { className?: string }) {
   return (
     <div
-      className={`absolute top-16 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none ${
+      className={`relative z-30 pointer-events-none ${
         className ?? ""
       }`}
     >
