@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useMemo } from "react";
 import RoomCard from "@/components/RoomCard";
 import SearchBar from "@/components/searchBar/SearchBar";
 import TitleBackgroundCard from "@/components/TitleBackgroundCard";
@@ -13,7 +14,7 @@ import { RefreshCw, AlertCircle } from "lucide-react";
 export default function Home() {
   const { rooms, isLoading, error, refetch } = useRooms();
 
-  const renderContent = () => {
+  const renderContent = useMemo(() => {
     if (isLoading) {
       return (
         <div className="space-y-6">
@@ -31,7 +32,7 @@ export default function Home() {
           <AlertCircle className="h-12 w-12 text-destructive" />
           <div className="text-center space-y-2">
             <h3 className="text-lg font-semibold">Failed to Load Rooms</h3>
-            <p className="text-muted-foreground max-w-md">{error}</p>
+            <p className="text-foreground/70 max-w-md">{error}</p>
           </div>
           <Button onClick={refetch} variant="outline" className="gap-2">
             <RefreshCw className="h-4 w-4" />
@@ -46,7 +47,7 @@ export default function Home() {
         <div className="flex flex-col items-center justify-center py-12 space-y-4">
           <div className="text-center space-y-2">
             <h3 className="text-lg font-semibold">No Rooms Found</h3>
-            <p className="text-muted-foreground">
+            <p className="text-foreground/70">
               There are no rooms available at the moment. Check back later!
             </p>
           </div>
@@ -61,7 +62,7 @@ export default function Home() {
         ))}
       </div>
     );
-  };
+  }, [rooms, isLoading, error, refetch]);
 
   return (
     <div className="flex flex-col items-center justify-center my-8">
@@ -71,7 +72,7 @@ export default function Home() {
         hidebutton={true}
         noShadow={true}
       >
-        {renderContent()}
+        {renderContent}
       </TitleBackgroundCard>
     </div>
   );

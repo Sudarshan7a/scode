@@ -1,6 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
+import { useCallback } from "react";
 
 export interface ToastOptions {
   duration?: number;
@@ -60,51 +61,51 @@ export interface UseToastReturn {
  * ```
  */
 export function useToast(): UseToastReturn {
-  const success = (message: string, options?: ToastOptions) => {
+  const success = useCallback((message: string, options?: ToastOptions) => {
     return toast.success(message, {
       duration: options?.duration || 4000,
       position: options?.position,
       dismissible: options?.dismissible ?? true,
       action: options?.action,
     });
-  };
+  }, []);
 
-  const error = (message: string, options?: ToastOptions) => {
+  const error = useCallback((message: string, options?: ToastOptions) => {
     return toast.error(message, {
       duration: options?.duration || 6000, // Longer duration for errors
       position: options?.position,
       dismissible: options?.dismissible ?? true,
       action: options?.action,
     });
-  };
+  }, []);
 
-  const warning = (message: string, options?: ToastOptions) => {
+  const warning = useCallback((message: string, options?: ToastOptions) => {
     return toast.warning(message, {
       duration: options?.duration || 5000,
       position: options?.position,
       dismissible: options?.dismissible ?? true,
       action: options?.action,
     });
-  };
+  }, []);
 
-  const info = (message: string, options?: ToastOptions) => {
+  const info = useCallback((message: string, options?: ToastOptions) => {
     return toast.info(message, {
       duration: options?.duration || 4000,
       position: options?.position,
       dismissible: options?.dismissible ?? true,
       action: options?.action,
     });
-  };
+  }, []);
 
-  const loading = (message: string, options?: Omit<ToastOptions, "action">) => {
+  const loading = useCallback((message: string, options?: Omit<ToastOptions, "action">) => {
     return toast.loading(message, {
       duration: options?.duration || Infinity,
       position: options?.position,
       dismissible: options?.dismissible ?? true,
     });
-  };
+  }, []);
 
-  const promise = <T>(
+  const promise = useCallback(<T>(
     promiseToResolve: Promise<T>,
     options: {
       loading: string;
@@ -114,19 +115,19 @@ export function useToast(): UseToastReturn {
   ): Promise<T> => {
     toast.promise(promiseToResolve, options);
     return promiseToResolve;
-  };
+  }, []);
 
-  const dismiss = (toastId?: string | number) => {
+  const dismiss = useCallback((toastId?: string | number) => {
     if (toastId) {
       toast.dismiss(toastId);
     } else {
       toast.dismiss();
     }
-  };
+  }, []);
 
-  const dismissAll = () => {
+  const dismissAll = useCallback(() => {
     toast.dismiss();
-  };
+  }, []);
 
   return {
     success,
