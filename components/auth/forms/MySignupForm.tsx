@@ -7,9 +7,10 @@ import OAuthSection from "../common/OAuthSection";
 import FormDivider from "../common/FormDivider";
 import SignupEmailPasswordForm from "./SignupEmailPasswordForm";
 import TermsAndPrivacy from "../common/TermsAndPrivacy";
-import { toast } from "sonner";
+import { useToast, TOAST_MESSAGES } from "../../../hooks/useToast";
 export function MySignupForm() {
   const router = useRouter();
+  const { success, error } = useToast();
 
   // Handler for OAuth signup
   const handleOAuthSignup = (_providerId: string): void => {
@@ -41,7 +42,7 @@ export function MySignupForm() {
       const result = await res.json();
 
       if (!res.ok || !result.ok) {
-        toast.error(result.message ?? "Signup failed");
+        error(result.message ?? TOAST_MESSAGES.AUTH.SIGNUP_ERROR);
         return {
           ok: false,
           message: result.message,
@@ -49,7 +50,7 @@ export function MySignupForm() {
         };
       }
 
-      toast.success(result.message ?? "Signup successful");
+      success(result.message ?? TOAST_MESSAGES.AUTH.SIGNUP_SUCCESS);
 
       // Redirect or show success message
       if (result.redirect) {
@@ -57,9 +58,9 @@ export function MySignupForm() {
       }
 
       return { ok: true, message: result.message, redirect: result.redirect };
-    } catch (error) {
-      const message = `Unexpected signup error: ${error}`;
-      toast.error(message);
+    } catch (err) {
+      const message = `Unexpected signup error: ${err}`;
+      error(TOAST_MESSAGES.AUTH.SIGNUP_ERROR);
       return { ok: false, message };
     }
   };

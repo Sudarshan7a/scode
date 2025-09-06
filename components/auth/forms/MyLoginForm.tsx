@@ -7,11 +7,12 @@ import FormDivider from "../common/FormDivider";
 import EmailPasswordForm from "./EmailPasswordForm";
 import TermsAndPrivacy from "../common/TermsAndPrivacy";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { useToast, TOAST_MESSAGES } from "../../../hooks/useToast";
 // import { logIn } from "../../../auth/nextjs/actions";
 
 export function MyLoginForm() {
   const router = useRouter();
+  const { success, error } = useToast();
   // Handler for OAuth login
   const handleOAuthLogin = (_providerId: string): void => {
     console.log("OAuth login with provider:", _providerId);
@@ -37,11 +38,11 @@ export function MyLoginForm() {
       const result = await res.json();
 
       if (!res.ok) {
-        toast.error(result.message);
+        error(result.message || TOAST_MESSAGES.AUTH.LOGIN_ERROR);
         // Optionally show this in UI
         return;
       } else {
-        toast.success(result.message || "Login successful!");
+        success(result.message || TOAST_MESSAGES.AUTH.LOGIN_SUCCESS);
       }
 
       // Always redirect after successful login. Use a full navigation to ensure
