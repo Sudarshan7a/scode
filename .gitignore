@@ -67,3 +67,6 @@ execute-commits.bat
 
 #ignore mcp.json
 /mcp.json
+
+#ignore learn_Doc folder
+/learn_Doc/*
