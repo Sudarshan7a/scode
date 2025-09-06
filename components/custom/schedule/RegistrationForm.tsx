@@ -12,6 +12,7 @@ import type {
 } from "./schemas/formSchemas";
 import { axiosInstance } from "@/lib/axiosInstance";
 import AsyncErrorBoundary from "@/components/AsyncErrorBoundary";
+import { useToast, TOAST_MESSAGES } from "@/hooks/useToast";
 
 type RegistrationFormProps = {
   formType: "schedule" | "host" | "join";
@@ -34,6 +35,7 @@ export default function RegistrationForm({
   formType,
   buttonUnderlineStyle,
 }: RegistrationFormProps) {
+  const { error, promise } = useToast();
   const [isScheduling, setIsScheduling] = useState(false);
   const [isHosting, setIsHosting] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
@@ -57,16 +59,13 @@ export default function RegistrationForm({
         userAgent: navigator.userAgent,
       };
 
-      console.log("Submitting schedule payload:", StartRoomPayload);
-
-      const CreateRoomResult = await axiosInstance.post(
-        "/api/rooms/create",
-        StartRoomPayload
-      );
-
-      console.log(
-        "-------- Schedule form submission result --------",
-        CreateRoomResult
+      const CreateRoomResult = await promise(
+        axiosInstance.post("/api/rooms/create", StartRoomPayload),
+        {
+          loading: "Scheduling your room...",
+          success: TOAST_MESSAGES.ROOM.SCHEDULED,
+          error: TOAST_MESSAGES.ROOM.SCHEDULE_ERROR,
+        }
       );
 
       // Handle success - show success dialog instead of redirecting
@@ -78,14 +77,11 @@ export default function RegistrationForm({
         });
         setShowSuccessDialog(true);
       } else {
-        console.warn(
-          "No roomId returned from schedule API",
-          CreateRoomResult.data
-        );
+        error("Room scheduled but no room ID was returned. Please check your dashboard.");
       }
-    } catch (error) {
-      console.error("Failed to schedule room:", error);
-      // Handle error - maybe show toast or error message
+    } catch (err) {
+      // Promise toast will handle the error message
+      console.error("Failed to schedule room:", err);
     } finally {
       setIsScheduling(false);
     }
@@ -102,28 +98,24 @@ export default function RegistrationForm({
         userAgent: navigator.userAgent,
       };
 
-      console.log("Submitting host payload:", StartRoomPayload);
-
-      const StartRoomResult = await axiosInstance.post(
-        "/api/rooms/start",
-        StartRoomPayload
-      );
-
-      console.log(
-        "-------- Host form submission result --------",
-        StartRoomResult
+      const StartRoomResult = await promise(
+        axiosInstance.post("/api/rooms/start", StartRoomPayload),
+        {
+          loading: "Creating your room...",
+          success: TOAST_MESSAGES.ROOM.CREATED,
+          error: TOAST_MESSAGES.ROOM.CREATE_ERROR,
+        }
       );
 
       // Handle success - redirect to the room
       if (StartRoomResult.data && StartRoomResult.data.roomId) {
-        console.log("Redirecting to room:", StartRoomResult.data.roomId);
         window.location.href = `/room/${StartRoomResult.data.roomId}`;
       } else {
-        console.warn("No roomId returned from start API", StartRoomResult.data);
+        error("Room created but no room ID was returned. Please check your dashboard.");
       }
-    } catch (error) {
-      console.error("Failed to start room:", error);
-      // Handle error - maybe show toast or error message
+    } catch (err) {
+      // Promise toast will handle the error message
+      console.error("Failed to start room:", err);
     } finally {
       setIsHosting(false);
     }
@@ -138,25 +130,25 @@ export default function RegistrationForm({
         joinTimestamp: new Date().toISOString(),
         deviceBrowserInfo: getUserDeviceBrowserInfo(),
       };
-      const JoinRoomResult = await axiosInstance.post(
-        "/api/rooms/join",
-        JoinRoomPayload
-      );
 
-      console.log(
-        "-------- Join form submission result --------",
-        JoinRoomResult
+      const JoinRoomResult = await promise(
+        axiosInstance.post("/api/rooms/join", JoinRoomPayload),
+        {
+          loading: "Joining room...",
+          success: TOAST_MESSAGES.ROOM.JOINED,
+          error: TOAST_MESSAGES.ROOM.JOIN_ERROR,
+        }
       );
 
       // Handle success - redirect to the room
       if (JoinRoomResult.data && JoinRoomResult.data.roomId) {
         window.location.href = `/room/${JoinRoomResult.data.roomId}`;
       } else {
-        console.warn("No roomId returned from join API", JoinRoomResult.data);
+        error("Unable to join room. Please check the room ID and try again.");
       }
-    } catch (error) {
-      console.error("Failed to join room:", error);
-      // Handle error - maybe show toast or error message
+    } catch (err) {
+      // Promise toast will handle the error message
+      console.error("Failed to join room:", err);
     } finally {
       setIsJoining(false);
     }
