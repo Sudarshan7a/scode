@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
+import { useToast, TOAST_MESSAGES } from "./useToast";
 
 type RoomStatus = "live" | "scheduled" | "ended" | "saved";
 
@@ -10,42 +11,56 @@ type UseRoomsOptions = {
 
 export function useRooms(options: UseRoomsOptions = {}) {
   const { privacy = "both", status } = options;
+  const { error: showErrorToast, info } = useToast();
   const [allRooms, setAllRooms] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+
+  const fetchRooms = useCallback(async (showRetryToast = false) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      if (showRetryToast) {
+        info("Refreshing rooms...", { duration: 2000 });
+      }
+
+      const res = await fetch("/api/rooms");
+      if (!res.ok) {
+        throw new Error(`Failed to fetch rooms: ${res.statusText}`);
+      }
+      const data = await res.json();
+      setAllRooms(data.rooms || []);
+      setRetryCount(0); // Reset retry count on success
+    } catch (e) {
+      const errorMessage = e instanceof Error ? e.message : "Failed to load rooms";
+      setError(errorMessage);
+      
+      // Show toast with retry option
+      showErrorToast(TOAST_MESSAGES.SYSTEM.LOADING_ERROR, {
+        action: {
+          label: "Retry",
+          onClick: () => {
+            setRetryCount(prev => prev + 1);
+            fetchRooms(true);
+          }
+        }
+      });
+      
+      console.error("Failed to fetch rooms:", e);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [showErrorToast, info]);
 
   useEffect(() => {
-    let mounted = true;
-    const fetchRooms = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const res = await fetch("/api/rooms");
-        if (!res.ok) {
-          throw new Error(`Failed to fetch rooms: ${res.statusText}`);
-        }
-        const data = await res.json();
-        if (mounted) {
-          setAllRooms(data.rooms || []);
-        }
-      } catch (e) {
-        if (mounted) {
-          const errorMessage =
-            e instanceof Error ? e.message : "Failed to load rooms";
-          setError(errorMessage);
-          console.error("Failed to fetch rooms:", e);
-        }
-      } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
-      }
-    };
     fetchRooms();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  }, [fetchRooms, retryCount]);
+
+  const refetch = useCallback(() => {
+    fetchRooms(true);
+  }, [fetchRooms]);
 
   const rooms = useMemo(() => {
     return allRooms.filter((room) => {
@@ -73,11 +88,6 @@ export function useRooms(options: UseRoomsOptions = {}) {
     rooms,
     isLoading,
     error,
-    refetch: () => {
-      setIsLoading(true);
-      setError(null);
-      // Trigger re-fetch by incrementing a counter or similar
-      window.location.reload(); // Simple approach for now
-    },
+    refetch,
   };
 }

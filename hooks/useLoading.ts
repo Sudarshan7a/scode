@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useToast } from "./useToast";
 
 interface UseLoadingState {
   isLoading: boolean;
@@ -6,12 +7,20 @@ interface UseLoadingState {
   startLoading: () => void;
   stopLoading: () => void;
   setError: (error: string | null) => void;
-  executeAsync: <T>(asyncFn: () => Promise<T>) => Promise<T | null>;
+  executeAsync: <T>(
+    asyncFn: () => Promise<T>,
+    options?: {
+      successMessage?: string;
+      errorMessage?: string;
+      showToasts?: boolean;
+    }
+  ) => Promise<T | null>;
 }
 
 export function useLoading(initialLoading = false): UseLoadingState {
   const [isLoading, setIsLoading] = useState(initialLoading);
   const [error, setError] = useState<string | null>(null);
+  const { success, error: showErrorToast } = useToast();
 
   const startLoading = useCallback(() => {
     setIsLoading(true);
@@ -23,22 +32,40 @@ export function useLoading(initialLoading = false): UseLoadingState {
   }, []);
 
   const executeAsync = useCallback(
-    async <T>(asyncFn: () => Promise<T>): Promise<T | null> => {
+    async <T>(
+      asyncFn: () => Promise<T>,
+      options?: {
+        successMessage?: string;
+        errorMessage?: string;
+        showToasts?: boolean;
+      }
+    ): Promise<T | null> => {
+      const { successMessage, errorMessage, showToasts = false } = options || {};
+      
       try {
         startLoading();
         const result = await asyncFn();
+        
+        if (showToasts && successMessage) {
+          success(successMessage);
+        }
+        
         return result;
       } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "An error occurred";
-        setError(errorMessage);
+        const errorMsg = err instanceof Error ? err.message : "An error occurred";
+        setError(errorMsg);
+        
+        if (showToasts) {
+          showErrorToast(errorMessage || errorMsg);
+        }
+        
         console.error("Async operation failed:", err);
         return null;
       } finally {
         stopLoading();
       }
     },
-    [startLoading, stopLoading]
+    [startLoading, stopLoading, success, showErrorToast]
   );
 
   return {
