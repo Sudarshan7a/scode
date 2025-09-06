@@ -314,7 +314,6 @@ export default function RoomStatusCard({
           title={title}
           subtitle={subtitle}
           details={details}
-          children={children}
           isHost={isHost}
           roomState={roomState}
           onStart={onStart}
@@ -325,7 +324,9 @@ export default function RoomStatusCard({
           roomUrl={roomUrl}
           copied={copied}
           onCopy={handleCopy}
-        />
+        >
+          {children}
+        </CardContent>
       </div>
     </div>
   );
