@@ -13,6 +13,25 @@ import { axiosInstance } from "@/lib/axiosInstance";
 import AsyncErrorBoundary from "@/components/AsyncErrorBoundary";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
+// Type guards for API response - moved outside component
+interface ApiResponse extends Record<string, unknown> {
+  status?: string;
+  scheduledAt?: string | null;
+  room?: unknown;
+  error?: string;
+}
+
+const isObject = (value: unknown): value is Record<string, unknown> => {
+  return value !== null && typeof value === "object";
+};
+
+const hasStatus = (
+  obj: Record<string, unknown>,
+  status: string
+): obj is ApiResponse => {
+  return "status" in obj && obj.status === status;
+};
+
 export default function RoomPage({
   params,
 }: {
@@ -33,27 +52,7 @@ export default function RoomPage({
   type ErrorInfo = { message: string };
   type RoomInfo = ScheduledInfo | ErrorInfo | Record<string, unknown> | null;
 
-  // Type guards for API response
-  interface ApiResponse extends Record<string, unknown> {
-    status?: string;
-    scheduledAt?: string | null;
-    room?: unknown;
-    error?: string;
-  }
-
   const [roomInfo, setRoomInfo] = useState<RoomInfo>(null);
-
-  // Type guards for API response - moved outside useEffect
-  const isObject = (value: unknown): value is Record<string, unknown> => {
-    return value !== null && typeof value === "object";
-  };
-
-  const hasStatus = (
-    obj: Record<string, unknown>,
-    status: string
-  ): obj is ApiResponse => {
-    return "status" in obj && obj.status === status;
-  };
 
   // Button handlers
   const handleStartRoom = async () => {
