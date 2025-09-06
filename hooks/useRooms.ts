@@ -11,17 +11,34 @@ type UseRoomsOptions = {
 export function useRooms(options: UseRoomsOptions = {}) {
   const { privacy = "both", status } = options;
   const [allRooms, setAllRooms] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
     const fetchRooms = async () => {
       try {
+        setIsLoading(true);
+        setError(null);
         const res = await fetch("/api/rooms");
-        if (!res.ok) return;
+        if (!res.ok) {
+          throw new Error(`Failed to fetch rooms: ${res.statusText}`);
+        }
         const data = await res.json();
-        if (mounted) setAllRooms(data.rooms || []);
+        if (mounted) {
+          setAllRooms(data.rooms || []);
+        }
       } catch (e) {
-        // ignore
+        if (mounted) {
+          const errorMessage =
+            e instanceof Error ? e.message : "Failed to load rooms";
+          setError(errorMessage);
+          console.error("Failed to fetch rooms:", e);
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
     fetchRooms();
@@ -52,5 +69,15 @@ export function useRooms(options: UseRoomsOptions = {}) {
     });
   }, [allRooms, privacy, status]);
 
-  return rooms;
+  return {
+    rooms,
+    isLoading,
+    error,
+    refetch: () => {
+      setIsLoading(true);
+      setError(null);
+      // Trigger re-fetch by incrementing a counter or similar
+      window.location.reload(); // Simple approach for now
+    },
+  };
 }
