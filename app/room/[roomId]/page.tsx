@@ -47,6 +47,7 @@ export default function RoomPage({
   const [isStarting, setIsStarting] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
   const [isHost, setIsHost] = useState(false);
+  const [hasJoinedEditor, setHasJoinedEditor] = useState(false);
 
   type ScheduledInfo = { scheduledAt: string | null };
   type ErrorInfo = { message: string };
@@ -63,8 +64,9 @@ export default function RoomPage({
       });
 
       if (resp.data) {
-        // Room started successfully, refresh the room state
-        window.location.reload();
+        // Room started successfully, update state to live and set joined flag
+        setRoomState("live");
+        setHasJoinedEditor(true);
       }
     } catch (error) {
       console.error("Failed to start room:", error);
@@ -82,8 +84,8 @@ export default function RoomPage({
       });
 
       if (resp.data) {
-        // Successfully joined, refresh the room state
-        window.location.reload();
+        // Successfully joined, set joined flag
+        setHasJoinedEditor(true);
       }
     } catch (error) {
       console.error("Failed to join room:", error);
@@ -202,20 +204,28 @@ export default function RoomPage({
         />
       )}
 
-      {/* For scheduled rooms: show editor to host, status card to participants */}
-      {roomState === "scheduled" && !isHost && (
+      {/* For scheduled rooms: show status card for BOTH host and participants */}
+      {roomState === "scheduled" && (
         <RoomStatusCard
-          title="Room scheduled"
+          title={isHost ? "Ready to start your room" : "Room scheduled"}
           subtitle={
-            roomInfo && "scheduledAt" in roomInfo && roomInfo.scheduledAt
+            isHost
+              ? "Click 'Start Room' when you're ready to begin the session"
+              : roomInfo && "scheduledAt" in roomInfo && roomInfo.scheduledAt
               ? new Date(String(roomInfo.scheduledAt)).toLocaleString()
               : "TBA"
           }
           details={
-            <p>
-              Join the room when it starts — you&apos;ll be able to collaborate
-              live.
-            </p>
+            isHost ? (
+              <p>
+                Starting the room will make it live and allow participants to join the collaborative session.
+              </p>
+            ) : (
+              <p>
+                Join the room when it starts — you&apos;ll be able to collaborate
+                live.
+              </p>
+            )
           }
           roomState="scheduled"
           isHost={isHost}
@@ -252,8 +262,38 @@ export default function RoomPage({
         />
       )}
 
-      {/* Show collaborative editor for live rooms OR scheduled rooms with host */}
-      {(roomState === "live" || (roomState === "scheduled" && isHost)) && (
+      {/* For live rooms: show status card until user explicitly joins */}
+      {roomState === "live" && !hasJoinedEditor && (
+        <RoomStatusCard
+          title="Room is live!"
+          subtitle={
+            isHost
+              ? "Your room is now active and ready for collaboration"
+              : "The host has started the room - you can now join"
+          }
+          details={
+            isHost ? (
+              <p>
+                Click &apos;Join Room&apos; to enter the collaborative editor and start coding with your participants.
+              </p>
+            ) : (
+              <p>
+                Join the room to start collaborating with other participants in real-time.
+              </p>
+            )
+          }
+          roomState="live"
+          isHost={isHost}
+          onStart={handleStartRoom}
+          onJoin={handleJoinRoom}
+          isStarting={isStarting}
+          isJoining={isJoining}
+          roomId={roomId}
+        />
+      )}
+
+      {/* Show collaborative editor ONLY for live rooms where user has joined */}
+      {roomState === "live" && hasJoinedEditor && (
         <AsyncErrorBoundary
           fallbackTitle="Editor Failed to Load"
           fallbackMessage="The collaborative editor encountered an error. Please refresh the page to continue."
@@ -273,13 +313,7 @@ export default function RoomPage({
                 fallbackTitle="Code Editor Failed to Load"
                 fallbackMessage="The code editor encountered an error. Please refresh to continue coding."
               >
-                <CollaborativeEditor
-                  roomId={roomId}
-                  isScheduled={roomState === "scheduled"}
-                  isHost={isHost}
-                  onStartRoom={handleStartRoom}
-                  isStarting={isStarting}
-                />
+                <CollaborativeEditor roomId={roomId} />
               </AsyncErrorBoundary>
             </ResizablePanel>
           </ResizablePanelGroup>
