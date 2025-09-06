@@ -46,7 +46,7 @@ const ActivitySection: React.FC<ActivitySection> = ({
           <AlertCircle className="h-4 w-4 text-destructive" />
         </div>
         <div className="flex items-center justify-center py-4">
-          <p className="text-sm text-muted-foreground">{error}</p>
+          <p className="text-sm text-foreground/70">{error}</p>
         </div>
       </div>
     );

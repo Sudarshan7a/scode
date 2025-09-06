@@ -62,7 +62,7 @@ export default function UpcomingRoomsClient() {
             <h3 className="text-base font-semibold">
               Failed to Load Upcoming Rooms
             </h3>
-            <p className="text-sm text-muted-foreground">{error}</p>
+            <p className="text-sm text-foreground/70">{error}</p>
           </div>
           <Button
             onClick={fetchUpcomingRooms}
@@ -81,7 +81,7 @@ export default function UpcomingRoomsClient() {
       return (
         <div className="flex flex-col items-center justify-center py-8 space-y-2">
           <h3 className="text-base font-semibold">No Upcoming Rooms</h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-foreground/70">
             You don&apos;t have any upcoming rooms scheduled.
           </p>
         </div>

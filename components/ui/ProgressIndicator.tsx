@@ -38,7 +38,7 @@ export function ProgressIndicator({
               <div className="h-4 w-4 rounded-full bg-destructive" />
             )}
             {step.status === "pending" && (
-              <div className="h-4 w-4 rounded-full border border-muted-foreground" />
+              <div className="h-4 w-4 rounded-full border border-foreground/30" />
             )}
           </div>
 
@@ -51,19 +51,19 @@ export function ProgressIndicator({
                     "text-green-600 dark:text-green-400",
                   step.status === "error" && "text-destructive",
                   step.status === "loading" && "text-primary",
-                  step.status === "pending" && "text-muted-foreground"
+                  step.status === "pending" && "text-foreground/70"
                 )}
               >
                 {step.label}
               </p>
               {step.status === "loading" && (
-                <span className="text-xs text-muted-foreground animate-pulse">
+                <span className="text-xs text-primary/80 animate-pulse">
                   Processing...
                 </span>
               )}
             </div>
             {step.description && (
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-foreground/60 mt-1">
                 {step.description}
               </p>
             )}
