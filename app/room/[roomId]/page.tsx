@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import RoomStatusCard from "./RoomStatusCard";
 import { axiosInstance } from "@/lib/axiosInstance";
 import AsyncErrorBoundary from "@/components/AsyncErrorBoundary";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function RoomPage({
   params,
@@ -183,6 +184,15 @@ export default function RoomPage({
         <RoomStatusCard
           title="Loading room"
           subtitle="Please wait while we verify the room."
+          details={
+            <div className="flex items-center justify-center py-4">
+              <LoadingSpinner
+                size="medium"
+                text="Verifying room access..."
+                showText
+              />
+            </div>
+          }
         />
       )}
 
