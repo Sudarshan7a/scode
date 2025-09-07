@@ -145,18 +145,21 @@ Privacy-first auth and token hygiene:
 - Registration form refactoring with modular components
 - Secure authentication system with email verification
 - Dashboard interface with session tracking
+- Explore page for discovering public coding sessions
+- Error boundary implementation for improved reliability
+- Comprehensive development documentation and Git workflow guides
 
 ### 🚧 In Progress
 
+- OAuth integrations (GitHub, Google) - UI components ready, API integration pending
 - Room roles & permissions system
-- Explore page for discovering public coding sessions
 - Enhanced UI/UX improvements
 - Performance optimizations
 
 ### 📋 Planned Features
 
 - **Authentication Enhancements**
-  - OAuth integrations (GitHub, Google, Discord)
+  - Complete OAuth integrations (GitHub, Google, Discord)
   - Multi-factor authentication (TOTP)
   - Device-based trust and session management
 - **Collaboration Features**
@@ -184,7 +187,7 @@ Privacy-first auth and token hygiene:
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 18+ (tested with Node.js 20)
 - pnpm (recommended) or npm
 - MongoDB database (local or cloud)
 - Redis instance (Upstash recommended)
@@ -204,8 +207,8 @@ cd scode
 # Using pnpm (recommended)
 pnpm install
 
-# Or using npm
-npm install
+# Or using npm (with legacy peer deps for compatibility)
+npm install --legacy-peer-deps
 ```
 
 3. **Configure environment**
@@ -213,23 +216,23 @@ npm install
 Create `.env.local` in the root directory:
 
 ```dotenv
+# Optional public API URL
+NEXT_PUBLIC_API_URL=http://localhost:3000/api
+
 # Database
 MONGODB_URI=mongodb+srv://<user>:<pass>@<cluster>/<db>?retryWrites=true&w=majority
 MONGODB_DB=scode
 
 # Authentication
-JWT_SECRET=your-super-secure-jwt-secret-key-here
+JWT_SECRET=your-super-secure-jwt-secret-here
 
-# Redis (for rate limiting and token storage)
-UPSTASH_REDIS_REST_URL=https://your-redis-url.upstash.io
-UPSTASH_REDIS_REST_TOKEN=your-redis-token
+# Upstash Redis (used by rate limiter & verify tokens)
+UPSTASH_REDIS_REST_URL=your-upstash-redis-rest-url-here
+UPSTASH_REDIS_REST_TOKEN=your-upstash-redis-rest-token-here
 
 # Email Service
-RESEND_API_KEY=your-resend-api-key
+RESEND_API_KEY=your-resend-api-key-here
 MY_DOMAIN=http://localhost:3000
-
-# Optional: Custom settings
-NEXT_PUBLIC_WS_URL=ws://localhost:1234
 ```
 
 4. **Start the WebSocket server** (for real-time collaboration)

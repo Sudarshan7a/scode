@@ -37,22 +37,51 @@ echo '{ "path": "cz-conventional-changelog" }' > ~/.czrc
 npm install -g @commitlint/cli @commitlint/config-conventional
 ```
 
-### 3. Project-Level Setup
+### 3. S‑code Project Setup
+
+For this specific project, here's the streamlined setup:
 
 ```bash
-# In your project root
-npm install --save-dev husky lint-staged prettier eslint
+# Clone and navigate to the project
+git clone https://github.com/Sudarshan7a/scode.git
+cd scode
 
-# Initialize husky for git hooks
-npx husky init
+# Install dependencies (note: use legacy peer deps for compatibility)
+npm install --legacy-peer-deps
+# OR use pnpm (recommended)
+pnpm install
 
-# Create pre-commit hook
-echo "npx lint-staged" > .husky/pre-commit
-chmod +x .husky/pre-commit
+# Copy environment configuration
+cp .env.example .env.local
+# Edit .env.local with your database and service credentials
 
-# Create commit-msg hook
-echo "npx commitlint --edit \$1" > .husky/commit-msg
-chmod +x .husky/commit-msg
+# Start development
+npm run dev
+```
+
+### Project-Specific Scripts
+
+This project includes several helpful scripts:
+
+```bash
+npm run lint                 # Run ESLint (fix before commits)
+npm run audit:repo          # Run repository health audit
+npm run help:git            # Show Git learning resources
+npm run audit:commits       # Analyze commit message quality
+npm run audit:branches      # Check branch naming patterns
+```
+
+### 3. Optional: Enhanced Development Setup
+
+For a more advanced workflow with automated checks:
+
+```bash
+# Install development tools globally
+npm install -g @commitlint/cli @commitlint/config-conventional
+npm install -g commitizen cz-conventional-changelog
+
+# Set up commitizen for guided commit messages
+echo '{ "path": "cz-conventional-changelog" }' > ~/.czrc
 ```
 
 ## ⚙️ Configuration Files
