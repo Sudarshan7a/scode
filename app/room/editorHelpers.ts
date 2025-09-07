@@ -191,14 +191,14 @@ export async function initializeEditor(opts: {
       import("y-websocket"),
       import("y-indexeddb"),
     ]);
-    
+
     // Get WebsocketProvider from y-websocket module
     const WebsocketProvider = websocketModule.WebsocketProvider;
-    
+
     if (!WebsocketProvider) {
       throw new Error("WebsocketProvider not found in y-websocket module");
     }
-    
+
     setupMonacoEnvironment();
     // Configure Monaco's JS/TS language service for better IntelliSense
     // (this sets compilerOptions, diagnostics and eager model sync).
@@ -219,10 +219,10 @@ export async function initializeEditor(opts: {
     );
 
     // Listen for custom room-ended messages
-    provider.ws?.addEventListener('message', (event) => {
+    provider.ws?.addEventListener("message", (event) => {
       try {
         const data = JSON.parse(event.data);
-        if (data.type === 'room-ended') {
+        if (data.type === "room-ended") {
           // Trigger a page reload to show the ended state
           window.location.reload();
         }

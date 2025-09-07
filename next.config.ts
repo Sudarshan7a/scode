@@ -11,11 +11,25 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  webpack: (config) => {
+  webpack: (config, { dev, isServer }) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': require('path').resolve(__dirname),
+      "@": require("path").resolve(__dirname),
     };
+
+    // Monaco Editor compatibility fixes
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        crypto: false,
+      };
+
+      // Ensure workers can be loaded properly
+      config.output.globalObject = "self";
+    }
+
     return config;
   },
 };
