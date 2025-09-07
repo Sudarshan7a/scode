@@ -183,7 +183,7 @@ export async function initializeEditor(opts: {
     const [
       { setupMonacoEnvironment },
       Y,
-      { WebsocketProvider },
+      websocketModule,
       { IndexeddbPersistence },
     ] = await Promise.all([
       import("@/lib/monaco/monacoEnvironment"),
@@ -191,6 +191,16 @@ export async function initializeEditor(opts: {
       import("y-websocket"),
       import("y-indexeddb"),
     ]);
+    
+    // Debug the y-websocket module structure
+    console.log("y-websocket module:", websocketModule);
+    const WebsocketProvider = websocketModule.WebsocketProvider;
+    console.log("WebsocketProvider:", WebsocketProvider);
+    
+    if (!WebsocketProvider) {
+      throw new Error("WebsocketProvider not found in y-websocket module");
+    }
+    
     setupMonacoEnvironment();
     // Configure Monaco's JS/TS language service for better IntelliSense
     // (this sets compilerOptions, diagnostics and eager model sync).
@@ -212,12 +222,27 @@ export async function initializeEditor(opts: {
       roomId,
       ydoc
     );
+    
     provider.on(
       "status",
       (event: { status: "connected" | "disconnected" | "connecting" }) => {
         console.log("WebSocket status:", event.status);
       }
     );
+
+    // Listen for custom room-ended messages
+    provider.ws?.addEventListener('message', (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'room-ended') {
+          console.log('Room ended by host:', data.message);
+          // Trigger a page reload or redirect to show the ended state
+          window.location.reload();
+        }
+      } catch (e) {
+        // Ignore non-JSON messages (Y.js binary messages)
+      }
+    });
 
     const ytext = ydoc.getText("monaco");
 

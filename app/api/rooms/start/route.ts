@@ -15,6 +15,7 @@ class HttpError extends Error {
 }
 
 const startSchema = z.object({
+  roomId: z.string().optional(), // For starting existing scheduled rooms
   title: z.string().min(1).optional(),
   roomName: z.string().optional(),
   name: z.string().optional(),
@@ -33,14 +34,6 @@ function validateStart(body: unknown): StartPayload {
     throw new HttpError({ error: parsed.error.flatten() }, 400);
   }
   return parsed.data;
-}
-
-function getUserIdFromRequest(request: NextRequest): string {
-  const userCookieID = request.cookies.get("userId");
-  if (!userCookieID?.value) {
-    throw new HttpError({ error: "Unauthorized" }, 401);
-  }
-  return userCookieID.value;
 }
 
 function buildRoomDoc(payload: StartPayload, userId: string) {
@@ -70,15 +63,74 @@ function buildRoomDoc(payload: StartPayload, userId: string) {
   };
 }
 
-export const POST = withAuth(async (request: NextRequest) => {
+export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
     const body = await request.json();
     const payload = validateStart(body);
-
-    const userId = getUserIdFromRequest(request);
-    const doc = buildRoomDoc(payload, userId);
-
     const { roomsCollection } = await connectToMongo();
+
+    // Case 1: Starting an existing scheduled room
+    if (payload.roomId) {
+      // Validate ObjectId format
+      if (!ObjectId.isValid(payload.roomId)) {
+        return NextResponse.json(
+          { error: "Invalid room ID format" },
+          { status: 400 }
+        );
+      }
+
+      const room = await roomsCollection.findOne({ 
+        _id: new ObjectId(payload.roomId) 
+      });
+
+      if (!room) {
+        return NextResponse.json(
+          { error: "Room not found" },
+          { status: 404 }
+        );
+      }
+
+      // Verify that the current user is the owner/host
+      if (String(room.ownerId) !== userId) {
+        return NextResponse.json(
+          { error: "Only the room owner can start the session" },
+          { status: 403 }
+        );
+      }
+
+      // Check if room is scheduled
+      if (room.status !== "scheduled") {
+        return NextResponse.json(
+          { error: "Room is not in scheduled state" },
+          { status: 400 }
+        );
+      }
+
+      // Update room status to live and set startedAt
+      const startedAt = new Date();
+      await roomsCollection.updateOne(
+        { _id: new ObjectId(payload.roomId) },
+        {
+          $set: {
+            status: "live",
+            startedAt: startedAt,
+            updatedAt: startedAt
+          }
+        }
+      );
+
+      return NextResponse.json(
+        {
+          message: "Room started successfully",
+          roomId: payload.roomId,
+          status: "live"
+        },
+        { status: 200 }
+      );
+    }
+
+    // Case 2: Creating a new room (existing functionality)
+    const doc = buildRoomDoc(payload, userId);
     const result = await roomsCollection.insertOne(doc);
     console.log("Inserted room with id:", result.insertedId.toString());
 

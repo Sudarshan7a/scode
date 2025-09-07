@@ -46,6 +46,7 @@ export default function RoomPage({
 
   const [isStarting, setIsStarting] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
+  const [isEnding, setIsEnding] = useState(false);
   const [isHost, setIsHost] = useState(false);
   const [hasJoinedEditor, setHasJoinedEditor] = useState(false);
 
@@ -95,12 +96,32 @@ export default function RoomPage({
     }
   };
 
+  const handleEndSession = async () => {
+    setIsEnding(true);
+    try {
+      const resp = await axiosInstance.post("/api/rooms/end", {
+        roomId,
+      });
+
+      if (resp.data && resp.data.status === "success") {
+        // Session ended successfully, update state to ended
+        setRoomState("ended");
+        setHasJoinedEditor(false);
+      }
+    } catch (error) {
+      console.error("Failed to end session:", error);
+      // You could show an error message here
+    } finally {
+      setIsEnding(false);
+    }
+  };
+
   useEffect(() => {
     let mounted = true;
 
     async function checkRoom() {
       try {
-        const resp = await axiosInstance.post("/api/rooms/join", {
+        const resp = await axiosInstance.post("/api/rooms/details", {
           roomId,
         });
 
@@ -108,29 +129,50 @@ export default function RoomPage({
 
         const data = resp.data as unknown;
 
-        if (isObject(data) && hasStatus(data, "scheduled")) {
-          setIsHost(!!(data.role === "host"));
-          setRoomState("scheduled");
-          setRoomInfo({ scheduledAt: data.scheduledAt ?? null });
-          return;
-        }
+        if (isObject(data)) {
+          // Set host status from API response
+          const isUserHost = !!(data.isHost);
+          setIsHost(isUserHost);
+          
+          // Handle different room statuses based on host/participant role
+          if (data.status === "scheduled") {
+            setRoomState("scheduled");
+            setRoomInfo({ 
+              scheduledAt: data.scheduledAt ?? null,
+              title: data.title,
+              description: data.description 
+            });
+            return;
+          }
 
-        if (isObject(data) && hasStatus(data, "ended")) {
-          setIsHost(!!(data.role === "host"));
-          setRoomState("ended");
-          setRoomInfo({});
-          return;
-        }
+          if (data.status === "ended") {
+            setRoomState("ended");
+            setRoomInfo({
+              title: data.title,
+              endedAt: data.endedAt
+            });
+            return;
+          }
 
-        // Success response (status 200-299)
-        if (isObject(data) && "room" in data) {
-          setIsHost(!!(data.role === "host"));
-          setRoomState("live");
-          setRoomInfo((data.room as Record<string, unknown>) ?? data);
-          return;
+          if (data.status === "live") {
+            setRoomState("live");
+            setRoomInfo({
+              title: data.title,
+              description: data.description,
+              room: data.room
+            });
+            
+            // If user is host and room is live, automatically join the editor
+            if (isUserHost) {
+              setHasJoinedEditor(true);
+            }
+            return;
+          }
+
+          // Default fallback
+          setRoomState("error");
+          setRoomInfo({ message: "Unknown room status" });
         }
-        setRoomState("live");
-        setRoomInfo(data as Record<string, unknown>);
       } catch (err: unknown) {
         if (!mounted) return;
 
@@ -149,7 +191,7 @@ export default function RoomPage({
 
           if (status === 401) {
             setRoomState("error");
-            setRoomInfo({ message: "Unauthorized. Please sign in to join." });
+            setRoomInfo({ message: "Unauthorized. Please sign in to view this room." });
             return;
           }
 
@@ -204,16 +246,16 @@ export default function RoomPage({
         />
       )}
 
-      {/* For scheduled rooms: show status card for BOTH host and participants */}
+      {/* For scheduled rooms: different behavior for host vs participants */}
       {roomState === "scheduled" && (
         <RoomStatusCard
-          title={isHost ? "Ready to start your room" : "Room scheduled"}
+          title={isHost ? "Ready to start your room" : "Room is scheduled"}
           subtitle={
             isHost
               ? "Click 'Start Room' when you're ready to begin the session"
               : roomInfo && "scheduledAt" in roomInfo && roomInfo.scheduledAt
-              ? new Date(String(roomInfo.scheduledAt)).toLocaleString()
-              : "TBA"
+              ? `Scheduled for: ${new Date(String(roomInfo.scheduledAt)).toLocaleString()}`
+              : "Waiting for the host to start the session"
           }
           details={
             isHost ? (
@@ -223,8 +265,8 @@ export default function RoomPage({
               </p>
             ) : (
               <p>
-                Join the room when it starts — you&apos;ll be able to
-                collaborate live.
+                The room will become available when the host starts the session.
+                You&apos;ll be able to join once it&apos;s live.
               </p>
             )
           }
@@ -240,9 +282,15 @@ export default function RoomPage({
 
       {roomState === "ended" && (
         <RoomStatusCard
-          title="This room has ended"
+          title={isHost ? "Your room has ended" : "This room has ended"}
           subtitle="The live session is over"
-          details={<p>You can view saved code from the room list.</p>}
+          details={
+            isHost ? (
+              <p>Your coding session has concluded. You can create a new room to start another session.</p>
+            ) : (
+              <p>The collaborative session has ended. Thank you for participating!</p>
+            )
+          }
           roomState="ended"
           isHost={isHost}
           onStart={handleStartRoom}
@@ -316,7 +364,12 @@ export default function RoomPage({
                 fallbackTitle="Code Editor Failed to Load"
                 fallbackMessage="The code editor encountered an error. Please refresh to continue coding."
               >
-                <CollaborativeEditor roomId={roomId} />
+                <CollaborativeEditor 
+                  roomId={roomId}
+                  isHost={isHost}
+                  onEndSession={handleEndSession}
+                  isEnding={isEnding}
+                />
               </AsyncErrorBoundary>
             </ResizablePanel>
           </ResizablePanelGroup>
