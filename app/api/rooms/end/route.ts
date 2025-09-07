@@ -6,42 +6,51 @@ import { ObjectId } from "mongodb";
 // Function to notify WebSocket server about room ending
 async function notifyWebSocketServer(roomId: string) {
   try {
-    const wsUrl = process.env.NEXT_PUBLIC_MY_WEBSOCKET_DOMAIN || "ws://localhost:1234";
-    
+    const wsUrl =
+      process.env.NEXT_PUBLIC_MY_WEBSOCKET_DOMAIN || "ws://localhost:1234";
+
     // Convert ws:// to http:// for API calls
-    const httpUrl = wsUrl.replace(/^ws:\/\//, "http://").replace(/^wss:\/\//, "https://");
-    
-    console.log(`Attempting to notify WebSocket server at: ${httpUrl}/api/rooms/${roomId}/end`);
-    
+    const httpUrl = wsUrl
+      .replace(/^ws:\/\//, "http://")
+      .replace(/^wss:\/\//, "https://");
+
+    console.log(
+      `Attempting to notify WebSocket server at: ${httpUrl}/api/rooms/${roomId}/end`
+    );
+
     // Send room end notification to WebSocket server
     const response = await fetch(`${httpUrl}/api/rooms/${roomId}/end`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ roomId })
+      body: JSON.stringify({ roomId }),
     });
-    
+
     console.log(`WebSocket server response status: ${response.status}`);
-    console.log(`WebSocket server response headers:`, Object.fromEntries(response.headers.entries()));
-    
+    console.log(
+      `WebSocket server response headers:`,
+      Object.fromEntries(response.headers.entries())
+    );
+
     if (!response.ok) {
       const errorText = await response.text();
       console.log(`WebSocket server error response: ${errorText}`);
-      throw new Error(`WebSocket server responded with ${response.status}: ${errorText}`);
+      throw new Error(
+        `WebSocket server responded with ${response.status}: ${errorText}`
+      );
     }
-    
+
     // Try to parse as JSON, fallback to text if it fails
     let result;
-    const contentType = response.headers.get('content-type');
-    if (contentType && contentType.includes('application/json')) {
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
       result = await response.json();
     } else {
       result = await response.text();
     }
-    
-    console.log('WebSocket server notification result:', result);
-    
+
+    console.log("WebSocket server notification result:", result);
   } catch (error) {
     console.warn("Failed to notify WebSocket server about room ending:", error);
     // Don't fail the room ending if WebSocket notification fails
@@ -101,7 +110,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
           status: "ended",
           endedAt: endedAt,
           endedBy: new ObjectId(userId),
-          updatedAt: endedAt
+          updatedAt: endedAt,
         },
       }
     );
@@ -120,7 +129,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       status: "success",
       message: "Session ended successfully",
       roomId: roomId,
-      endedAt: endedAt
+      endedAt: endedAt,
     });
   } catch (error) {
     console.error("Error ending session:", error);

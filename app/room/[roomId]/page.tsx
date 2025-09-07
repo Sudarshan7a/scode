@@ -131,16 +131,16 @@ export default function RoomPage({
 
         if (isObject(data)) {
           // Set host status from API response
-          const isUserHost = !!(data.isHost);
+          const isUserHost = !!data.isHost;
           setIsHost(isUserHost);
-          
+
           // Handle different room statuses based on host/participant role
           if (data.status === "scheduled") {
             setRoomState("scheduled");
-            setRoomInfo({ 
+            setRoomInfo({
               scheduledAt: data.scheduledAt ?? null,
               title: data.title,
-              description: data.description 
+              description: data.description,
             });
             return;
           }
@@ -149,7 +149,7 @@ export default function RoomPage({
             setRoomState("ended");
             setRoomInfo({
               title: data.title,
-              endedAt: data.endedAt
+              endedAt: data.endedAt,
             });
             return;
           }
@@ -159,9 +159,9 @@ export default function RoomPage({
             setRoomInfo({
               title: data.title,
               description: data.description,
-              room: data.room
+              room: data.room,
             });
-            
+
             // If user is host and room is live, automatically join the editor
             if (isUserHost) {
               setHasJoinedEditor(true);
@@ -191,7 +191,9 @@ export default function RoomPage({
 
           if (status === 401) {
             setRoomState("error");
-            setRoomInfo({ message: "Unauthorized. Please sign in to view this room." });
+            setRoomInfo({
+              message: "Unauthorized. Please sign in to view this room.",
+            });
             return;
           }
 
@@ -254,7 +256,9 @@ export default function RoomPage({
             isHost
               ? "Click 'Start Room' when you're ready to begin the session"
               : roomInfo && "scheduledAt" in roomInfo && roomInfo.scheduledAt
-              ? `Scheduled for: ${new Date(String(roomInfo.scheduledAt)).toLocaleString()}`
+              ? `Scheduled for: ${new Date(
+                  String(roomInfo.scheduledAt)
+                ).toLocaleString()}`
               : "Waiting for the host to start the session"
           }
           details={
@@ -286,9 +290,15 @@ export default function RoomPage({
           subtitle="The live session is over"
           details={
             isHost ? (
-              <p>Your coding session has concluded. You can create a new room to start another session.</p>
+              <p>
+                Your coding session has concluded. You can create a new room to
+                start another session.
+              </p>
             ) : (
-              <p>The collaborative session has ended. Thank you for participating!</p>
+              <p>
+                The collaborative session has ended. Thank you for
+                participating!
+              </p>
             )
           }
           roomState="ended"
@@ -364,7 +374,7 @@ export default function RoomPage({
                 fallbackTitle="Code Editor Failed to Load"
                 fallbackMessage="The code editor encountered an error. Please refresh to continue coding."
               >
-                <CollaborativeEditor 
+                <CollaborativeEditor
                   roomId={roomId}
                   isHost={isHost}
                   onEndSession={handleEndSession}
