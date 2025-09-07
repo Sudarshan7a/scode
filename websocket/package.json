@@ -1,6 +1,7 @@
 {
   "name": "websocket",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "main": "server.js",
   "scripts": {
@@ -17,6 +18,7 @@
   },
   "dependencies": {
     "@y/websocket-server": "^0.1.1",
+    "express": "^5.1.0",
     "ws": "^8.14.2"
   }
 }
