@@ -2,8 +2,10 @@
   "name": "websocket",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,6 +16,7 @@
     "y-websocket": "^3.0.0"
   },
   "dependencies": {
-    "@y/websocket-server": "^0.1.1"
+    "@y/websocket-server": "^0.1.1",
+    "ws": "^8.14.2"
   }
 }
