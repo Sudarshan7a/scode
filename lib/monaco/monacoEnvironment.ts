@@ -5,13 +5,13 @@ export function setupMonacoEnvironment() {
   if (typeof window === "undefined") return;
 
   // Simple worker factory that falls back gracefully
-  (self as any).MonacoEnvironment = {
-    getWorkerUrl: function (moduleId: string, label: string) {
+  (self as unknown as { MonacoEnvironment: unknown }).MonacoEnvironment = {
+    getWorkerUrl: function () {
       // For now, return empty to disable workers and avoid errors
       // Monaco will fall back to running in the main thread
       return "";
     },
-    getWorker: function (moduleId: string, label: string) {
+    getWorker: function () {
       // Create a minimal worker that doesn't crash
       const workerScript = `
         self.onmessage = function(e) {
@@ -29,9 +29,9 @@ export function setupMonacoEnvironment() {
         });
         const url = URL.createObjectURL(blob);
         return new Worker(url);
-      } catch (error) {
+      } catch {
         // Return null to force main thread execution
-        return null as any;
+        return null as Worker | null;
       }
     },
   };

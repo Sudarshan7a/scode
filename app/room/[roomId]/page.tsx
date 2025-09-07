@@ -14,22 +14,8 @@ import AsyncErrorBoundary from "@/components/AsyncErrorBoundary";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 // Type guards for API response - moved outside component
-interface ApiResponse extends Record<string, unknown> {
-  status?: string;
-  scheduledAt?: string | null;
-  room?: unknown;
-  error?: string;
-}
-
 const isObject = (value: unknown): value is Record<string, unknown> => {
   return value !== null && typeof value === "object";
-};
-
-const hasStatus = (
-  obj: Record<string, unknown>,
-  status: string
-): obj is ApiResponse => {
-  return "status" in obj && obj.status === status;
 };
 
 export default function RoomPage({

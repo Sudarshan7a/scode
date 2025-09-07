@@ -210,7 +210,7 @@ export async function initializeEditor(opts: {
     }
 
     const ydoc = new Y.Doc();
-    const persistence = new IndexeddbPersistence(roomId, ydoc);
+    new IndexeddbPersistence(roomId, ydoc);
 
     const provider = new WebsocketProvider(
       process.env.NEXT_PUBLIC_MY_WEBSOCKET_DOMAIN as string,
@@ -226,7 +226,7 @@ export async function initializeEditor(opts: {
           // Trigger a page reload to show the ended state
           window.location.reload();
         }
-      } catch (e) {
+      } catch {
         // Ignore non-JSON messages (Y.js binary messages)
       }
     });
