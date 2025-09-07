@@ -69,7 +69,7 @@ function ProductHighlightCard() {
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`w-2.5 h-2.5 rounded-full transition-all hover:bg-primary/70 ${
+            className={`w-2.5 h-2.5 rounded-full transition-all hover:bg-primary/70 cursor-pointer ${
               index === currentSlide ? "w-6 bg-primary" : "bg-gray-300"
             }`}
             aria-label={`Go to slide ${index + 1}`}

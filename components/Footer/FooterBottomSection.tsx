@@ -6,7 +6,7 @@ export default function FooterBottomSection() {
       <p>© 2025 Scode. All rights reserved.</p>
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="bg-mysecondary hover:bg-mysecondary-hover text-white p-2 rounded-full shadow-md transition"
+        className="bg-mysecondary hover:bg-mysecondary-hover text-white p-2 rounded-full shadow-md transition cursor-pointer"
         aria-label="Scroll to top"
       >
         {/* Add your ArrowUp icon component here */}

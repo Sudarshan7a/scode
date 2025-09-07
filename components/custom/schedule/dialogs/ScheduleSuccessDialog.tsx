@@ -107,7 +107,7 @@ export function ScheduleSuccessDialog({
 
             <div className="absolute -inset-1 rounded-2xl blur-lg opacity-20 bg-gradient-to-r from-mysecondary to-[#3c8de3] group-hover:opacity-30 transition-opacity duration-300" />
 
-            <div className="relative rounded-2xl bg-white/98 dark:bg-[#0f0f10]/90 border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-sm overflow-hidden transform hover:scale-[1.02] transition-all duration-300">
+            <div className="relative rounded-2xl bg-white/95 dark:bg-[#0f0f10]/95 border border-white/30 dark:border-white/20 shadow-2xl backdrop-blur-lg overflow-hidden transition-all duration-300">
               {/* Gradient header strip */}
               <div className="h-3 w-full bg-gradient-to-r from-orange-400 via-blue-400 to-purple-400 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
@@ -177,7 +177,7 @@ export function ScheduleSuccessDialog({
                       <Button
                         size="sm"
                         onClick={handleCopyLink}
-                        className="bg-mysecondary hover:bg-mysecondary-hover text-white border-0 transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md"
+                        className="bg-mysecondary hover:bg-mysecondary-hover text-white border-0 transition-all duration-200 shadow-sm hover:shadow-md"
                       >
                         <div className="flex items-center gap-2">
                           {copied ? (
@@ -208,7 +208,7 @@ export function ScheduleSuccessDialog({
                         size="sm"
                         onClick={handleCopyLink}
                         variant="outline"
-                        className="border-mysecondary/20 text-mysecondary hover:bg-mysecondary hover:text-white transition-all duration-200 hover:scale-105"
+                        className="border-mysecondary/20 text-mysecondary hover:bg-mysecondary hover:text-white transition-all duration-200"
                       >
                         <div className="flex items-center gap-2">
                           {copied ? (
@@ -245,7 +245,7 @@ export function ScheduleSuccessDialog({
                   </Button>
                   <Button
                     onClick={handleGoToRoom}
-                    className="flex-1 py-3 bg-mysecondary hover:bg-mysecondary-hover text-white transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md"
+                    className="flex-1 py-3 bg-mysecondary hover:bg-mysecondary-hover text-white transition-all duration-200 shadow-sm hover:shadow-md"
                   >
                     <div className="flex items-center justify-center gap-2">
                       <ExternalLink className="w-4 h-4" />

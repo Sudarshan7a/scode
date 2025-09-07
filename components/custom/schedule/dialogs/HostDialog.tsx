@@ -32,10 +32,10 @@ export function HostDialog({
           Host
         </Button>
       </DialogTrigger>
-      <DialogContent className="min-w-[60%] max-h-[90vh] overflow-y-auto overflow-x-hidden border-0 p-0 bg-transparent shadow-none [&>[data-slot=dialog-close]]:bg-white/80 [&>[data-slot=dialog-close]]:backdrop-blur-sm [&>[data-slot=dialog-close]]:border [&>[data-slot=dialog-close]]:border-white/20 [&>[data-slot=dialog-close]]:shadow-lg [&>[data-slot=dialog-close]_svg]:size-4">
+      <DialogContent className="min-w-[60%] max-h-[90vh] overflow-y-auto overflow-x-hidden border-0 p-0 bg-black/20 backdrop-blur-md shadow-none [&>[data-slot=dialog-close]]:bg-white/90 [&>[data-slot=dialog-close]]:backdrop-blur-md [&>[data-slot=dialog-close]]:border [&>[data-slot=dialog-close]]:border-white/30 [&>[data-slot=dialog-close]]:shadow-lg [&>[data-slot=dialog-close]_svg]:size-4">
         {/* Glassmorphism card */}
         <div className="relative w-full">
-          <div className="relative rounded-2xl bg-white/98 dark:bg-[#0f0f10]/90 border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-sm overflow-hidden">
+          <div className="relative rounded-2xl bg-white/95 dark:bg-[#0f0f10]/95 border border-white/30 dark:border-white/20 shadow-2xl backdrop-blur-lg overflow-hidden">
             {/* Gradient header strip */}
             <div className="h-3 w-full bg-gradient-to-r from-orange-400 via-blue-400 to-purple-400 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />

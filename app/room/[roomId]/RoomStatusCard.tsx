@@ -86,11 +86,11 @@ function RoomShareSection({
   if (roomState !== "scheduled" || !roomId) return null;
 
   return (
-    <div className="p-4 rounded-xl bg-gradient-to-r from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/20 border border-blue-200/50 dark:border-blue-700/50">
-      <div className="space-y-3">
+    <div className="p-3 rounded-lg bg-gradient-to-r from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/20 border border-blue-200/50 dark:border-blue-700/50">
+      <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <ExternalLink className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-          <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+          <ExternalLink className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+          <span className="text-xs font-medium text-blue-700 dark:text-blue-300">
             Share this room
           </span>
         </div>
@@ -107,7 +107,7 @@ function RoomShareSection({
               size="sm"
               variant="outline"
               onClick={onCopy}
-              className="h-8 px-2 text-xs"
+              className="h-6 px-2 text-xs"
             >
               {copied ? (
                 <Check className="w-3 h-3" />
@@ -118,7 +118,7 @@ function RoomShareSection({
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1">
           <div className="text-xs text-blue-600/80 dark:text-blue-400/80 font-medium">
             Join Link
           </div>
@@ -132,7 +132,7 @@ function RoomShareSection({
               size="sm"
               variant="outline"
               onClick={onCopy}
-              className="h-8 px-2 text-xs"
+              className="h-6 px-2 text-xs"
             >
               {copied ? (
                 <Check className="w-3 h-3" />
@@ -163,7 +163,7 @@ function ActionArea({
   isJoining?: boolean;
 }) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {isHost ? (
         <PrimaryAction
           label={disabled ? "Unavailable" : "Start Room"}
@@ -180,7 +180,7 @@ function ActionArea({
         />
       )}
 
-      <Button className="w-full text-foreground/80 py-3 rounded-md border-1 border-foreground/60 transition-all duration-300 bg-foreground/5 hover:bg-mysecondary/40">
+      <Button className="w-full text-foreground/80 py-2 text-sm rounded-md border-1 border-foreground/60 transition-all duration-300 bg-foreground/5 hover:bg-mysecondary/40">
         View Details
       </Button>
     </div>
@@ -220,20 +220,20 @@ function CardContent({
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
         </div>
 
-        <div className="p-8 space-y-4">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent leading-tight">
+        <div className="p-6 space-y-3">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent leading-tight">
             {title}
           </h2>
 
           {subtitle && (
-            <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed font-medium">
+            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed font-medium">
               {subtitle}
             </p>
           )}
 
           {details && (
-            <div className="p-4 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100/50 dark:from-gray-800/50 dark:to-gray-900/50 border border-gray-200/50 dark:border-gray-700/50">
-              <div className="text-sm text-gray-700 dark:text-gray-300 font-medium">
+            <div className="p-3 rounded-lg bg-gradient-to-r from-gray-50 to-gray-100/50 dark:from-gray-800/50 dark:to-gray-900/50 border border-gray-200/50 dark:border-gray-700/50">
+              <div className="text-xs text-gray-700 dark:text-gray-300 font-medium">
                 {details}
               </div>
             </div>
@@ -247,7 +247,7 @@ function CardContent({
             onCopy={onCopy}
           />
 
-          {children && <div className="pt-2 space-y-3">{children}</div>}
+          {children && <div className="pt-1 space-y-2">{children}</div>}
 
           <ActionArea
             isHost={isHost}
@@ -299,14 +299,14 @@ export default function RoomStatusCard({
     >
       <DecorativeBackground />
 
-      {/* Logo positioned at top with reduced spacing */}
-      <div className="pt-8 pb-4 relative z-30">
+      {/* Logo positioned at top with minimal spacing */}
+      <div className="pt-6 pb-2 relative z-30">
         <TopLogo />
       </div>
 
-      {/* Main content with flex-1 to take remaining space and center vertically */}
-      <div className="flex-1 w-full max-w-lg flex flex-col items-center justify-center relative z-10 pb-8">
-        <div className="mb-8 transform hover:scale-105 transition-transform duration-300">
+      {/* Main content with compact sizing */}
+      <div className="flex-1 w-full max-w-md flex flex-col items-center justify-center relative z-10 pb-6">
+        <div className="mb-4 transform hover:scale-105 transition-transform duration-300">
           {/* Placeholder for optional logo */}
         </div>
 
