@@ -35,21 +35,12 @@ function isAllowedDomain(url: string): boolean {
 axiosInstance.interceptors.request.use(async (config) => {
   const isAuthNeeded = isAllowedDomain(config.url ?? "");
 
-  console.log("Axios request:", {
-    url: config.url,
-    isAuthNeeded,
-    origin: window.location.origin,
-  });
-
   if (!isAuthNeeded) return config;
 
   let token = await getAccessToken();
 
-  console.log("Current access token:", token ? "exists" : "missing");
-
   if (!token) {
     try {
-      console.log("Requesting fresh access token...");
       // Request a fresh access token using the refresh cookie
       const res = await axios.post(
         "/api/auth/get-access-token",
@@ -59,9 +50,6 @@ axiosInstance.interceptors.request.use(async (config) => {
       token = res.data?.accessToken;
       if (token) {
         setAccessToken(token);
-        console.log("Fresh access token obtained");
-      } else {
-        console.log("No access token in response");
       }
     } catch (error) {
       console.error("Failed to get access token:", error);
@@ -73,9 +61,6 @@ axiosInstance.interceptors.request.use(async (config) => {
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    console.log("Added Authorization header");
-  } else {
-    console.log("No token to add to Authorization header");
   }
 
   return config;

@@ -192,10 +192,8 @@ export async function initializeEditor(opts: {
       import("y-indexeddb"),
     ]);
     
-    // Debug the y-websocket module structure
-    console.log("y-websocket module:", websocketModule);
+    // Get WebsocketProvider from y-websocket module
     const WebsocketProvider = websocketModule.WebsocketProvider;
-    console.log("WebsocketProvider:", WebsocketProvider);
     
     if (!WebsocketProvider) {
       throw new Error("WebsocketProvider not found in y-websocket module");
@@ -213,21 +211,11 @@ export async function initializeEditor(opts: {
 
     const ydoc = new Y.Doc();
     const persistence = new IndexeddbPersistence(roomId, ydoc);
-    persistence.on("synced", () =>
-      console.log("Loaded content from IndexedDB")
-    );
 
     const provider = new WebsocketProvider(
       process.env.NEXT_PUBLIC_MY_WEBSOCKET_DOMAIN as string,
       roomId,
       ydoc
-    );
-    
-    provider.on(
-      "status",
-      (event: { status: "connected" | "disconnected" | "connecting" }) => {
-        console.log("WebSocket status:", event.status);
-      }
     );
 
     // Listen for custom room-ended messages
@@ -235,8 +223,7 @@ export async function initializeEditor(opts: {
       try {
         const data = JSON.parse(event.data);
         if (data.type === 'room-ended') {
-          console.log('Room ended by host:', data.message);
-          // Trigger a page reload or redirect to show the ended state
+          // Trigger a page reload to show the ended state
           window.location.reload();
         }
       } catch (e) {
