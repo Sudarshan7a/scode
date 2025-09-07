@@ -40,25 +40,30 @@ export function useLoading(initialLoading = false): UseLoadingState {
         showToasts?: boolean;
       }
     ): Promise<T | null> => {
-      const { successMessage, errorMessage, showToasts = false } = options || {};
-      
+      const {
+        successMessage,
+        errorMessage,
+        showToasts = false,
+      } = options || {};
+
       try {
         startLoading();
         const result = await asyncFn();
-        
+
         if (showToasts && successMessage) {
           success(successMessage);
         }
-        
+
         return result;
       } catch (err) {
-        const errorMsg = err instanceof Error ? err.message : "An error occurred";
+        const errorMsg =
+          err instanceof Error ? err.message : "An error occurred";
         setError(errorMsg);
-        
+
         if (showToasts) {
           showErrorToast(errorMessage || errorMsg);
         }
-        
+
         console.error("Async operation failed:", err);
         return null;
       } finally {

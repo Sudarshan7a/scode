@@ -17,24 +17,25 @@ export function useRooms(options: UseRoomsOptions = {}) {
 
   const fetchRooms = useCallback(async () => {
     if (fetchingRef.current) return; // Prevent multiple simultaneous requests
-    
+
     try {
       fetchingRef.current = true;
       setIsLoading(true);
       setError(null);
 
       const res = await fetch("/api/rooms", {
-        cache: 'no-store' // Ensure fresh data
+        cache: "no-store", // Ensure fresh data
       });
-      
+
       if (!res.ok) {
         throw new Error(`Failed to fetch rooms: ${res.statusText}`);
       }
-      
+
       const data = await res.json();
       setAllRooms(data.rooms || []);
     } catch (e) {
-      const errorMessage = e instanceof Error ? e.message : "Failed to load rooms";
+      const errorMessage =
+        e instanceof Error ? e.message : "Failed to load rooms";
       setError(errorMessage);
       console.error("Failed to fetch rooms:", e);
     } finally {
