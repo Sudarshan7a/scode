@@ -1,8 +1,13 @@
 import { WebSocketServer, WebSocket } from "ws";
 import express from "express";
 import { createServer } from "http";
+import dotenv from "dotenv";
+
+// Load environment variables from .env.local
+dotenv.config({ path: ".env.local" });
 
 const PORT = process.env.PORT || 1234;
+const HOST = process.env.HOST || "0.0.0.0";
 
 // Track active rooms and their connections
 const activeRooms = new Map();
@@ -138,11 +143,11 @@ wss.on("connection", (ws, req) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Custom WebSocket server running on port ${PORT}`);
-  console.log(`Health check available at http://localhost:${PORT}/health`);
+server.listen(PORT, HOST, () => {
+  console.log(`Custom WebSocket server running on ${HOST}:${PORT}`);
+  console.log(`Health check available at http://${HOST}:${PORT}/health`);
   console.log(
-    `Room management API available at http://localhost:${PORT}/api/rooms/:roomId/end`
+    `Room management API available at http://${HOST}:${PORT}/api/rooms/:roomId/end`
   );
 });
 
