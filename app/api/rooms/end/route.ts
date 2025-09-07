@@ -15,12 +15,6 @@ async function notifyWebSocketServer(roomId: string) {
       .replace(/^wss:\/\//, "https://")
       .replace(/\/$/, ""); // Remove trailing slash
 
-    console.log(
-      `[DEBUG] Attempting to notify WebSocket server at: ${httpUrl}/api/rooms/${roomId}/end`
-    );
-    console.log(`[DEBUG] Original WS URL: ${wsUrl}`);
-    console.log(`[DEBUG] Converted HTTP URL: ${httpUrl}`);
-
     // Send room end notification to WebSocket server
     const response = await fetch(`${httpUrl}/api/rooms/${roomId}/end`, {
       method: "POST",
@@ -30,15 +24,8 @@ async function notifyWebSocketServer(roomId: string) {
       body: JSON.stringify({ roomId }),
     });
 
-    console.log(`[DEBUG] WebSocket server response status: ${response.status}`);
-    console.log(
-      `[DEBUG] WebSocket server response headers:`,
-      Object.fromEntries(response.headers.entries())
-    );
-
     if (!response.ok) {
       const errorText = await response.text();
-      console.log(`[DEBUG] WebSocket server error response: ${errorText}`);
       throw new Error(
         `WebSocket server responded with ${response.status}: ${errorText}`
       );
@@ -53,11 +40,10 @@ async function notifyWebSocketServer(roomId: string) {
       result = await response.text();
     }
 
-    console.log("[DEBUG] WebSocket server notification result:", result);
     return result;
   } catch (error) {
     console.error(
-      "[DEBUG] Failed to notify WebSocket server about room ending:",
+      "Failed to notify WebSocket server about room ending:",
       error
     );
     // Don't fail the room ending if WebSocket notification fails
@@ -67,13 +53,9 @@ async function notifyWebSocketServer(roomId: string) {
 
 export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
-    console.log(`[DEBUG] Room end API called by user: ${userId}`);
-
     const { roomId } = await request.json();
-    console.log(`[DEBUG] Room ID to end: ${roomId}`);
 
     if (!roomId) {
-      console.log(`[DEBUG] No room ID provided`);
       return NextResponse.json(
         { error: "Room ID is required" },
         { status: 400 }
@@ -82,7 +64,6 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
 
     // Validate ObjectId format
     if (!ObjectId.isValid(roomId)) {
-      console.log(`[DEBUG] Invalid room ID format: ${roomId}`);
       return NextResponse.json(
         { error: "Invalid room ID format" },
         { status: 400 }
@@ -93,21 +74,13 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
 
     // Find the room and verify host permissions
     const room = await roomsCollection.findOne({ _id: new ObjectId(roomId) });
-    console.log(
-      `[DEBUG] Found room:`,
-      room ? { id: room._id, status: room.status, ownerId: room.ownerId } : null
-    );
 
     if (!room) {
-      console.log(`[DEBUG] Room not found: ${roomId}`);
       return NextResponse.json({ error: "Room not found" }, { status: 404 });
     }
 
     // Verify that the current user is the host
     if (String(room.ownerId) !== userId) {
-      console.log(
-        `[DEBUG] Permission denied - User ${userId} is not the owner ${room.ownerId}`
-      );
       return NextResponse.json(
         { error: "Only the host can end the session" },
         { status: 403 }
@@ -116,14 +89,11 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
 
     // Check if room is already ended
     if (room.status === "ended") {
-      console.log(`[DEBUG] Room already ended: ${roomId}`);
       return NextResponse.json(
         { error: "Session is already ended" },
         { status: 400 }
       );
     }
-
-    console.log(`[DEBUG] Updating room status to ended...`);
 
     // Update room status to ended
     const endedAt = new Date();
@@ -139,31 +109,21 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       }
     );
 
-    console.log(`[DEBUG] Update result:`, updateResult);
-
     if (updateResult.modifiedCount === 0) {
-      console.log(`[DEBUG] Failed to update room status`);
       return NextResponse.json(
         { error: "Failed to end session" },
         { status: 500 }
       );
     }
 
-    console.log(
-      `[DEBUG] Room status updated successfully, notifying WebSocket server...`
-    );
-
     // Notify WebSocket server about room ending
     try {
-      const wsResult = await notifyWebSocketServer(roomId);
-      console.log(`[DEBUG] WebSocket notification successful:`, wsResult);
+      await notifyWebSocketServer(roomId);
     } catch (wsError) {
-      console.error(`[DEBUG] WebSocket notification failed:`, wsError);
+      console.error("WebSocket notification failed:", wsError);
       // Continue anyway - room is already marked as ended in database
       // Clients will see the ended state when they refresh or reconnect
     }
-
-    console.log(`[DEBUG] Room end process completed successfully`);
 
     return NextResponse.json({
       status: "success",
@@ -172,7 +132,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       endedAt: endedAt,
     });
   } catch (error) {
-    console.error("[DEBUG] Error ending session:", error);
+    console.error("Error ending session:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

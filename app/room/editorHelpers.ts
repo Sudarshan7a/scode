@@ -218,59 +218,20 @@ export async function initializeEditor(opts: {
       ydoc
     );
 
-    console.log(
-      `[DEBUG] Connecting to WebSocket server: ${process.env.NEXT_PUBLIC_MY_WEBSOCKET_DOMAIN}`
-    );
-    console.log(`[DEBUG] Room ID: ${roomId}`);
-
-    // Listen for provider connection events
-    provider.on("status", (event) => {
-      console.log(`[DEBUG] WebSocket status changed:`, event);
-    });
-
-    provider.on("connection-close", (event) => {
-      console.log(`[DEBUG] WebSocket connection closed:`, event);
-    });
-
-    provider.on("connection-error", (event) => {
-      console.log(`[DEBUG] WebSocket connection error:`, event);
-    });
-
     // Listen for custom room-ended messages
     provider.ws?.addEventListener("message", (event) => {
       // Only log JSON messages to reduce noise from Y.js binary messages
       try {
         const data = JSON.parse(event.data);
-        console.log(`[DEBUG] JSON message received:`, data);
         if (data.type === "room-ended") {
           // Log to console when room ends
-          console.log("[DEBUG] Room has ended. You will be disconnected.");
-          console.log(`[DEBUG] Room end details:`, data);
+          console.log("Room has ended. You will be disconnected.");
           // Trigger a page reload to show the ended state
           window.location.reload();
         }
       } catch (error) {
         // Y.js binary messages are expected and normal - don't log them
       }
-    });
-
-    // Add connection open listener
-    provider.ws?.addEventListener("open", () => {
-      console.log(`[DEBUG] WebSocket connection opened for room ${roomId}`);
-    });
-
-    // Add connection close listener
-    provider.ws?.addEventListener("close", (event) => {
-      console.log(
-        `[DEBUG] WebSocket connection closed for room ${roomId}:`,
-        event.code,
-        event.reason
-      );
-    });
-
-    // Add error listener
-    provider.ws?.addEventListener("error", (event) => {
-      console.log(`[DEBUG] WebSocket error for room ${roomId}:`, event);
     });
 
     const ytext = ydoc.getText("monaco");
