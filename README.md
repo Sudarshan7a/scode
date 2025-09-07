@@ -376,6 +376,19 @@ public/                 # Static assets
 
 ## Troubleshooting
 
+**Installation Issues**
+
+- Dependency conflicts with `react-day-picker`
+  - Use `npm install --legacy-peer-deps` instead of regular npm install
+  - Or use `pnpm install` which handles peer dependencies better
+- Node.js version compatibility
+  - Ensure you're using Node.js 18+ (tested with Node.js 20)
+  - Check version with `node --version`
+- WebSocket server fails to start
+  - Navigate to `websocket/` directory first: `cd websocket`
+  - Install WebSocket dependencies: `npm install` or `pnpm install`
+  - Start server: `npx y-websocket`
+
 **Authentication Issues**
 
 - Domain not allowed on signup
