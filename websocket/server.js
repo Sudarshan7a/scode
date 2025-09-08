@@ -35,7 +35,7 @@ app.use((req, res, next) => {
 app.post("/api/rooms/:roomId/end", (req, res) => {
   try {
     const { roomId } = req.params;
-    console.log(`Ending room: ${roomId}`);
+  // Room ending triggered
 
     // Get all connections for this room
     const roomConnections = activeRooms.get(roomId) || new Set();
@@ -64,9 +64,7 @@ app.post("/api/rooms/:roomId/end", (req, res) => {
       }
     });
 
-    console.log(
-      `Room ${roomId} ended - notified ${sentCount} clients, ${closedCount} were already closed`
-    );
+  // Summary: room end notification complete
 
     // Clean up room
     activeRooms.delete(roomId);
@@ -105,12 +103,12 @@ wss.on("connection", (ws, req) => {
   const roomId = url.pathname.slice(1); // Remove leading slash
 
   if (!roomId) {
-    console.log(`Connection rejected - no room ID provided`);
+  // Connection rejected: no room ID provided
     ws.close(1008, "Room ID required");
     return;
   }
 
-  console.log(`New connection to room: ${roomId}`);
+  // New connection to room
 
   // Track this connection for the room
   if (!activeRooms.has(roomId)) {
@@ -118,9 +116,7 @@ wss.on("connection", (ws, req) => {
   }
   activeRooms.get(roomId).add(ws);
 
-  console.log(
-    `Room ${roomId} now has ${activeRooms.get(roomId).size} connections`
-  );
+  // Updated connection count for room
 
   // Add connection ID for tracking
   ws.connectionId = Math.random().toString(36).substr(2, 9);
@@ -142,17 +138,15 @@ wss.on("connection", (ws, req) => {
 
   // Handle connection close
   ws.on("close", () => {
-    console.log(`Connection closed for room: ${roomId}`);
+    // Connection closed for room
     const roomConnections = activeRooms.get(roomId);
     if (roomConnections) {
       roomConnections.delete(ws);
       if (roomConnections.size === 0) {
         activeRooms.delete(roomId);
-        console.log(`Room ${roomId} is now empty and removed`);
+  // Room is now empty and removed
       } else {
-        console.log(
-          `Room ${roomId} now has ${roomConnections.size} connections`
-        );
+  // Room connection count updated
       }
     }
   });
@@ -164,17 +158,16 @@ wss.on("connection", (ws, req) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`Custom WebSocket server running on ${HOST}:${PORT}`);
-  console.log(`Health check available at http://${HOST}:${PORT}/health`);
-  console.log(`Room management API available at http://${HOST}:${PORT}/api/rooms/:roomId/end`);
+  // Server started
+  // Health and API endpoints available
 });
 
 // Graceful shutdown
 process.on("SIGINT", () => {
-  console.log("Shutting down WebSocket server...");
+  // Shutting down WebSocket server
   wss.close(() => {
     server.close(() => {
-      console.log("Server closed");
+  // Server closed
       process.exit(0);
     });
   });
