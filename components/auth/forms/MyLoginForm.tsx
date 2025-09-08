@@ -15,7 +15,7 @@ export function MyLoginForm() {
   const { success, error } = useToast();
   // Handler for OAuth login
   const handleOAuthLogin = (_providerId: string): void => {
-    // OAuth login with provider: _providerId
+    console.log("OAuth login with provider:", _providerId);
     // TODO: Implement OAuth login flow
     // Here you would implement the actual OAuth flow
     // For example, with NextAuth.js you might use signIn(providerId)
@@ -48,7 +48,7 @@ export function MyLoginForm() {
       // Always redirect after successful login. Use a full navigation to ensure
       // the refresh token cookie set by the server is sent on the next request.
       const redirectPath = result.redirect || "/dashboard";
-  // Login successful, redirecting to redirectPath
+      console.log("Login successful, redirecting to:", redirectPath);
       try {
         // Prefer router.replace for SPA navigation, then force full navigation
         // only if needed to ensure cookies are present.

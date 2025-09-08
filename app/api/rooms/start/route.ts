@@ -79,15 +79,12 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
         );
       }
 
-      const room = await roomsCollection.findOne({ 
-        _id: new ObjectId(payload.roomId) 
+      const room = await roomsCollection.findOne({
+        _id: new ObjectId(payload.roomId),
       });
 
       if (!room) {
-        return NextResponse.json(
-          { error: "Room not found" },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: "Room not found" }, { status: 404 });
       }
 
       // Verify that the current user is the owner/host
@@ -114,8 +111,8 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
           $set: {
             status: "live",
             startedAt: startedAt,
-            updatedAt: startedAt
-          }
+            updatedAt: startedAt,
+          },
         }
       );
 
@@ -123,7 +120,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
         {
           message: "Room started successfully",
           roomId: payload.roomId,
-          status: "live"
+          status: "live",
         },
         { status: 200 }
       );
@@ -131,8 +128,8 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
 
     // Case 2: Creating a new room (existing functionality)
     const doc = buildRoomDoc(payload, userId);
-  const result = await roomsCollection.insertOne(doc);
-  // Inserted room with id: result.insertedId (no debug log)
+    const result = await roomsCollection.insertOne(doc);
+    console.log("Inserted room with id:", result.insertedId.toString());
 
     return NextResponse.json(
       {

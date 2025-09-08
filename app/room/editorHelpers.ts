@@ -224,7 +224,9 @@ export async function initializeEditor(opts: {
       try {
         const data = JSON.parse(event.data);
         if (data.type === "room-ended") {
-          // Room ended: trigger a reload to show ended state
+          // Log to console when room ends
+          console.log("Room has ended. You will be disconnected.");
+          // Trigger a page reload to show the ended state
           window.location.reload();
         }
       } catch (error) {
