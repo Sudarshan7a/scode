@@ -165,19 +165,6 @@ Visual changes should include before/after screenshots.
 - [ ] No breaking changes (or breaking changes documented)
 ```
 
-## AI Assistant Operational Mode
-
-| Action Requested by You    | Assistant Response                                                 |
-| -------------------------- | ------------------------------------------------------------------ |
-| "commit"                   | Stage & commit locally (no push)                                   |
-| "commit and push" / "push" | Stage (if needed), commit (if needed), then push                   |
-| "don’t push" / default     | Will not push until explicit instruction                           |
-| "create PR"                | Will (after confirmation) push branch, then outline PR description |
-
-If you change the rule, update this file so behavior stays transparent.
-
----
-
 Last updated: September 2025
 
 ## 🤝 Community Guidelines
