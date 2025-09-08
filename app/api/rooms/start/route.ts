@@ -131,8 +131,8 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
 
     // Case 2: Creating a new room (existing functionality)
     const doc = buildRoomDoc(payload, userId);
-    const result = await roomsCollection.insertOne(doc);
-    console.log("Inserted room with id:", result.insertedId.toString());
+  const result = await roomsCollection.insertOne(doc);
+  // Inserted room with id: result.insertedId (no debug log)
 
     return NextResponse.json(
       {

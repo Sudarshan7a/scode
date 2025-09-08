@@ -14,7 +14,7 @@ export function MySignupForm() {
 
   // Handler for OAuth signup
   const handleOAuthSignup = (_providerId: string): void => {
-    console.log("OAuth signup with provider:", _providerId);
+    // OAuth signup with provider: _providerId
     // TODO: Implement OAuth signup flow
     // Implement actual OAuth flow here (e.g., signIn(providerId))
   };

@@ -85,28 +85,22 @@ export default function RoomPage({
   const handleEndSession = async () => {
     setIsEnding(true);
     try {
-      console.log(`[DEBUG] Attempting to end session for room: ${roomId}`);
-      
+      // Attempt to end session for room
+
       const resp = await axiosInstance.post("/api/rooms/end", {
         roomId,
       });
 
-      console.log(`[DEBUG] End session response:`, resp.data);
-
       if (resp.data && resp.data.status === "success") {
         // Session ended successfully, update state to ended
-        console.log(`[DEBUG] Session ended successfully`);
         setRoomState("ended");
         setHasJoinedEditor(false);
       }
     } catch (error) {
-      console.error("[DEBUG] Failed to end session:", error);
-      
       // If authentication failed, redirect to login
-      if (error && typeof error === 'object' && 'response' in error) {
+      if (error && typeof error === "object" && "response" in error) {
         const axiosError = error as { response?: { status?: number } };
         if (axiosError.response?.status === 401) {
-          console.log("[DEBUG] Authentication failed, redirecting to login");
           window.location.href = "/login";
         }
       }
