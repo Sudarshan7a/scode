@@ -22,7 +22,7 @@ export default function PrimaryAction({
     <button
       onClick={onClick}
       disabled={isDisabled}
-      className={`w-full py-3 px-4 rounded-xl font-medium text-white shadow-lg hover:shadow-xl transition-all duration-500 transform hover:scale-[1.02] focus:ring-1 focus:ring-mysecondary focus:ring-offset-2 relative overflow-hidden group ${
+      className={`w-full cursor-pointer py-3 px-4 rounded-xl font-medium text-white shadow-lg hover:shadow-xl transition-all duration-500 transform hover:scale-[1.02] focus:ring-1 focus:ring-mysecondary focus:ring-offset-2 relative overflow-hidden group ${
         isDisabled ? "opacity-50 cursor-not-allowed" : ""
       } bg-gradient-to-r from-mysecondary to-mysecondary-hover ${
         className ?? ""

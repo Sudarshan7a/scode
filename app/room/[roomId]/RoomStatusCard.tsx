@@ -166,9 +166,9 @@ function ActionArea({
     <div className="space-y-2">
       {isHost ? (
         <PrimaryAction
-          label={disabled ? "Unavailable" : "Start Room"}
+          label={"Start Room"}
           onClick={onStart}
-          disabled={disabled}
+          disabled={!disabled}
           loading={isStarting}
         />
       ) : (
