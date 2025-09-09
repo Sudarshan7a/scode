@@ -26,7 +26,7 @@ function isAllowedDomain(url: string): boolean {
     }
 
     return false;
-  } catch (error) {
+  } catch {
     return false;
   }
 }

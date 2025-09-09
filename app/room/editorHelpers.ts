@@ -229,7 +229,7 @@ export async function initializeEditor(opts: {
           // Trigger a page reload to show the ended state
           window.location.reload();
         }
-      } catch (error) {
+      } catch {
         // Y.js binary messages are expected and normal - don't log them
       }
     });

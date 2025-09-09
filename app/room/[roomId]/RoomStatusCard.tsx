@@ -72,7 +72,6 @@ function DecorativeBackground() {
  * The card content is extracted so RoomStatusCard stays small and easy to understand.
  */
 function RoomShareSection({
-  roomState,
   roomId,
   roomUrl,
   copiedId,

@@ -23,7 +23,7 @@ export function useRoomOperations(): RoomOperationsReturn {
         const roomUrl = `${window.location.origin}/room/${roomId}`;
         await navigator.clipboard.writeText(roomUrl);
         success(TOAST_MESSAGES.ROOM.COPIED_LINK);
-      } catch (err) {
+      } catch {
         error("Failed to copy link to clipboard");
       }
     },
@@ -36,7 +36,7 @@ export function useRoomOperations(): RoomOperationsReturn {
         // Add API call here when available
         success(TOAST_MESSAGES.ROOM.LEFT);
         onLeave?.();
-      } catch (err) {
+      } catch {
         error("Failed to leave room");
       }
     },

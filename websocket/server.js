@@ -130,11 +130,9 @@ wss.on("connection", (ws, req) => {
     // Forward Y.js messages to other clients in the same room
     const roomConnections = activeRooms.get(roomId);
     if (roomConnections) {
-      let forwardedCount = 0;
       roomConnections.forEach((otherWs) => {
         if (otherWs !== ws && otherWs.readyState === WebSocket.OPEN) {
           otherWs.send(message);
-          forwardedCount++;
         }
       });
     }
