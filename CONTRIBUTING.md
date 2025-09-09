@@ -1,85 +1,231 @@
 # Contributing & Collaboration Workflow
 
-This repository is currently managed with an assisted workflow. To keep control explicit and avoid unintended deployments, the following rules apply.
+Welcome to S‑code! This guide will help you contribute effectively to our collaborative coding platform.
 
-## Core Rule (Important)
+## 🚀 Getting Started
 
-The AI assistant MUST NOT push to any remote branch unless you (the human maintainer) explicitly say to push. Default behavior: make local commits only.
+### Development Setup
 
-Phrases that allow a push (examples):
+1. **Fork and clone the repository**
+2. **Install dependencies**: Use `npm install --legacy-peer-deps` or `pnpm install`
+3. **Set up environment**: Copy `.env.example` to `.env.local` and configure
+4. **Start development**: Run `npm run dev` or `pnpm dev`
 
-- "push"
-- "push now"
-- "create PR" (will require a push of the feature branch)
+### Repository Structure
 
-Everything else: only stage + commit locally.
+```
+├── app/              # Next.js 15 App Router pages and API routes
+├── components/       # Reusable React components
+├── hooks/           # Custom React hooks
+├── lib/             # Utility functions and configurations
+├── types/           # TypeScript type definitions
+├── docs/            # Documentation files
+└── websocket/       # WebSocket server for real-time collaboration
+```
+
+## Core Rules & Workflow
+
+This repository follows a structured development workflow to maintain code quality and prevent deployment issues.
 
 ## Branching Strategy
 
-- `master` (protected): only updated via Pull Requests.
-- Feature branches: use short, purpose‑based names (e.g. `refactor-verify-handler`, `feat-room-permissions`).
-- Keep changes scoped; avoid large multi‑concern PRs.
+- `master` (protected): Production-ready code, only updated via Pull Requests
+- Feature branches: Use descriptive names with prefixes:
+  - `feat/user-authentication` - New features
+  - `fix/login-validation` - Bug fixes  
+  - `docs/setup-guide` - Documentation updates
+  - `refactor/auth-handlers` - Code refactoring
+  - `chore/dependency-updates` - Maintenance tasks
 
-## Commit Conventions
+### Branch Workflow
 
-Use Conventional Commits:
+1. **Create a feature branch** from `master`
+2. **Make focused changes** - keep PRs small and scoped
+3. **Test thoroughly** - ensure all features work as expected
+4. **Submit a Pull Request** with clear description
+5. **Address review feedback** promptly
+6. **Merge when approved** - squash commits for clean history
 
-- `feat(auth): add x`
-- `fix(rate-limit): handle null ip`
-- `refactor(signup): extract validation helpers`
-- `chore(deps): update redis client`
-- `docs: add contributing guide`
+## Code Quality Standards
 
-## Auth / API Consistency
+### Commit Conventions
 
-All auth route responses follow a normalized shape:
+We use [Conventional Commits](https://conventionalcommits.org/) for clear, consistent commit messages:
 
-```json
-{ "ok": boolean, "message": string, "redirect?": string, "fieldErrors?": Record<string,string>, "user?": {"id": string, "name": string} }
+```bash
+feat(auth): add OAuth integration with GitHub
+fix(editor): resolve syntax highlighting issue  
+docs(readme): update installation instructions
+refactor(api): extract validation helpers
+chore(deps): update MongoDB driver to v6.18.0
 ```
 
-Do not introduce divergent shapes without updating clients.
+### Linting and Formatting
 
-## Lint & Quality
+- **Run linting**: `npm run lint` or `pnpm lint`
+- **Fix lint errors** before submitting PRs
+- **Address TypeScript warnings** where practical
+- **Use consistent code style** - prefer extracting helpers over disabling rules
 
-- Run `pnpm exec eslint .` before requesting a push / PR.
-- Address complexity / duplication warnings where practical.
-- Prefer extracting helpers over disabling rules. Only add `// eslint-disable-next-line` if refactor is impractical.
+### Testing Guidelines
 
-## Environment Assumptions
+- **Test authentication flows**: signup → verify → login
+- **Verify API consistency**: ensure response schemas remain unchanged
+- **Test collaborative features**: room creation, joining, real-time editing
+- **Check error boundaries**: verify graceful error handling
 
-Critical env vars (must exist before pushing deploy‑relevant code):
+## API Design Guidelines
 
+### Authentication Routes
+
+All auth route responses follow a normalized shape for consistency:
+
+```typescript
+interface AuthResponse {
+  ok: boolean;
+  message: string;
+  redirect?: string;
+  fieldErrors?: Record<string, string>;
+  user?: {
+    id: string;
+    name: string;
+  };
+}
 ```
-MONGODB_URI
-UPSTASH_REDIS_REST_URL
-UPSTASH_REDIS_REST_TOKEN
-RESEND_API_KEY
-JWT_SECRET
-MY_DOMAIN
+
+**Do not introduce divergent response shapes** without updating clients and documentation.
+
+### Error Handling
+
+- Use proper HTTP status codes
+- Provide meaningful error messages
+- Implement rate limiting for security
+- Log errors appropriately (avoid exposing sensitive data)
+
+## Environment Configuration
+
+### Required Environment Variables
+
+Critical env vars (must exist before deploying):
+
+```bash
+# Database
+MONGODB_URI=mongodb+srv://...
+MONGODB_DB=scode
+
+# Authentication  
+JWT_SECRET=your-secure-secret
+
+# Redis
+UPSTASH_REDIS_REST_URL=https://...
+UPSTASH_REDIS_REST_TOKEN=...
+
+# Email
+RESEND_API_KEY=...
+MY_DOMAIN=https://your-domain.com
 ```
 
-## Pull Request Checklist
+### Development vs Production
 
-Before asking to push / open PR:
+- **Development**: Use `.env.local` for local overrides
+- **Production**: Set environment variables in deployment platform
+- **Never commit** real secrets to version control
 
-- [ ] Lint passes (no errors, minimal warnings)
-- [ ] Auth flows tested: signup → verify → login
-- [ ] No accidental console logs (except intentional error logs)
-- [ ] Response schema unchanged or docs updated
-- [ ] Added/updated docs if behavior changed
+## Pull Request Guidelines
 
-## AI Assistant Operational Mode
+### Before Submitting a PR
 
-| Action Requested by You    | Assistant Response                                                 |
-| -------------------------- | ------------------------------------------------------------------ |
-| "commit"                   | Stage & commit locally (no push)                                   |
-| "commit and push" / "push" | Stage (if needed), commit (if needed), then push                   |
-| "don’t push" / default     | Will not push until explicit instruction                           |
-| "create PR"                | Will (after confirmation) push branch, then outline PR description |
+- [ ] **Lint passes** with no errors, minimal warnings
+- [ ] **All tests pass** (if applicable)
+- [ ] **Authentication flows tested**: signup → verify → login
+- [ ] **No debug code**: remove console logs (except intentional error logs)
+- [ ] **API consistency maintained**: response schemas unchanged or docs updated
+- [ ] **Documentation updated**: if behavior changes require doc updates
+- [ ] **Dependencies justified**: new dependencies should be necessary and well-maintained
 
-If you change the rule, update this file so behavior stays transparent.
+### PR Description Template
+
+```markdown
+## What Changed
+Brief description of the changes made.
+
+## Why
+Explanation of the motivation or problem being solved.
+
+## How to Test
+Steps for reviewers to test the changes.
+
+## Screenshots (if applicable)
+Visual changes should include before/after screenshots.
+
+## Checklist
+- [ ] Code follows project conventions
+- [ ] Tests added/updated (if applicable)
+- [ ] Documentation updated (if needed)
+- [ ] No breaking changes (or breaking changes documented)
+```
+
+Last updated: September 2025
+
+## 🤝 Community Guidelines
+
+### Getting Help
+
+- **Documentation**: Check `/docs` folder for guides and examples
+- **Issues**: Search existing issues before creating new ones
+- **Discussions**: Use GitHub Discussions for questions and ideas
+- **Code Review**: Be constructive and respectful in reviews
+
+### Reporting Issues
+
+When reporting bugs, please include:
+
+- **Steps to reproduce** the issue
+- **Expected vs actual behavior**
+- **Browser and OS information**
+- **Console errors** (if any)
+- **Screenshots** (for UI issues)
+
+### Suggesting Features
+
+For feature requests, please provide:
+
+- **Use case description** - what problem does this solve?
+- **Proposed solution** - how should it work?
+- **Alternative solutions** considered
+- **Additional context** - mockups, examples, etc.
+
+## 🔧 Development Resources
+
+### Available Scripts
+
+```bash
+npm run dev              # Start development server
+npm run build           # Build for production
+npm run lint            # Run ESLint
+npm run audit:repo      # Run repository health audit
+npm run help:git        # Show Git learning resources
+```
+
+### Learning Resources
+
+- **[Git Best Practices](docs/git-best-practices.md)** - Complete workflow guide
+- **[Development Setup](docs/development-setup.md)** - Configuration guide  
+- **[Repository Scorecard](docs/repository-scorecard.md)** - Self-assessment tool
+- **[Learning Checklist](docs/learning-checklist.md)** - Progressive skill development
+
+### Architecture Overview
+
+S‑code is built with modern web technologies:
+
+- **Frontend**: Next.js 15 + React 19 + TypeScript
+- **Styling**: Tailwind CSS + Radix UI components
+- **Database**: MongoDB with optimized connection pooling
+- **Caching**: Upstash Redis for rate limiting and sessions
+- **Real-time**: Y.js CRDTs with WebSocket synchronization
+- **Authentication**: JWT with HttpOnly cookies
+- **Email**: Resend for transactional emails
 
 ---
 
-Last updated: 2025-08-09
+**Thank you for contributing to S‑code!** Your contributions help make coding practice more collaborative and accessible for everyone.
