@@ -1,6 +1,7 @@
 "use client";
 import type React from "react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import TopLogo from "@/components/TopLogo";
 import PrimaryAction from "@/components/PrimaryAction";
 import { Button } from "@/components/ui/button";
@@ -208,6 +209,11 @@ function CardContent({
   onCopy: () => void;
 }) {
   const disabled = roomState === "scheduled" || roomState === "ended";
+  const router = useRouter();
+
+  const handleGoToDashboard = () => {
+    router.push("/dashboard");
+  };
 
   return (
     <div className="relative w-full group">
@@ -249,14 +255,25 @@ function CardContent({
 
           {children && <div className="pt-1 space-y-2">{children}</div>}
 
-          <ActionArea
-            isHost={isHost}
-            disabled={disabled}
-            onStart={onStart}
-            onJoin={onJoin}
-            isStarting={isStarting}
-            isJoining={isJoining}
-          />
+          {roomState === "ended" ? (
+            <div className="space-y-2">
+              <Button
+                onClick={handleGoToDashboard}
+                className="w-full py-2 text-sm rounded-md border-1 border-foreground/60 transition-all duration-300 bg-green-600 hover:bg-green-700 text-white"
+              >
+                Go to Dashboard
+              </Button>
+            </div>
+          ) : (
+            <ActionArea
+              isHost={isHost}
+              disabled={disabled}
+              onStart={onStart}
+              onJoin={onJoin}
+              isStarting={isStarting}
+              isJoining={isJoining}
+            />
+          )}
         </div>
 
         <div className="h-px w-full bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
