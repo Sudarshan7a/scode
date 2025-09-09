@@ -75,14 +75,18 @@ function RoomShareSection({
   roomState,
   roomId,
   roomUrl,
-  copied,
-  onCopy,
+  copiedId,
+  copiedLink,
+  onCopyId,
+  onCopyLink,
 }: {
   roomState?: RoomState;
   roomId?: string;
   roomUrl: string;
-  copied: boolean;
-  onCopy: () => void;
+  copiedId?: boolean;
+  copiedLink?: boolean;
+  onCopyId?: () => void;
+  onCopyLink?: () => void;
 }) {
   // Show the share section whenever we have a roomId so users can copy
   // the room ID or link from any card (scheduled, live, ended, etc.).
@@ -109,10 +113,10 @@ function RoomShareSection({
             <Button
               size="sm"
               variant="outline"
-              onClick={onCopy}
+              onClick={onCopyId}
               className="h-6 px-2 text-xs"
             >
-              {copied ? (
+              {copiedId ? (
                 <Check className="w-3 h-3" />
               ) : (
                 <Copy className="w-3 h-3" />
@@ -134,10 +138,10 @@ function RoomShareSection({
             <Button
               size="sm"
               variant="outline"
-              onClick={onCopy}
+              onClick={onCopyLink}
               className="h-6 px-2 text-xs"
             >
-              {copied ? (
+              {copiedLink ? (
                 <Check className="w-3 h-3" />
               ) : (
                 <Copy className="w-3 h-3" />
@@ -203,12 +207,16 @@ function CardContent({
   isJoining,
   roomId,
   roomUrl,
-  copied,
-  onCopy,
+  copiedId,
+  copiedLink,
+  onCopyId,
+  onCopyLink,
 }: Props & {
   roomUrl: string;
-  copied: boolean;
-  onCopy: () => void;
+  copiedId?: boolean;
+  copiedLink?: boolean;
+  onCopyId?: () => void;
+  onCopyLink?: () => void;
 }) {
   // A button should be enabled when:
   // - room is live, OR
@@ -257,8 +265,10 @@ function CardContent({
             roomState={roomState}
             roomId={roomId}
             roomUrl={roomUrl}
-            copied={copied}
-            onCopy={onCopy}
+            copiedId={copiedId}
+            copiedLink={copiedLink}
+            onCopyId={onCopyId}
+            onCopyLink={onCopyLink}
           />
 
           {children && <div className="pt-1 space-y-2">{children}</div>}
@@ -312,7 +322,11 @@ export default function RoomStatusCard({
       ? `${window.location.origin}/room/${roomId}`
       : "";
 
-  const { copied, handleCopy } = useCopyToClipboard(roomUrl);
+  // Separate copy hooks so ID copy and Link copy are independent
+  const { copied: copiedId, handleCopy: handleCopyId } =
+    useCopyToClipboard(roomId);
+  const { copied: copiedLink, handleCopy: handleCopyLink } =
+    useCopyToClipboard(roomUrl);
 
   return (
     <div
@@ -347,8 +361,10 @@ export default function RoomStatusCard({
           isJoining={isJoining}
           roomId={roomId}
           roomUrl={roomUrl}
-          copied={copied}
-          onCopy={handleCopy}
+          copiedId={copiedId}
+          copiedLink={copiedLink}
+          onCopyId={handleCopyId}
+          onCopyLink={handleCopyLink}
         >
           {children}
         </CardContent>
