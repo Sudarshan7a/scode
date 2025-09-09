@@ -24,7 +24,8 @@ export function ScheduleSuccessDialog({
   roomTitle,
   scheduledAt,
 }: ScheduleSuccessDialogProps) {
-  const [copied, setCopied] = useState(false);
+  const [copiedId, setCopiedId] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // Smooth entrance animation
@@ -42,13 +43,37 @@ export function ScheduleSuccessDialog({
       ? `${window.location.origin}/room/${roomId}`
       : "";
 
+  const handleCopyId = async () => {
+    if (!roomId) return;
+
+    try {
+      await navigator.clipboard.writeText(roomId);
+      setCopiedId(true);
+      setTimeout(() => setCopiedId(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+      try {
+        const textArea = document.createElement("textarea");
+        textArea.value = roomId;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        setCopiedId(true);
+        setTimeout(() => setCopiedId(false), 2000);
+      } catch (fallbackErr) {
+        console.error("Fallback copy failed:", fallbackErr);
+      }
+    }
+  };
+
   const handleCopyLink = async () => {
     if (!roomUrl) return;
 
     try {
       await navigator.clipboard.writeText(roomUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
     } catch (err) {
       console.error("Failed to copy:", err);
       // Fallback for older browsers
@@ -59,8 +84,8 @@ export function ScheduleSuccessDialog({
         textArea.select();
         document.execCommand("copy");
         document.body.removeChild(textArea);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2000);
       } catch (fallbackErr) {
         console.error("Fallback copy failed:", fallbackErr);
       }
@@ -176,17 +201,17 @@ export function ScheduleSuccessDialog({
                       </code>
                       <Button
                         size="sm"
-                        onClick={handleCopyLink}
+                        onClick={handleCopyId}
                         className="bg-mysecondary hover:bg-mysecondary-hover text-white border-0 transition-all duration-200 shadow-sm hover:shadow-md"
                       >
                         <div className="flex items-center gap-2">
-                          {copied ? (
+                          {copiedId ? (
                             <Check className="w-4 h-4" />
                           ) : (
                             <Copy className="w-4 h-4" />
                           )}
                           <span className="font-medium">
-                            {copied ? "Copied" : "Copy"}
+                            {copiedId ? "Copied" : "Copy"}
                           </span>
                         </div>
                       </Button>
@@ -211,13 +236,13 @@ export function ScheduleSuccessDialog({
                         className="border-mysecondary/20 text-mysecondary hover:bg-mysecondary hover:text-white transition-all duration-200"
                       >
                         <div className="flex items-center gap-2">
-                          {copied ? (
+                          {copiedLink ? (
                             <Check className="w-4 h-4" />
                           ) : (
                             <Copy className="w-4 h-4" />
                           )}
                           <span className="font-medium">
-                            {copied ? "Copied" : "Copy"}
+                            {copiedLink ? "Copied" : "Copy"}
                           </span>
                         </div>
                       </Button>
