@@ -156,10 +156,9 @@ export default function RoomPage({
               room: data.room,
             });
 
-            // If user is host and room is live, automatically join the editor
-            if (isUserHost) {
-              setHasJoinedEditor(true);
-            }
+            // Do not automatically join the editor on initial load.
+            // Hosts redirected here after creating/starting a room should
+            // see the RoomStatusCard and explicitly click to enter.
             return;
           }
 

@@ -169,7 +169,7 @@ function ActionArea({
         <PrimaryAction
           label={"Start Room"}
           onClick={onStart}
-          disabled={!disabled}
+          disabled={disabled}
           loading={isStarting}
         />
       ) : (
@@ -208,9 +208,15 @@ function CardContent({
   copied: boolean;
   onCopy: () => void;
 }) {
-  const disabled = roomState === "scheduled" || roomState === "ended";
-  const router = useRouter();
+  // A button should be enabled when:
+  // - room is live, OR
+  // - room is scheduled AND the user is the host
+  // Otherwise it should be disabled (including ended rooms).
+  const enabled = roomState === "live" || (roomState === "scheduled" && isHost);
 
+  const disabled = roomState === "ended" || !enabled;
+
+  const router = useRouter();
   const handleGoToDashboard = () => {
     router.push("/dashboard");
   };
