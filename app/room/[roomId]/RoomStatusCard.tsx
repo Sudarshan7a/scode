@@ -84,7 +84,9 @@ function RoomShareSection({
   copied: boolean;
   onCopy: () => void;
 }) {
-  if (roomState !== "scheduled" || !roomId) return null;
+  // Show the share section whenever we have a roomId so users can copy
+  // the room ID or link from any card (scheduled, live, ended, etc.).
+  if (!roomId) return null;
 
   return (
     <div className="p-3 rounded-lg bg-gradient-to-r from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/20 border border-blue-200/50 dark:border-blue-700/50">
