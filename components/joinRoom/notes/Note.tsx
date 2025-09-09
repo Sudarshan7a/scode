@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 function Note({ sessionId }: { sessionId: string }) {
   const storageKey = `note-${sessionId}`;
@@ -13,6 +13,12 @@ function Note({ sessionId }: { sessionId: string }) {
     const saved = localStorage.getItem(storageKey);
     if (saved) setContent(saved);
   }, [storageKey]);
+
+  // Memoized content change handler
+  const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value);
+    setStatus("unsaved");
+  }, []);
 
   useEffect(() => {
     if (content === "") return;
@@ -42,10 +48,7 @@ function Note({ sessionId }: { sessionId: string }) {
 
         <textarea
           value={content}
-          onChange={(e) => {
-            setContent(e.target.value);
-            setStatus("unsaved");
-          }}
+          onChange={handleContentChange}
           style={{
             lineHeight: "24px",
             backgroundSize: "100% 24px",

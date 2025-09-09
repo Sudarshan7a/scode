@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { productHighlights } from "@/constants/productHighlights";
 import VideoIcon from "@/components/icons/VideoIcon";
 import ChartIcon from "@/components/icons/ChartIcon";
@@ -9,6 +9,12 @@ import ShieldIcon from "@/components/icons/ShieldIcon";
 
 function ProductHighlightCard() {
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Single event handler using event delegation
+  const handleSlideClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    const index = parseInt(e.currentTarget.dataset.index || '0', 10);
+    setCurrentSlide(index);
+  }, []);
 
   // Auto-slide every 5 seconds
   useEffect(() => {
@@ -68,7 +74,8 @@ function ProductHighlightCard() {
         {productHighlights.map((_, index) => (
           <button
             key={index}
-            onClick={() => setCurrentSlide(index)}
+            data-index={index}
+            onClick={handleSlideClick}
             className={`w-2.5 h-2.5 rounded-full transition-all hover:bg-primary/70 cursor-pointer ${
               index === currentSlide ? "w-6 bg-primary" : "bg-gray-300"
             }`}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Button } from "./ui/button";
 import ErrorBoundary from "./ErrorBoundary";
 import AsyncErrorBoundary from "./AsyncErrorBoundary";
@@ -29,9 +29,17 @@ export default function ErrorBoundaryTest() {
   const [throwError, setThrowError] = useState(false);
   const [asyncError, setAsyncError] = useState(false);
 
-  const handleRetry = () => {
+  const handleRetry = useCallback(() => {
     setAsyncError(false);
-  };
+  }, []);
+
+  const handleToggleError = useCallback(() => {
+    setThrowError(!throwError);
+  }, [throwError]);
+
+  const handleToggleAsyncError = useCallback(() => {
+    setAsyncError(!asyncError);
+  }, [asyncError]);
 
   return (
     <div className="p-8 space-y-8">
@@ -40,7 +48,7 @@ export default function ErrorBoundaryTest() {
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">Test Global Error Boundary</h2>
         <Button
-          onClick={() => setThrowError(!throwError)}
+          onClick={handleToggleError}
           variant={throwError ? "destructive" : "default"}
         >
           {throwError ? "Fix Error" : "Trigger Error"}
@@ -54,7 +62,7 @@ export default function ErrorBoundaryTest() {
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">Test Async Error Boundary</h2>
         <Button
-          onClick={() => setAsyncError(!asyncError)}
+          onClick={handleToggleAsyncError}
           variant={asyncError ? "destructive" : "default"}
         >
           {asyncError ? "Fix Async Error" : "Trigger Async Error"}

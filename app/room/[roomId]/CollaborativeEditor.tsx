@@ -44,6 +44,15 @@ export default function CollaborativeEditor({
   const [languageId, setLanguageId] = useState("javascript");
 
   const selectLanguage = useCallback((lang: string) => setLanguageId(lang), []);
+
+  // Single event handler using data attributes
+  const handleLanguageSelect = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const langId = e.currentTarget.dataset.langId;
+    if (langId) {
+      selectLanguage(langId);
+    }
+  }, [selectLanguage]);
+
   // container handles cleanup on unmount
   function LanguageSelector() {
     return (
@@ -58,7 +67,8 @@ export default function CollaborativeEditor({
             {languages.map((l) => (
               <DropdownMenuItem
                 key={l.id}
-                onClick={() => selectLanguage(l.id)}
+                data-lang-id={l.id}
+                onClick={handleLanguageSelect}
                 className={l.id === languageId ? "font-semibold" : undefined}
               >
                 {l.label}
