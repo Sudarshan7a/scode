@@ -57,8 +57,8 @@ export default function Home() {
 
     return (
       <div className="space-y-4">
-        {rooms.map((room: mockRooms) => (
-          <RoomCard key={room.title || room._id.$oid} room={room} />
+        {rooms.map((room) => (
+          <RoomCard key={room.id || room.title} room={room as unknown as mockRooms} />
         ))}
       </div>
     );
