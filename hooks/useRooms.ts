@@ -3,6 +3,16 @@ import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 
 type RoomStatus = "live" | "scheduled" | "ended" | "saved";
 
+type Room = {
+  id: string;
+  title: string;
+  status: RoomStatus;
+  isPrivate: boolean;
+  createdAt: string;
+  scheduledAt?: string;
+  [key: string]: unknown;
+};
+
 type UseRoomsOptions = {
   privacy?: "private" | "public" | "both"; // Filter for private, public, or both rooms
   status?: RoomStatus[]; // Filter by room status (live, scheduled, etc.)
@@ -10,7 +20,7 @@ type UseRoomsOptions = {
 
 export function useRooms(options: UseRoomsOptions = {}) {
   const { privacy = "both", status } = options;
-  const [allRooms, setAllRooms] = useState<any[]>([]);
+  const [allRooms, setAllRooms] = useState<Room[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const fetchingRef = useRef(false);
@@ -47,7 +57,7 @@ export function useRooms(options: UseRoomsOptions = {}) {
   // Fetch rooms only once on mount
   useEffect(() => {
     fetchRooms();
-  }, []); // Remove fetchRooms from dependencies to prevent re-renders
+  }, [fetchRooms]);
 
   const refetch = useCallback(() => {
     fetchRooms();

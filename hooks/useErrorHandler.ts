@@ -33,7 +33,7 @@ export function useErrorHandler() {
   const { error: showErrorToast } = useToast();
 
   const handleError = useCallback(
-    (error: Error, errorInfo?: any, showToast = true) => {
+    (error: Error, errorInfo?: { retryFunction?: () => void; [key: string]: unknown }, showToast = true) => {
       console.error("Error caught by error handler:", error, errorInfo);
 
       // Show user-friendly toast notification
@@ -48,7 +48,7 @@ export function useErrorHandler() {
           action: hasRetryFunction
             ? {
                 label: "Retry",
-                onClick: errorInfo.retryFunction,
+                onClick: errorInfo.retryFunction!,
               }
             : undefined,
         });

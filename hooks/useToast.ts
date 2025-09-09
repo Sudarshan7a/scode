@@ -70,19 +70,16 @@ export interface UseToastReturn {
  * ```
  */
 function makeHandler(
-  handler: any,
+  handler: (message: string, options?: Record<string, unknown>) => string | number,
   defaults: { duration?: number; allowAction?: boolean } = {}
 ) {
-  return (message: string, options?: any) => {
-    const payload: any = {
+  return (message: string, options?: ToastOptions) => {
+    const payload = {
       duration: options?.duration ?? defaults.duration,
       position: options?.position,
       dismissible: options?.dismissible ?? true,
+      ...(defaults.allowAction && options?.action ? { action: options.action } : {}),
     };
-
-    if (defaults.allowAction) {
-      payload.action = options?.action;
-    }
 
     return handler(message, payload);
   };
@@ -127,7 +124,11 @@ export function useToast(): UseToastReturn {
 
   const dismiss = useCallback((toastId?: string | number) => {
     // sonner.toast.dismiss accepts an optional id; calling it with undefined will dismiss all
-    toast.dismiss(toastId as any);
+    if (toastId !== undefined) {
+      toast.dismiss(toastId);
+    } else {
+      toast.dismiss();
+    }
   }, []);
 
   const dismissAll = useCallback(() => {

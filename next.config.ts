@@ -11,10 +11,12 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  webpack: (config, { dev, isServer }) => {
+  webpack: (config, { isServer }) => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const path = require("path");
     config.resolve.alias = {
       ...config.resolve.alias,
-      "@": require("path").resolve(__dirname),
+      "@": path.resolve(__dirname),
     };
 
     // Monaco Editor compatibility fixes
