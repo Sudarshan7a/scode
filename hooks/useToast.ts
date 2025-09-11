@@ -70,7 +70,10 @@ export interface UseToastReturn {
  * ```
  */
 function makeHandler(
-  handler: (message: string, options?: Record<string, unknown>) => string | number,
+  handler: (
+    message: string,
+    options?: Record<string, unknown>
+  ) => string | number,
   defaults: { duration?: number; allowAction?: boolean } = {}
 ) {
   return (message: string, options?: ToastOptions) => {
@@ -78,7 +81,9 @@ function makeHandler(
       duration: options?.duration ?? defaults.duration,
       position: options?.position,
       dismissible: options?.dismissible ?? true,
-      ...(defaults.allowAction && options?.action ? { action: options.action } : {}),
+      ...(defaults.allowAction && options?.action
+        ? { action: options.action }
+        : {}),
     };
 
     return handler(message, payload);

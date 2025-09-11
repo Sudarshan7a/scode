@@ -58,7 +58,10 @@ export default function Home() {
     return (
       <div className="space-y-4">
         {rooms.map((room) => (
-          <RoomCard key={room.id || room.title} room={room as unknown as mockRooms} />
+          <RoomCard
+            key={room.id || room.title}
+            room={room as unknown as mockRooms}
+          />
         ))}
       </div>
     );

@@ -15,10 +15,13 @@ function Note({ sessionId }: { sessionId: string }) {
   }, [storageKey]);
 
   // Memoized content change handler
-  const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
-    setStatus("unsaved");
-  }, []);
+  const handleContentChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setContent(e.target.value);
+      setStatus("unsaved");
+    },
+    []
+  );
 
   useEffect(() => {
     if (content === "") return;

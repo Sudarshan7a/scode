@@ -35,15 +35,21 @@ export function Calendar24({
   //   }
   // }}
 
-  const handleDateSelect = React.useCallback((d: Date | undefined) => {
-    setDate(d);
-    if (d) onChangeDate?.(d);
-    setOpen(false);
-  }, [onChangeDate]);
+  const handleDateSelect = React.useCallback(
+    (d: Date | undefined) => {
+      setDate(d);
+      if (d) onChangeDate?.(d);
+      setOpen(false);
+    },
+    [onChangeDate]
+  );
 
-  const handleTimeChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    onChangeTime?.(e.target.value);
-  }, [onChangeTime]);
+  const handleTimeChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChangeTime?.(e.target.value);
+    },
+    [onChangeTime]
+  );
 
   return (
     <div className="flex gap-4">
