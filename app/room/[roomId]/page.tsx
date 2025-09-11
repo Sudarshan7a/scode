@@ -46,6 +46,12 @@ export default function RoomPage({
   const handleStartRoom = async () => {
     setIsStarting(true);
     try {
+      // Basic client-side validation: Mongo ObjectId is 24 hex chars
+      if (!/^[a-fA-F0-9]{24}$/.test(String(roomId))) {
+        console.error("Invalid roomId format, aborting start:", roomId);
+        setIsStarting(false);
+        return;
+      }
       const resp = await axiosInstance.post("/api/rooms/start", {
         roomId,
       });
@@ -56,7 +62,14 @@ export default function RoomPage({
         setHasJoinedEditor(true);
       }
     } catch (error) {
-      console.error("Failed to start room:", error);
+      // Log server response body when available for easier debugging
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const e = error as any;
+      if (e && e.response && e.response.data) {
+        console.error("Failed to start room - server response:", e.response.data);
+      } else {
+        console.error("Failed to start room:", error);
+      }
       // You could show an error message here
     } finally {
       setIsStarting(false);
@@ -66,6 +79,11 @@ export default function RoomPage({
   const handleJoinRoom = async () => {
     setIsJoining(true);
     try {
+      if (!/^[a-fA-F0-9]{24}$/.test(String(roomId))) {
+        console.error("Invalid roomId format, aborting join:", roomId);
+        setIsJoining(false);
+        return;
+      }
       const resp = await axiosInstance.post("/api/rooms/join", {
         roomId,
       });
@@ -75,7 +93,12 @@ export default function RoomPage({
         setHasJoinedEditor(true);
       }
     } catch (error) {
-      console.error("Failed to join room:", error);
+      const e = error as any;
+      if (e && e.response && e.response.data) {
+        console.error("Failed to join room - server response:", e.response.data);
+      } else {
+        console.error("Failed to join room:", error);
+      }
       // You could show an error message here
     } finally {
       setIsJoining(false);
@@ -97,12 +120,21 @@ export default function RoomPage({
         setHasJoinedEditor(false);
       }
     } catch (error) {
-      // If authentication failed, redirect to login
-      if (error && typeof error === "object" && "response" in error) {
+      // If authentication failed, redirect to login. Also log server response.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const e = error as any;
+      if (e && e.response && e.response.data) {
+        console.error("Failed to end session - server response:", e.response.data);
+        if (e.response.status === 401) {
+          window.location.href = "/login";
+        }
+      } else if (error && typeof error === "object" && "response" in error) {
         const axiosError = error as { response?: { status?: number } };
         if (axiosError.response?.status === 401) {
           window.location.href = "/login";
         }
+      } else {
+        console.error("Failed to end session:", error);
       }
       // You could show an error message here
     } finally {
