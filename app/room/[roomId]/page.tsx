@@ -18,6 +18,14 @@ const isObject = (value: unknown): value is Record<string, unknown> => {
   return value !== null && typeof value === "object";
 };
 
+// Narrower guard for Axios-like errors { response: { status?, data? } }
+type AxiosErrorLike = { response: { status?: number; data?: unknown } };
+const hasAxiosResponse = (err: unknown): err is AxiosErrorLike => {
+  if (!isObject(err)) return false;
+  const resp = (err as Record<string, unknown>).response;
+  return isObject(resp);
+};
+
 export default function RoomPage({
   params,
 }: {
@@ -61,12 +69,13 @@ export default function RoomPage({
         setRoomState("live");
         setHasJoinedEditor(true);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       // Log server response body when available for easier debugging
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const e = error as any;
-      if (e && e.response && e.response.data) {
-        console.error("Failed to start room - server response:", e.response.data);
+      if (hasAxiosResponse(error)) {
+        console.error(
+          "Failed to start room - server response:",
+          error.response.data
+        );
       } else {
         console.error("Failed to start room:", error);
       }
@@ -92,10 +101,12 @@ export default function RoomPage({
         // Successfully joined, set joined flag
         setHasJoinedEditor(true);
       }
-    } catch (error) {
-      const e = error as any;
-      if (e && e.response && e.response.data) {
-        console.error("Failed to join room - server response:", e.response.data);
+    } catch (error: unknown) {
+      if (hasAxiosResponse(error)) {
+        console.error(
+          "Failed to join room - server response:",
+          error.response.data
+        );
       } else {
         console.error("Failed to join room:", error);
       }
@@ -119,18 +130,14 @@ export default function RoomPage({
         setRoomState("ended");
         setHasJoinedEditor(false);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       // If authentication failed, redirect to login. Also log server response.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const e = error as any;
-      if (e && e.response && e.response.data) {
-        console.error("Failed to end session - server response:", e.response.data);
-        if (e.response.status === 401) {
-          window.location.href = "/login";
-        }
-      } else if (error && typeof error === "object" && "response" in error) {
-        const axiosError = error as { response?: { status?: number } };
-        if (axiosError.response?.status === 401) {
+      if (hasAxiosResponse(error)) {
+        console.error(
+          "Failed to end session - server response:",
+          error.response.data
+        );
+        if (error.response.status === 401) {
           window.location.href = "/login";
         }
       } else {
