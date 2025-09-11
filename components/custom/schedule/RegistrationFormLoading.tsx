@@ -162,6 +162,10 @@ export default function RegistrationFormLoading({
     scheduledAt?: string;
   } | null>(null);
 
+  const handleSuccessDialogClose = React.useCallback(() => {
+    setShowSuccessDialog(false);
+  }, []);
+
   const handleScheduleSubmit = async (data: CreateRoomSchema) => {
     setIsScheduling(true);
     resetScheduleSteps();
@@ -404,7 +408,7 @@ export default function RegistrationFormLoading({
       {showSuccessDialog && successData && (
         <ScheduleSuccessDialog
           isOpen={showSuccessDialog}
-          onClose={() => setShowSuccessDialog(false)}
+          onClose={handleSuccessDialogClose}
           roomId={successData.roomId}
           roomTitle={successData.roomTitle}
           scheduledAt={successData.scheduledAt}
