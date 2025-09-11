@@ -35,6 +35,16 @@ export function Calendar24({
   //   }
   // }}
 
+  const handleDateSelect = React.useCallback((d: Date | undefined) => {
+    setDate(d);
+    if (d) onChangeDate?.(d);
+    setOpen(false);
+  }, [onChangeDate]);
+
+  const handleTimeChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    onChangeTime?.(e.target.value);
+  }, [onChangeTime]);
+
   return (
     <div className="flex gap-4">
       <div className="flex flex-col gap-3">
@@ -58,14 +68,7 @@ export function Calendar24({
               mode="single"
               selected={selected}
               captionLayout="dropdown"
-              onSelect={(date) => {
-                setDate(date);
-
-                if (date) {
-                  onChangeDate?.(date);
-                }
-                setOpen(false);
-              }}
+              onSelect={handleDateSelect}
             />
           </PopoverContent>
         </Popover>
@@ -80,11 +83,7 @@ export function Calendar24({
           step="1"
           defaultValue="10:30:00"
           className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-          onChange={(e) => {
-            if (onChangeTime) {
-              onChangeTime(e.target.value as string);
-            }
-          }}
+          onChange={handleTimeChange}
         />
       </div>
     </div>
