@@ -160,6 +160,7 @@ function ActionArea({
   onJoin,
   isStarting,
   isJoining,
+  roomState,
 }: {
   isHost?: boolean;
   disabled: boolean;
@@ -167,24 +168,24 @@ function ActionArea({
   onJoin?: () => void;
   isStarting?: boolean;
   isJoining?: boolean;
+  roomState?: RoomState;
 }) {
+  // Determine primary action based on room state and role
+  const isLive = roomState === "live";
+  const canStart = roomState === "scheduled" && isHost;
+
+  const label = isLive ? "Join Room" : canStart ? "Start Room" : "Join Room";
+  const onClick = isLive ? onJoin : canStart ? onStart : onJoin;
+  const loading = isLive ? isJoining : canStart ? isStarting : isJoining;
+
   return (
     <div className="space-y-2">
-      {isHost ? (
-        <PrimaryAction
-          label={"Start Room"}
-          onClick={onStart}
-          disabled={disabled}
-          loading={isStarting}
-        />
-      ) : (
-        <PrimaryAction
-          label={disabled ? "Unavailable" : "Join Room"}
-          onClick={onJoin}
-          disabled={disabled}
-          loading={isJoining}
-        />
-      )}
+      <PrimaryAction
+        label={disabled && label !== "Start Room" ? "Unavailable" : label}
+        onClick={onClick}
+        disabled={disabled}
+        loading={Boolean(loading)}
+      />
 
       <Button className="w-full text-foreground/80 py-2 text-sm rounded-md border-1 border-foreground/60 transition-all duration-300 bg-foreground/5 hover:bg-mysecondary/40">
         View Details
@@ -289,6 +290,7 @@ function CardContent({
               onJoin={onJoin}
               isStarting={isStarting}
               isJoining={isJoining}
+              roomState={roomState}
             />
           )}
         </div>
