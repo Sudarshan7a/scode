@@ -11,10 +11,13 @@ function ProductHighlightCard() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   // Single event handler using event delegation
-  const handleSlideClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    const index = parseInt(e.currentTarget.dataset.index || '0', 10);
-    setCurrentSlide(index);
-  }, []);
+  const handleSlideClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const index = parseInt(e.currentTarget.dataset.index || "0", 10);
+      setCurrentSlide(index);
+    },
+    []
+  );
 
   // Auto-slide every 5 seconds
   useEffect(() => {
