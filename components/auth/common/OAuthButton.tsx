@@ -17,11 +17,7 @@ export default function OAuthButton({
   className = "",
 }: OAuthButtonProps) {
   const handleClick = () => {
-    if (onClick) {
-      onClick();
-    } else {
-      // TODO: Default OAuth logic could go here
-    }
+    if (onClick) onClick();
   };
 
   return (
