@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "git stage & commit toast",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"add",
+				"-A",
+				";",
+				"git",
+				"commit",
+				"-m",
+				"feat(room): show toast on leaving room and navigate via client router for persistence"
+			]
+		}
+	]
+}

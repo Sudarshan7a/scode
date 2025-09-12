@@ -12,6 +12,8 @@ import RoomStatusCard from "./RoomStatusCard";
 import { axiosInstance } from "@/lib/axiosInstance";
 import AsyncErrorBoundary from "@/components/AsyncErrorBoundary";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { useRouter } from "next/navigation";
+import { useToast, TOAST_MESSAGES } from "../../../hooks/useToast";
 
 // Type guards for API response - moved outside component
 const isObject = (value: unknown): value is Record<string, unknown> => {
@@ -32,6 +34,8 @@ export default function RoomPage({
   params: Promise<{ roomId: string }>;
 }) {
   const { roomId } = use(params);
+  const router = useRouter();
+  const { success } = useToast();
 
   // roomState: loading | not-found | scheduled | ended | live | error
   const [roomState, setRoomState] = useState<
@@ -41,6 +45,7 @@ export default function RoomPage({
   const [isStarting, setIsStarting] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
   const [isEnding, setIsEnding] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
   const [isHost, setIsHost] = useState(false);
   const [hasJoinedEditor, setHasJoinedEditor] = useState(false);
 
@@ -146,6 +151,21 @@ export default function RoomPage({
       // You could show an error message here
     } finally {
       setIsEnding(false);
+    }
+  };
+
+  const handleLeaveRoom = async () => {
+    setIsLeaving(true);
+    try {
+      // No server route required: unmounting the editor will disconnect.
+      setHasJoinedEditor(false);
+      // Show confirmation toast and navigate using client routing so toast persists
+      success(TOAST_MESSAGES.ROOM.LEFT);
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Failed to leave room:", error);
+    } finally {
+      setIsLeaving(false);
     }
   };
 
@@ -411,6 +431,8 @@ export default function RoomPage({
                   isHost={isHost}
                   onEndSession={handleEndSession}
                   isEnding={isEnding}
+                  onLeaveRoom={handleLeaveRoom}
+                  isLeaving={isLeaving}
                 />
               </AsyncErrorBoundary>
             </ResizablePanel>

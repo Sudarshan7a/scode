@@ -28,11 +28,15 @@ export default function CollaborativeEditor({
   isHost = false,
   onEndSession,
   isEnding = false,
+  onLeaveRoom,
+  isLeaving = false,
 }: {
   roomId: string;
   isHost?: boolean;
   onEndSession?: () => Promise<void>;
   isEnding?: boolean;
+  onLeaveRoom?: () => Promise<void>;
+  isLeaving?: boolean;
 }) {
   // render a page and check if the room exists and live if not then show 404
   //if room schedule then show when will it start and if ended show  ended
@@ -78,7 +82,7 @@ export default function CollaborativeEditor({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* End Session Button - Only shown for hosts */}
+        {/* Host sees End Session; participants see Leave Room */}
         {isHost && onEndSession && (
           <Button
             variant="destructive"
@@ -94,6 +98,25 @@ export default function CollaborativeEditor({
               </>
             ) : (
               "End Session"
+            )}
+          </Button>
+        )}
+
+        {!isHost && onLeaveRoom && (
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={onLeaveRoom}
+            disabled={isLeaving}
+            className="ml-auto"
+          >
+            {isLeaving ? (
+              <>
+                <LoadingSpinner size="small" className="mr-2" />
+                Leaving...
+              </>
+            ) : (
+              "Leave Room"
             )}
           </Button>
         )}
