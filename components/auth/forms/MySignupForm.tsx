@@ -2,12 +2,12 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { SignupFormValues } from "../../../types/authTypes";
+import { SignupFormValues } from "@/types/authTypes";
 import OAuthSection from "../common/OAuthSection";
 import FormDivider from "../common/FormDivider";
 import SignupEmailPasswordForm from "./SignupEmailPasswordForm";
 import TermsAndPrivacy from "../common/TermsAndPrivacy";
-import { useToast, TOAST_MESSAGES } from "../../../hooks/useToast";
+import { useToast, TOAST_MESSAGES } from "@/hooks/useToast";
 export function MySignupForm() {
   const router = useRouter();
   const { success, error } = useToast();

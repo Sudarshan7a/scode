@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getUpcomingRooms } from "../../../../lib/getMongoData";
+import { getUpcomingRooms } from "@/lib/getMongoData";
 
 export async function GET() {
   try {

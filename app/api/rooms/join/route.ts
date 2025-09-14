@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withAuth } from "./../../../../lib/authMiddleware";
+import { withAuth } from "@/lib/authMiddleware";
 import { z } from "zod";
 import { connectToMongo } from "@/lib/mongodb";
 import { ObjectId, UpdateFilter, Document, Collection } from "mongodb";
@@ -46,7 +46,10 @@ async function findRoom(
 }
 
 // helper: check status and return a response if not joinable, otherwise null
-function checkRoomStatus(room: RoomLike, roomIdStr: string): NextResponse | null {
+function checkRoomStatus(
+  room: RoomLike,
+  roomIdStr: string
+): NextResponse | null {
   const status = room.status;
   if (status === "scheduled") {
     return NextResponse.json(
@@ -97,10 +100,9 @@ async function ensureCollaborator(
     room.collaborators!.some((c) => String(c.userId) === String(userIdStr));
 
   if (!existing) {
-    await roomsCollection.updateOne(
-      { _id: new ObjectId(String(room._id)) },
-      ({ $push: { collaborators: collaborator } } as unknown) as UpdateFilter<Document>
-    );
+    await roomsCollection.updateOne({ _id: new ObjectId(String(room._id)) }, {
+      $push: { collaborators: collaborator },
+    } as unknown as UpdateFilter<Document>);
   }
 }
 
@@ -152,7 +154,10 @@ function getUserCookieId(request: NextRequest) {
   return String(userCookie.value);
 }
 
-async function findRoomOrThrow(roomsCollection: Collection<Document>, roomIdStr: string) {
+async function findRoomOrThrow(
+  roomsCollection: Collection<Document>,
+  roomIdStr: string
+) {
   const room = await findRoom(roomsCollection, roomIdStr);
   if (!room) {
     throw new HttpError(404, { error: "room not found" });

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withAuth } from "./../../../../lib/authMiddleware";
-import { connectToMongo } from "./../../../../lib/mongodb";
+import { withAuth } from "@/lib/authMiddleware";
+import { connectToMongo } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
 // Function to notify WebSocket server about room ending

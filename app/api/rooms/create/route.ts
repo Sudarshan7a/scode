@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withAuth } from "./../../../../lib/authMiddleware";
+import { withAuth } from "@/lib/authMiddleware";
 import { z } from "zod";
 // import { connectToMongo } from "./../../../../lib/mongodb";
 import { ObjectId } from "mongodb";
