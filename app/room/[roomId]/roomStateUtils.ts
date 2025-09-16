@@ -25,13 +25,33 @@ export const logRequestError = (context: string, error: unknown) => {
   }
 };
 
-export type ScheduledInfo = { scheduledAt: string | null; title?: unknown; description?: unknown };
+export type ScheduledInfo = {
+  scheduledAt: string | null;
+  title?: unknown;
+  description?: unknown;
+};
 export type EndedInfo = { title?: unknown; endedAt?: unknown };
-export type LiveInfo = { title?: unknown; description?: unknown; room?: unknown };
+export type LiveInfo = {
+  title?: unknown;
+  description?: unknown;
+  room?: unknown;
+};
 export type ErrorInfo = { message: string };
-export type RoomInfo = ScheduledInfo | EndedInfo | LiveInfo | ErrorInfo | Record<string, unknown> | null;
+export type RoomInfo =
+  | ScheduledInfo
+  | EndedInfo
+  | LiveInfo
+  | ErrorInfo
+  | Record<string, unknown>
+  | null;
 
-export type RoomState = "loading" | "not-found" | "scheduled" | "ended" | "live" | "error";
+export type RoomState =
+  | "loading"
+  | "not-found"
+  | "scheduled"
+  | "ended"
+  | "live"
+  | "error";
 
 // Minimal shape returned by /api/rooms/details
 export type RoomDetailsData = {
@@ -45,7 +65,9 @@ export type RoomDetailsData = {
 };
 
 // Parse a details response into state, info, and host flag
-export const deriveRoomState = (data: RoomDetailsData): {
+export const deriveRoomState = (
+  data: RoomDetailsData
+): {
   nextState: RoomState;
   nextInfo: RoomInfo;
   isHost: boolean;
@@ -96,7 +118,9 @@ export const deriveRoomState = (data: RoomDetailsData): {
 };
 
 // Convert an error into state/info outcome for the UI
-export const deriveErrorState = (err: unknown): { nextState: RoomState; nextInfo: RoomInfo } => {
+export const deriveErrorState = (
+  err: unknown
+): { nextState: RoomState; nextInfo: RoomInfo } => {
   if (hasAxiosResponse(err)) {
     const status = err.response.status ?? 0;
     const errorData = err.response.data as unknown;
@@ -104,7 +128,9 @@ export const deriveErrorState = (err: unknown): { nextState: RoomState; nextInfo
     if (status === 401)
       return {
         nextState: "error",
-        nextInfo: { message: "Unauthorized. Please sign in to view this room." },
+        nextInfo: {
+          message: "Unauthorized. Please sign in to view this room.",
+        },
       };
     return {
       nextState: "error",

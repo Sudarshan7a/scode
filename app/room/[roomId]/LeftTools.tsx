@@ -1,12 +1,20 @@
 import React from "react";
-import MainContent from "../../../components/joinRoom/MainContent";
 import BottomBar from "../../../components/joinRoom/BottomBar";
+import VideoCallContainer from "./VideoCallContainer";
 
-function LeftTools() {
+type Props = {
+  roomId: string;
+};
+
+function LeftTools({ roomId }: Props) {
   return (
-    <div className="w-full h-full flex flex-col ">
-      <MainContent renderTab="AI chat" />
-      <BottomBar />
+    <div className="w-full h-full flex flex-col">
+      <div className="p-2">
+        <VideoCallContainer roomId={roomId} />
+      </div>
+      <div className="mt-auto">
+        <BottomBar />
+      </div>
     </div>
   );
 }

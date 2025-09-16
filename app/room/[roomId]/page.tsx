@@ -149,15 +149,17 @@ export default function RoomPage() {
         if (!mounted) return;
         const data = resp.data as unknown;
         if (isObject(data)) {
-          const { nextState, nextInfo, isHost } = deriveRoomState(data as {
-            isHost?: boolean;
-            status?: string;
-            scheduledAt?: string | null;
-            title?: unknown;
-            description?: unknown;
-            endedAt?: unknown;
-            room?: unknown;
-          });
+          const { nextState, nextInfo, isHost } = deriveRoomState(
+            data as {
+              isHost?: boolean;
+              status?: string;
+              scheduledAt?: string | null;
+              title?: unknown;
+              description?: unknown;
+              endedAt?: unknown;
+              room?: unknown;
+            }
+          );
           setIsHost(isHost);
           setRoomState(nextState);
           setRoomInfo(nextInfo);
@@ -179,7 +181,7 @@ export default function RoomPage() {
   }, [roomId]);
 
   return (
-    <div className="flex h-screen w-full justify-between">
+    <div className="flex flex-col h-screen w-full">
       {/* Render different UIs based on room state */}
       {roomState === "loading" && (
         <RoomStatusCard
@@ -311,14 +313,16 @@ export default function RoomPage() {
 
       {/* Show collaborative editor ONLY for live rooms where user has joined */}
       {roomState === "live" && hasJoinedEditor && (
-        <LiveEditorPanels
-          roomId={roomId}
-          isHost={isHost}
-          onEndSession={handleEndSession}
-          isEnding={isEnding}
-          onLeaveRoom={handleLeaveRoom}
-          isLeaving={isLeaving}
-        />
+        <div className="flex-1 min-h-0">
+          <LiveEditorPanels
+            roomId={roomId}
+            isHost={isHost}
+            onEndSession={handleEndSession}
+            isEnding={isEnding}
+            onLeaveRoom={handleLeaveRoom}
+            isLeaving={isLeaving}
+          />
+        </div>
       )}
     </div>
   );

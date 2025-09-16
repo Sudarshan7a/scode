@@ -14,6 +14,66 @@
 				"-m",
 				"feat(room): show toast on leaving room and navigate via client router for persistence"
 			]
+		},
+		{
+			"label": "pnpm-build",
+			"type": "shell",
+			"command": "pnpm",
+			"args": [
+				"run",
+				"-s",
+				"build"
+			],
+			"problemMatcher": [
+				"$tsc",
+				"$eslint-stylish"
+			],
+			"group": "build"
+		},
+		{
+			"label": "pnpm-build",
+			"type": "shell",
+			"command": "pnpm",
+			"args": [
+				"run",
+				"-s",
+				"build"
+			],
+			"problemMatcher": [
+				"$tsc",
+				"$eslint-stylish"
+			],
+			"group": "build"
+		},
+		{
+			"label": "pnpm-build",
+			"type": "shell",
+			"command": "pnpm",
+			"args": [
+				"run",
+				"-s",
+				"build"
+			],
+			"problemMatcher": [
+				"$tsc",
+				"$eslint-stylish"
+			],
+			"group": "build"
+		},
+		{
+			"label": "pnpm-build",
+			"type": "shell",
+			"command": "pnpm",
+			"args": [
+				"run",
+				"-s",
+				"build"
+			],
+			"problemMatcher": [
+				"$tsc",
+				"$eslint-stylish"
+			],
+			"group": "build"
 		}
 	]
 }

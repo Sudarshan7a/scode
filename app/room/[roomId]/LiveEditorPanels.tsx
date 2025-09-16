@@ -1,5 +1,9 @@
 "use client";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import AsyncErrorBoundary from "@/components/AsyncErrorBoundary";
 import LeftTools from "./LeftTools";
 import CollaborativeEditor from "./CollaborativeEditor";
@@ -32,7 +36,7 @@ export default function LiveEditorPanels({
             fallbackTitle="Tools Failed to Load"
             fallbackMessage="Unable to load the sidebar tools."
           >
-            <LeftTools />
+            <LeftTools roomId={roomId} />
           </AsyncErrorBoundary>
         </ResizablePanel>
         <ResizableHandle withHandle />
