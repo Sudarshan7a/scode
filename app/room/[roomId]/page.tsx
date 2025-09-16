@@ -6,14 +6,13 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import CollaborativeEditor from "./CollaborativeEditor";
-import { use } from "react";
 import { useEffect, useState } from "react";
 import RoomStatusCard from "./RoomStatusCard";
 import { axiosInstance } from "@/lib/axiosInstance";
 import AsyncErrorBoundary from "@/components/AsyncErrorBoundary";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { useRouter } from "next/navigation";
-import { useToast, TOAST_MESSAGES } from "../../../hooks/useToast";
+import { useParams, useRouter } from "next/navigation";
+import { useToast, TOAST_MESSAGES } from "@/hooks/useToast";
 
 // Type guards for API response - moved outside component
 const isObject = (value: unknown): value is Record<string, unknown> => {
@@ -28,19 +27,126 @@ const hasAxiosResponse = (err: unknown): err is AxiosErrorLike => {
   return isObject(resp);
 };
 
-export default function RoomPage({
-  params,
-}: {
-  params: Promise<{ roomId: string }>;
-}) {
-  const { roomId } = use(params);
+// Simple validator for Mongo ObjectId strings
+const isValidObjectId = (id: unknown): boolean =>
+  /^[a-fA-F0-9]{24}$/.test(String(id ?? ""));
+
+// Centralized error logger for axios/server errors
+const logRequestError = (context: string, error: unknown) => {
+  if (hasAxiosResponse(error)) {
+    console.error(`${context} - server response:`, error.response.data);
+  } else {
+    console.error(`${context}:`, error);
+  }
+};
+
+// Shared types used across helpers and component state
+type ScheduledInfo = { scheduledAt: string | null; title?: unknown; description?: unknown };
+type EndedInfo = { title?: unknown; endedAt?: unknown };
+type LiveInfo = { title?: unknown; description?: unknown; room?: unknown };
+type ErrorInfo = { message: string };
+type RoomInfo = ScheduledInfo | EndedInfo | LiveInfo | ErrorInfo | Record<string, unknown> | null;
+
+type RoomState = "loading" | "not-found" | "scheduled" | "ended" | "live" | "error";
+
+// Minimal shape returned by /api/rooms/details
+type RoomDetailsData = {
+  isHost?: boolean;
+  status?: string;
+  scheduledAt?: string | null;
+  title?: unknown;
+  description?: unknown;
+  endedAt?: unknown;
+  room?: unknown;
+};
+
+// Parse a details response into state, info, and host flag
+const deriveRoomState = (data: RoomDetailsData): {
+  nextState: RoomState;
+  nextInfo: RoomInfo;
+  isHost: boolean;
+} => {
+  const isUserHost = !!data.isHost;
+  const status = data.status as string | undefined;
+
+  if (status === "scheduled") {
+    return {
+      nextState: "scheduled",
+      nextInfo: {
+        scheduledAt: data.scheduledAt ?? null,
+        title: data.title,
+        description: data.description,
+      },
+      isHost: isUserHost,
+    };
+  }
+
+  if (status === "ended") {
+    return {
+      nextState: "ended",
+      nextInfo: {
+        title: data.title,
+        endedAt: data.endedAt,
+      },
+      isHost: isUserHost,
+    };
+  }
+
+  if (status === "live") {
+    return {
+      nextState: "live",
+      nextInfo: {
+        title: data.title,
+        description: data.description,
+        room: data.room,
+      },
+      isHost: isUserHost,
+    };
+  }
+
+  return {
+    nextState: "error",
+    nextInfo: { message: "Unknown room status" },
+    isHost: isUserHost,
+  };
+};
+
+// Convert an error into state/info outcome for the UI
+const deriveErrorState = (err: unknown): { nextState: RoomState; nextInfo: RoomInfo } => {
+  if (hasAxiosResponse(err)) {
+    const status = err.response.status ?? 0;
+    const errorData = err.response.data as unknown;
+    if (status === 404) return { nextState: "not-found", nextInfo: null };
+    if (status === 401)
+      return {
+        nextState: "error",
+        nextInfo: { message: "Unauthorized. Please sign in to view this room." },
+      };
+    return {
+      nextState: "error",
+      nextInfo: {
+        message: String(
+          isObject(errorData) && "error" in errorData
+            ? (errorData as { error: unknown }).error
+            : "Unknown error"
+        ),
+      },
+    };
+  }
+  return {
+    nextState: "error",
+    nextInfo: { message: err instanceof Error ? err.message : String(err) },
+  };
+};
+
+export default function RoomPage() {
+  const params = useParams<{ roomId: string }>();
+  const roomId = params.roomId;
   const router = useRouter();
   const { success } = useToast();
 
   // roomState: loading | not-found | scheduled | ended | live | error
-  const [roomState, setRoomState] = useState<
-    "loading" | "not-found" | "scheduled" | "ended" | "live" | "error"
-  >("loading");
+  const [roomState, setRoomState] = useState<RoomState>("loading");
 
   const [isStarting, setIsStarting] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
@@ -49,10 +155,6 @@ export default function RoomPage({
   const [isHost, setIsHost] = useState(false);
   const [hasJoinedEditor, setHasJoinedEditor] = useState(false);
 
-  type ScheduledInfo = { scheduledAt: string | null };
-  type ErrorInfo = { message: string };
-  type RoomInfo = ScheduledInfo | ErrorInfo | Record<string, unknown> | null;
-
   const [roomInfo, setRoomInfo] = useState<RoomInfo>(null);
 
   // Button handlers
@@ -60,7 +162,7 @@ export default function RoomPage({
     setIsStarting(true);
     try {
       // Basic client-side validation: Mongo ObjectId is 24 hex chars
-      if (!/^[a-fA-F0-9]{24}$/.test(String(roomId))) {
+      if (!isValidObjectId(roomId)) {
         console.error("Invalid roomId format, aborting start:", roomId);
         setIsStarting(false);
         return;
@@ -76,14 +178,7 @@ export default function RoomPage({
       }
     } catch (error: unknown) {
       // Log server response body when available for easier debugging
-      if (hasAxiosResponse(error)) {
-        console.error(
-          "Failed to start room - server response:",
-          error.response.data
-        );
-      } else {
-        console.error("Failed to start room:", error);
-      }
+      logRequestError("Failed to start room", error);
       // You could show an error message here
     } finally {
       setIsStarting(false);
@@ -93,7 +188,7 @@ export default function RoomPage({
   const handleJoinRoom = async () => {
     setIsJoining(true);
     try {
-      if (!/^[a-fA-F0-9]{24}$/.test(String(roomId))) {
+      if (!isValidObjectId(roomId)) {
         console.error("Invalid roomId format, aborting join:", roomId);
         setIsJoining(false);
         return;
@@ -107,14 +202,7 @@ export default function RoomPage({
         setHasJoinedEditor(true);
       }
     } catch (error: unknown) {
-      if (hasAxiosResponse(error)) {
-        console.error(
-          "Failed to join room - server response:",
-          error.response.data
-        );
-      } else {
-        console.error("Failed to join room:", error);
-      }
+      logRequestError("Failed to join room", error);
       // You could show an error message here
     } finally {
       setIsJoining(false);
@@ -143,7 +231,7 @@ export default function RoomPage({
           error.response.data
         );
         if (error.response.status === 401) {
-          window.location.href = "/login";
+          router.push("/login");
         }
       } else {
         console.error("Failed to end session:", error);
@@ -179,91 +267,19 @@ export default function RoomPage({
         });
 
         if (!mounted) return;
-
         const data = resp.data as unknown;
-
         if (isObject(data)) {
-          // Set host status from API response
-          const isUserHost = !!data.isHost;
-          setIsHost(isUserHost);
-
-          // Handle different room statuses based on host/participant role
-          if (data.status === "scheduled") {
-            setRoomState("scheduled");
-            setRoomInfo({
-              scheduledAt: data.scheduledAt ?? null,
-              title: data.title,
-              description: data.description,
-            });
-            return;
-          }
-
-          if (data.status === "ended") {
-            setRoomState("ended");
-            setRoomInfo({
-              title: data.title,
-              endedAt: data.endedAt,
-            });
-            return;
-          }
-
-          if (data.status === "live") {
-            setRoomState("live");
-            setRoomInfo({
-              title: data.title,
-              description: data.description,
-              room: data.room,
-            });
-
-            // Do not automatically join the editor on initial load.
-            // Hosts redirected here after creating/starting a room should
-            // see the RoomStatusCard and explicitly click to enter.
-            return;
-          }
-
-          // Default fallback
-          setRoomState("error");
-          setRoomInfo({ message: "Unknown room status" });
+          const { nextState, nextInfo, isHost } = deriveRoomState(data);
+          setIsHost(isHost);
+          setRoomState(nextState);
+          setRoomInfo(nextInfo);
+          return;
         }
       } catch (err: unknown) {
         if (!mounted) return;
-
-        // Handle Axios errors
-        if (err && typeof err === "object" && "response" in err) {
-          const axiosErr = err as {
-            response: { status: number; data: unknown };
-          };
-          const status = axiosErr.response.status;
-          const errorData = axiosErr.response.data;
-
-          if (status === 404) {
-            setRoomState("not-found");
-            return;
-          }
-
-          if (status === 401) {
-            setRoomState("error");
-            setRoomInfo({
-              message: "Unauthorized. Please sign in to view this room.",
-            });
-            return;
-          }
-
-          setRoomState("error");
-          setRoomInfo({
-            message: String(
-              isObject(errorData) && errorData.error
-                ? errorData.error
-                : "Unknown error"
-            ),
-          });
-        } else {
-          // Network or other errors
-          setRoomState("error");
-          setRoomInfo({
-            message: err instanceof Error ? err.message : String(err),
-          });
-        }
+        const { nextState, nextInfo } = deriveErrorState(err);
+        setRoomState(nextState);
+        setRoomInfo(nextInfo);
       }
     }
 
