@@ -70,3 +70,6 @@ execute-commits.bat
 
 #ignore learn_Doc folder
 /learn_Doc/*
+
+#ignore codeviz folder
+/codeviz/*
