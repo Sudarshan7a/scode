@@ -6,16 +6,8 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useParams, useRouter } from "next/navigation";
 import { useToast, TOAST_MESSAGES } from "@/hooks/useToast";
 import LiveEditorPanels from "./LiveEditorPanels";
-import {
-  RoomInfo,
-  RoomState,
-  isValidObjectId,
-  hasAxiosResponse,
-  logRequestError,
-  deriveRoomState,
-  deriveErrorState,
-  isObject,
-} from "./roomStateUtils";
+import { isValidObjectId, hasAxiosResponse, logRequestError, deriveRoomState, deriveErrorState, isObject } from "./roomStateUtils";
+import type { RoomInfo, RoomState } from "@/types/room";
 
 // page component now focuses on orchestration and rendering decisions only
 
@@ -34,7 +26,16 @@ export default function RoomPage() {
   const [isLeaving, setIsLeaving] = useState(false);
   const [isHost, setIsHost] = useState(false);
   const [hasJoinedEditor, setHasJoinedEditor] = useState(false);
-
+  const [audioVideoCallInfo, setAudioVideoCallInfo] = useState<{
+    meetingId?: string;
+    attendeeId?: string;
+    joinUrl?: string;
+    status: "initializing" | "connected" | "disconnected" | "error";
+  }>({
+    status: "disconnected",
+  });
+  const [audioState, setAudioState] = useState<boolean>(false);
+  const [videoState, setVideoState] = useState<boolean>(false);
   const [roomInfo, setRoomInfo] = useState<RoomInfo>(null);
 
   // Button handlers
@@ -179,6 +180,9 @@ export default function RoomPage() {
       mounted = false;
     };
   }, [roomId]);
+  if (roomState === "live") {
+    // do client setup here
+  }
 
   return (
     <div className="flex flex-col h-screen w-full">

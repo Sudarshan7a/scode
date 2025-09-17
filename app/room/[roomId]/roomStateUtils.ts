@@ -1,4 +1,13 @@
-// Utility types and helpers for the room page
+// Utility helpers for the room page. Core shared types are imported from '@/types/room'.
+import type {
+  RoomState,
+  RoomInfo,
+  RoomDetailsData,
+  ScheduledInfo,
+  EndedInfo,
+  LiveInfo,
+  ErrorInfo,
+} from "@/types/room";
 
 export const isObject = (value: unknown): value is Record<string, unknown> => {
   return value !== null && typeof value === "object";
@@ -25,44 +34,7 @@ export const logRequestError = (context: string, error: unknown) => {
   }
 };
 
-export type ScheduledInfo = {
-  scheduledAt: string | null;
-  title?: unknown;
-  description?: unknown;
-};
-export type EndedInfo = { title?: unknown; endedAt?: unknown };
-export type LiveInfo = {
-  title?: unknown;
-  description?: unknown;
-  room?: unknown;
-};
-export type ErrorInfo = { message: string };
-export type RoomInfo =
-  | ScheduledInfo
-  | EndedInfo
-  | LiveInfo
-  | ErrorInfo
-  | Record<string, unknown>
-  | null;
-
-export type RoomState =
-  | "loading"
-  | "not-found"
-  | "scheduled"
-  | "ended"
-  | "live"
-  | "error";
-
-// Minimal shape returned by /api/rooms/details
-export type RoomDetailsData = {
-  isHost?: boolean;
-  status?: string;
-  scheduledAt?: string | null;
-  title?: unknown;
-  description?: unknown;
-  endedAt?: unknown;
-  room?: unknown;
-};
+// (Types removed – now sourced from '@/types/room')
 
 // Parse a details response into state, info, and host flag
 export const deriveRoomState = (
