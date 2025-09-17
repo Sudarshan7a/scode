@@ -71,8 +71,10 @@ export default function VideoCallContainer({ roomId }: Props) {
           throw new Error(
             "Stream video not configured: NEXT_PUBLIC_STREAM_API_KEY is missing."
           );
+
         const { token, userId } = await fetchToken(roomId);
-        if (cancelled) return;
+        // console.log("Fetched video token", token, " for ", userId);
+
         const { c, call } = await createClientAndCall(
           apiKey,
           roomId,

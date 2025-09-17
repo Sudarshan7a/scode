@@ -6,7 +6,14 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useParams, useRouter } from "next/navigation";
 import { useToast, TOAST_MESSAGES } from "@/hooks/useToast";
 import LiveEditorPanels from "./LiveEditorPanels";
-import { isValidObjectId, hasAxiosResponse, logRequestError, deriveRoomState, deriveErrorState, isObject } from "./roomStateUtils";
+import {
+  isValidObjectId,
+  hasAxiosResponse,
+  logRequestError,
+  deriveRoomState,
+  deriveErrorState,
+  isObject,
+} from "./roomStateUtils";
 import type { RoomInfo, RoomState } from "@/types/room";
 
 // page component now focuses on orchestration and rendering decisions only
