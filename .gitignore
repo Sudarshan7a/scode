@@ -72,4 +72,5 @@ execute-commits.bat
 /learn_Doc/*
 
 #ignore codeviz folder
-/codeviz/*
+/codeviz/*/*
+.codeviz/Workspace 1/Workspace-1.drawio
