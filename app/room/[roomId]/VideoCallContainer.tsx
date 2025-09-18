@@ -66,6 +66,9 @@ export default function VideoCallContainer({ roomId }: Props) {
 
   useEffect(() => {
     let cancelled = false;
+    let localCall: typeof callObj | null = null;
+    let localClient: StreamVideoClient | null = null;
+
     const run = async () => {
       try {
         setLoading(true);
@@ -76,7 +79,6 @@ export default function VideoCallContainer({ roomId }: Props) {
           );
 
         const { token, userId } = await fetchToken(roomId);
-        // console.log("Fetched video token", token, " for ", userId);
 
         const { c, call } = await createClientAndCall(
           apiKey,
@@ -84,14 +86,17 @@ export default function VideoCallContainer({ roomId }: Props) {
           token,
           userId
         );
+        localClient = c;
+        localCall = call;
         if (cancelled) {
-          try {
-            await call.leave();
-          } catch {}
-          try {
-            c.disconnectUser?.();
-          } catch {}
-          return;
+          // If effect was cleaned up before init completed, dispose immediately.
+            try {
+              await call.leave();
+            } catch {}
+            try {
+              c.disconnectUser?.();
+            } catch {}
+            return;
         }
         setClient(c);
         setCallObj(call);
@@ -108,17 +113,24 @@ export default function VideoCallContainer({ roomId }: Props) {
     run();
     return () => {
       cancelled = true;
-      const cleanup = async () => {
+      (async () => {
         try {
-          if (joinedRef.current && callObj) {
-            await callObj.leave();
+          if (joinedRef.current && localCall) {
+            await localCall.leave();
           }
-        } catch {}
+        } catch (err) {
+          console.warn("Failed to leave Stream call during cleanup", err);
+        }
         try {
-          client?.disconnectUser?.();
-        } catch {}
-      };
-      cleanup();
+          localClient?.disconnectUser?.();
+        } catch (err) {
+          console.warn("Failed to disconnect Stream client during cleanup", err);
+        }
+        // Reset state to avoid retaining references
+        setCallObj(null);
+        setClient(null);
+        joinedRef.current = false;
+      })();
     };
   }, [apiKey, roomId]);
 
