@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import {
   StreamVideo,
   StreamVideoClient,
@@ -55,9 +56,11 @@ export default function VideoCallContainer({ roomId }: Props) {
   ) => {
     const user: User = { id: userId };
     const c = new StreamVideoClient({ apiKey, user, token });
+
     const call = c.call("default", roomId);
     await call.getOrCreate();
     await call.join({ create: true });
+
     return { c, call } as const;
   };
 
@@ -139,22 +142,25 @@ export default function VideoCallContainer({ roomId }: Props) {
 
   if (loading || !client || !callObj) {
     return (
-      <div className="w-full rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-600">
-        Connecting to call…
+      <div className="w-full rounded-md border border-gray-200 bg-white p-4 text-sm text-gray-600 flex items-center gap-3">
+        <LoadingSpinner size="small" />
+        <span>Connecting to call…</span>
       </div>
     );
   }
 
   return (
-    <div className="w-full rounded-md border border-gray-200 bg-white overflow-hidden">
+    <div className="w-full h-full  rounded-md border border-mysecodary bg-background overflow-hidden">
       <StreamVideo client={client}>
         <StreamCall call={callObj}>
-          <StreamTheme>
-            <div className="h-64">
-              <SpeakerLayout />
-            </div>
-            <div className="border-t border-gray-200">
-              <CallControls />
+          <StreamTheme className="h-full">
+            <div className="flex flex-col justify-end h-full">
+              <div className="min-h-64 h-full overflow-hidden">
+                <SpeakerLayout />
+              </div>{" "}
+              <div className="border-t border-gray-200 ">
+                <CallControls />
+              </div>
             </div>
           </StreamTheme>
         </StreamCall>

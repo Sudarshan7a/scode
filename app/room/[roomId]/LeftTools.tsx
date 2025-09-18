@@ -9,7 +9,7 @@ type Props = {
 function LeftTools({ roomId }: Props) {
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="p-2">
+      <div className="pt-2 px-2 h-full">
         <VideoCallContainer roomId={roomId} />
       </div>
       <div className="mt-auto">
