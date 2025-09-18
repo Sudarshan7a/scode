@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import {
   StreamVideo,
@@ -55,11 +55,26 @@ export default function VideoCallContainer({ roomId }: Props) {
     userId: string
   ) => {
     const user: User = { id: userId };
-    const c = new StreamVideoClient({ apiKey, user, token });
+    const ClientAny: any = StreamVideoClient as any;
+    // Prefer library provided singleton accessor if available to avoid duplicate client warnings.
+    const c: StreamVideoClient =
+      typeof ClientAny.getOrCreateInstance === "function"
+        ? ClientAny.getOrCreateInstance({ apiKey, user, token })
+        : new StreamVideoClient({ apiKey, user, token });
 
     const call = c.call("default", roomId);
     await call.getOrCreate();
-    await call.join({ create: true });
+    // Join without forcing device permissions yet; user can enable later via controls.
+    try {
+      await call.join({ create: true /* add: audio: false, video: false if SDK supports */ });
+    } catch (err) {
+      console.warn("Initial join encountered an error (possibly device permission). Retrying without media.", err);
+      // Attempt a fallback join without audio/video if options supported; swallow if still fails.
+      try {
+        // @ts-expect-error optional flags depending on SDK version
+        await call.join({ create: true, audio: false, video: false });
+      } catch {}
+    }
 
     return { c, call } as const;
   };
@@ -68,6 +83,7 @@ export default function VideoCallContainer({ roomId }: Props) {
     let cancelled = false;
     let localCall: typeof callObj | null = null;
     let localClient: StreamVideoClient | null = null;
+    let createdByThisComponent = false;
 
     const run = async () => {
       try {
@@ -77,7 +93,11 @@ export default function VideoCallContainer({ roomId }: Props) {
           throw new Error(
             "Stream video not configured: NEXT_PUBLIC_STREAM_API_KEY is missing."
           );
-
+        // If we already have a client & call (e.g. hot reload) do not recreate.
+        if (client && callObj) {
+          setLoading(false);
+          return;
+        }
         const { token, userId } = await fetchToken(roomId);
 
         const { c, call } = await createClientAndCall(
@@ -88,6 +108,7 @@ export default function VideoCallContainer({ roomId }: Props) {
         );
         localClient = c;
         localCall = call;
+        createdByThisComponent = !client; // we didn't have one before
         if (cancelled) {
           // If effect was cleaned up before init completed, dispose immediately.
           try {
@@ -123,7 +144,10 @@ export default function VideoCallContainer({ roomId }: Props) {
           console.warn("Failed to leave Stream call during cleanup", err);
         }
         try {
-          localClient?.disconnectUser?.();
+          // Only disconnect the user if we created this client instance; otherwise it may be shared.
+          if (createdByThisComponent) {
+            localClient?.disconnectUser?.();
+          }
         } catch (err) {
           console.warn(
             "Failed to disconnect Stream client during cleanup",
@@ -136,6 +160,7 @@ export default function VideoCallContainer({ roomId }: Props) {
         joinedRef.current = false;
       })();
     };
+    // Intentionally do NOT add `client` or `callObj` as dependencies to avoid re-init loops.
   }, [apiKey, roomId]);
 
   // Lightweight UI: show helpful message if not configured
