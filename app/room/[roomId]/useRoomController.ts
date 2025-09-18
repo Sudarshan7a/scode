@@ -72,7 +72,10 @@ export function useRoomController(roomId: string) {
       }
     } catch (error: unknown) {
       if (hasAxiosResponse(error)) {
-        console.error("Failed to end session - server response:", error.response.data);
+        console.error(
+          "Failed to end session - server response:",
+          error.response.data
+        );
         if (error.response.status === 401) {
           router.push("/login");
         }
@@ -105,9 +108,17 @@ export function useRoomController(roomId: string) {
         if (!mounted) return;
         const data = resp.data as unknown;
         if (isObject(data)) {
-          const { nextState, nextInfo, isHost } = deriveRoomState(data as {
-            isHost?: boolean; status?: string; scheduledAt?: string | null; title?: unknown; description?: unknown; endedAt?: unknown; room?: unknown;
-          });
+          const { nextState, nextInfo, isHost } = deriveRoomState(
+            data as {
+              isHost?: boolean;
+              status?: string;
+              scheduledAt?: string | null;
+              title?: unknown;
+              description?: unknown;
+              endedAt?: unknown;
+              room?: unknown;
+            }
+          );
           setIsHost(isHost);
           setRoomState(nextState);
           setRoomInfo(nextInfo);
@@ -121,7 +132,9 @@ export function useRoomController(roomId: string) {
       }
     }
     checkRoom();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [roomId]);
 
   return {

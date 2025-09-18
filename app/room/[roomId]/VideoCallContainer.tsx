@@ -117,6 +117,7 @@ export default function VideoCallContainer({ roomId }: Props) {
         try {
           if (joinedRef.current && localCall) {
             await localCall.leave();
+            console.log("Left the call successfully");
           }
         } catch (err) {
           console.warn("Failed to leave Stream call during cleanup", err);

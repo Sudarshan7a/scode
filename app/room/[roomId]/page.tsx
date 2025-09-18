@@ -81,7 +81,11 @@ function LoadingState({ visible }: VisibleProps) {
       subtitle="Please wait while we verify the room."
       details={
         <div className="flex items-center justify-center py-4">
-          <LoadingSpinner size="medium" text="Verifying room access..." showText />
+          <LoadingSpinner
+            size="medium"
+            text="Verifying room access..."
+            showText
+          />
         </div>
       }
     />
@@ -90,7 +94,12 @@ function LoadingState({ visible }: VisibleProps) {
 
 function NotFoundState({ visible }: VisibleProps) {
   if (!visible) return null;
-  return <RoomStatusCard title="404 — Room not found" subtitle="The room does not exist." />;
+  return (
+    <RoomStatusCard
+      title="404 — Room not found"
+      subtitle="The room does not exist."
+    />
+  );
 }
 
 interface ScheduledStateProps extends VisibleProps {
@@ -102,20 +111,33 @@ interface ScheduledStateProps extends VisibleProps {
   onStart: () => void;
   onJoin: () => void;
 }
-function ScheduledState({ visible, isHost, roomInfo, roomId, isStarting, isJoining, onStart, onJoin }: ScheduledStateProps) {
+function ScheduledState({
+  visible,
+  isHost,
+  roomInfo,
+  roomId,
+  isStarting,
+  isJoining,
+  onStart,
+  onJoin,
+}: ScheduledStateProps) {
   if (!visible) return null;
   const subtitle = isHost
     ? "Click 'Start Room' when you're ready to begin the session"
     : roomInfo && "scheduledAt" in roomInfo && roomInfo.scheduledAt
-    ? `Scheduled for: ${new Date(String(roomInfo.scheduledAt)).toLocaleString()}`
+    ? `Scheduled for: ${new Date(
+        String(roomInfo.scheduledAt)
+      ).toLocaleString()}`
     : "Waiting for the host to start the session";
   const details = isHost ? (
     <p>
-      Starting the room will make it live and allow participants to join the collaborative session.
+      Starting the room will make it live and allow participants to join the
+      collaborative session.
     </p>
   ) : (
     <p>
-      The room will become available when the host starts the session. You&apos;ll be able to join once it&apos;s live.
+      The room will become available when the host starts the session.
+      You&apos;ll be able to join once it&apos;s live.
     </p>
   );
   return (
@@ -141,16 +163,22 @@ interface EndedStateProps extends VisibleProps {
   onStart: () => void;
   onJoin: () => void;
 }
-function EndedState({ visible, isHost, isStarting, isJoining, onStart, onJoin }: EndedStateProps) {
+function EndedState({
+  visible,
+  isHost,
+  isStarting,
+  isJoining,
+  onStart,
+  onJoin,
+}: EndedStateProps) {
   if (!visible) return null;
   const details = isHost ? (
     <p>
-      Your coding session has concluded. You can create a new room to start another session.
+      Your coding session has concluded. You can create a new room to start
+      another session.
     </p>
   ) : (
-    <p>
-      The collaborative session has ended. Thank you for participating!
-    </p>
+    <p>The collaborative session has ended. Thank you for participating!</p>
   );
   return (
     <RoomStatusCard
@@ -167,10 +195,14 @@ function EndedState({ visible, isHost, isStarting, isJoining, onStart, onJoin }:
   );
 }
 
-interface ErrorStateProps extends VisibleProps { roomInfo: any }
+interface ErrorStateProps extends VisibleProps {
+  roomInfo: any;
+}
 function ErrorState({ visible, roomInfo }: ErrorStateProps) {
   if (!visible) return null;
-  const subtitle = String(roomInfo && "message" in roomInfo ? roomInfo.message : "Unknown error");
+  const subtitle = String(
+    roomInfo && "message" in roomInfo ? roomInfo.message : "Unknown error"
+  );
   return <RoomStatusCard title="Unable to load room" subtitle={subtitle} />;
 }
 
@@ -182,14 +214,23 @@ interface LivePreJoinStateProps extends VisibleProps {
   onJoin: () => void;
   roomId: string;
 }
-function LivePreJoinState({ visible, isHost, isStarting, isJoining, onStart, onJoin, roomId }: LivePreJoinStateProps) {
+function LivePreJoinState({
+  visible,
+  isHost,
+  isStarting,
+  isJoining,
+  onStart,
+  onJoin,
+  roomId,
+}: LivePreJoinStateProps) {
   if (!visible) return null;
   const subtitle = isHost
     ? "Your room is now active and ready for collaboration"
     : "The host has started the room - you can now join";
   const details = isHost ? (
     <p>
-      Click &apos;Join Room&apos; to enter the collaborative editor and start coding with your participants.
+      Click &apos;Join Room&apos; to enter the collaborative editor and start
+      coding with your participants.
     </p>
   ) : (
     <p>
@@ -220,7 +261,15 @@ interface LiveEditorStateProps extends VisibleProps {
   onLeaveRoom: () => Promise<void>;
   isLeaving: boolean;
 }
-function LiveEditorState({ visible, roomId, isHost, onEndSession, isEnding, onLeaveRoom, isLeaving }: LiveEditorStateProps) {
+function LiveEditorState({
+  visible,
+  roomId,
+  isHost,
+  onEndSession,
+  isEnding,
+  onLeaveRoom,
+  isLeaving,
+}: LiveEditorStateProps) {
   if (!visible) return null;
   return (
     <div className="flex-1 min-h-0">
