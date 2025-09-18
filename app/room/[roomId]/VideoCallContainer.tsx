@@ -90,13 +90,13 @@ export default function VideoCallContainer({ roomId }: Props) {
         localCall = call;
         if (cancelled) {
           // If effect was cleaned up before init completed, dispose immediately.
-            try {
-              await call.leave();
-            } catch {}
-            try {
-              c.disconnectUser?.();
-            } catch {}
-            return;
+          try {
+            await call.leave();
+          } catch {}
+          try {
+            c.disconnectUser?.();
+          } catch {}
+          return;
         }
         setClient(c);
         setCallObj(call);
@@ -124,7 +124,10 @@ export default function VideoCallContainer({ roomId }: Props) {
         try {
           localClient?.disconnectUser?.();
         } catch (err) {
-          console.warn("Failed to disconnect Stream client during cleanup", err);
+          console.warn(
+            "Failed to disconnect Stream client during cleanup",
+            err
+          );
         }
         // Reset state to avoid retaining references
         setCallObj(null);
