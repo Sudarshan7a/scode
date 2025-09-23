@@ -44,7 +44,10 @@ export default function VideoCallContainer({ roomId }: Props) {
           body: JSON.stringify({ roomId }),
         });
       } catch (err) {
-        console.warn("Failed to request end room (will ignore if not host)", err);
+        console.warn(
+          "Failed to request end room (will ignore if not host)",
+          err
+        );
       }
 
       // Attempt to leave the Stream call gracefully
