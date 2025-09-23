@@ -26,9 +26,38 @@ export default function VideoCallContainer({ roomId }: Props) {
   > | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [deviceError, setDeviceError] = useState<string | null>(null);
+  const [enablingDevices, setEnablingDevices] = useState(false);
   const joinedRef = useRef(false);
 
   const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY;
+
+  // Named handler for leaving the call
+  const handleLeave = async () => {
+    try {
+      // Try to end the room if the current user is the host.
+      // The API enforces host-only; non-hosts will get 403 which we ignore.
+      try {
+        await fetch("/api/rooms/end", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ roomId }),
+        });
+      } catch (err) {
+        console.warn("Failed to request end room (will ignore if not host)", err);
+      }
+
+      // Attempt to leave the Stream call gracefully
+      try {
+        await callObj?.leave?.();
+      } catch (err) {
+        console.warn("Failed to leave call gracefully", err);
+      }
+    } finally {
+      // As a final step, reload the page to reset UI state
+      window.location.reload();
+    }
+  };
 
   const fetchToken = async (rid: string) => {
     const res = await fetch(
@@ -64,19 +93,56 @@ export default function VideoCallContainer({ roomId }: Props) {
 
     const call = c.call("default", roomId);
     await call.getOrCreate();
-    // Join without forcing device permissions yet; user can enable later via controls.
+    // Try to join; if error, retry with media disabled
+    let didJoin = false;
+    let usedFallback = false;
     try {
-      await call.join({ create: true /* add: audio: false, video: false if SDK supports */ });
+      await call.join({ create: true });
+      didJoin = true;
     } catch (err) {
-      console.warn("Initial join encountered an error (possibly device permission). Retrying without media.", err);
-      // Attempt a fallback join without audio/video if options supported; swallow if still fails.
+      console.warn(
+        "Initial join failed (likely device permission). Retrying with audio/video disabled...",
+        err
+      );
       try {
         // @ts-expect-error optional flags depending on SDK version
         await call.join({ create: true, audio: false, video: false });
-      } catch {}
+        didJoin = true;
+        usedFallback = true;
+      } catch (err2) {
+        console.error("Fallback join without media also failed", err2);
+      }
     }
 
-    return { c, call } as const;
+    return { c, call, didJoin, usedFallback } as const;
+  };
+
+  // Attempt to enable mic and camera with graceful error handling
+  const safeEnableDevices = async (call: NonNullable<typeof callObj>) => {
+    setEnablingDevices(true);
+    try {
+      setDeviceError(null);
+      try {
+        await call.microphone?.enable?.();
+      } catch (err) {
+        console.error("Failed to enable microphone", err);
+        setDeviceError(
+          "Can't access microphone. Check your browser permissions and device settings."
+        );
+      }
+      try {
+        await call.camera?.enable?.();
+      } catch (err) {
+        console.error("Failed to enable camera", err);
+        setDeviceError(
+          (prev) =>
+            prev ??
+            "Can't access camera. Check your browser permissions and device settings."
+        );
+      }
+    } finally {
+      setEnablingDevices(false);
+    }
   };
 
   useEffect(() => {
@@ -100,7 +166,7 @@ export default function VideoCallContainer({ roomId }: Props) {
         }
         const { token, userId } = await fetchToken(roomId);
 
-        const { c, call } = await createClientAndCall(
+        const { c, call, didJoin, usedFallback } = await createClientAndCall(
           apiKey,
           roomId,
           token,
@@ -121,7 +187,16 @@ export default function VideoCallContainer({ roomId }: Props) {
         }
         setClient(c);
         setCallObj(call);
-        joinedRef.current = true;
+        joinedRef.current = didJoin;
+        if (!didJoin) {
+          throw new Error(
+            "Failed to join the call. Please check your network and try again."
+          );
+        }
+        // If we had to join without media, attempt to enable devices gracefully
+        if (usedFallback) {
+          safeEnableDevices(call);
+        }
       } catch (e) {
         console.error("Stream video init error:", e);
         setError(
@@ -192,6 +267,18 @@ export default function VideoCallContainer({ roomId }: Props) {
 
   return (
     <div className="w-full h-full  rounded-md border border-mysecodary bg-background overflow-hidden">
+      {deviceError && (
+        <div className="w-full bg-yellow-50 text-yellow-900 border-b border-yellow-200 px-3 py-2 text-xs flex items-center gap-3">
+          <span>{deviceError}</span>
+          <button
+            className="ml-auto px-2 py-1 rounded border border-yellow-300 hover:bg-yellow-100 disabled:opacity-50"
+            onClick={() => callObj && safeEnableDevices(callObj)}
+            disabled={enablingDevices}
+          >
+            {enablingDevices ? "Trying…" : "Retry enabling devices"}
+          </button>
+        </div>
+      )}
       <StreamVideo client={client}>
         <StreamCall call={callObj}>
           <StreamTheme className="h-full">
@@ -200,7 +287,7 @@ export default function VideoCallContainer({ roomId }: Props) {
                 <SpeakerLayout />
               </div>{" "}
               <div className="border-t border-gray-200 ">
-                <CallControls />
+                <CallControls onLeave={handleLeave} />
               </div>
             </div>
           </StreamTheme>
