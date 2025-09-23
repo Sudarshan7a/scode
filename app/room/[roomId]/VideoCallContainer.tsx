@@ -32,6 +32,11 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
   const [enablingDevices, setEnablingDevices] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const joinedRef = useRef(false);
+  // Refs used by init/cleanup helpers
+  const localCallRef = useRef<typeof callObj>(null);
+  const localClientRef = useRef<StreamVideoClient | null>(null);
+  const createdByThisComponentRef = useRef(false);
+  const cancelledRef = useRef(false);
 
   const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY;
 
@@ -155,100 +160,100 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
     }
   };
 
+  // Initialize the Stream client and call once the editor view mounts
+  const initCall = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      if (!apiKey)
+        throw new Error(
+          "Stream video not configured: NEXT_PUBLIC_STREAM_API_KEY is missing."
+        );
+      // Avoid duplicate init during fast refresh
+      if (client && callObj) {
+        setLoading(false);
+        return;
+      }
+
+      const { token, userId } = await fetchToken(roomId);
+      const { c, call, didJoin, usedFallback } = await createClientAndCall(
+        apiKey,
+        roomId,
+        token,
+        userId
+      );
+
+      // If effect has already been cleaned up, dispose immediately
+      if (cancelledRef.current) {
+        try {
+          await call.leave();
+        } catch {}
+        try {
+          c.disconnectUser?.();
+        } catch {}
+        return;
+      }
+
+      localClientRef.current = c;
+      localCallRef.current = call;
+      createdByThisComponentRef.current = !client;
+
+      setClient(c);
+      setCallObj(call);
+      joinedRef.current = didJoin;
+      if (!didJoin) {
+        throw new Error(
+          "Failed to join the call. Please check your network and try again."
+        );
+      }
+      if (usedFallback) {
+        safeEnableDevices(call);
+      }
+    } catch (e) {
+      console.error("Stream video init error:", e);
+      setError(e instanceof Error ? e.message : "Failed to initialize video call.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Cleanup call and client on unmount or param change
+  const cleanupCall = async () => {
+    cancelledRef.current = true;
+    try {
+      if (joinedRef.current && localCallRef.current) {
+        await localCallRef.current.leave();
+        console.log("Left the call successfully");
+      }
+    } catch (err) {
+      console.warn("Failed to leave Stream call during cleanup", err);
+    }
+    try {
+      if (createdByThisComponentRef.current) {
+        localClientRef.current?.disconnectUser?.();
+      }
+    } catch (err) {
+      console.warn("Failed to disconnect Stream client during cleanup", err);
+    }
+    // Reset refs and state
+    localCallRef.current = null;
+    localClientRef.current = null;
+    createdByThisComponentRef.current = false;
+    joinedRef.current = false;
+    setCallObj(null);
+    setClient(null);
+  };
+
   // isHost is provided via props from LiveEditorPanels
 
   useEffect(() => {
-    let cancelled = false;
-    let localCall: typeof callObj | null = null;
-    let localClient: StreamVideoClient | null = null;
-    let createdByThisComponent = false;
-
-    const run = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        if (!apiKey)
-          throw new Error(
-            "Stream video not configured: NEXT_PUBLIC_STREAM_API_KEY is missing."
-          );
-        // If we already have a client & call (e.g. hot reload) do not recreate.
-        if (client && callObj) {
-          setLoading(false);
-          return;
-        }
-        const { token, userId } = await fetchToken(roomId);
-
-        const { c, call, didJoin, usedFallback } = await createClientAndCall(
-          apiKey,
-          roomId,
-          token,
-          userId
-        );
-        localClient = c;
-        localCall = call;
-        createdByThisComponent = !client; // we didn't have one before
-        if (cancelled) {
-          // If effect was cleaned up before init completed, dispose immediately.
-          try {
-            await call.leave();
-          } catch {}
-          try {
-            c.disconnectUser?.();
-          } catch {}
-          return;
-        }
-        setClient(c);
-        setCallObj(call);
-        joinedRef.current = didJoin;
-        if (!didJoin) {
-          throw new Error(
-            "Failed to join the call. Please check your network and try again."
-          );
-        }
-        // If we had to join without media, attempt to enable devices gracefully
-        if (usedFallback) {
-          safeEnableDevices(call);
-        }
-      } catch (e) {
-        console.error("Stream video init error:", e);
-        setError(
-          e instanceof Error ? e.message : "Failed to initialize video call."
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-    run();
+    cancelledRef.current = false;
+    void initCall();
     return () => {
-      cancelled = true;
-      (async () => {
-        try {
-          if (joinedRef.current && localCall) {
-            await localCall.leave();
-            console.log("Left the call successfully");
-          }
-        } catch (err) {
-          console.warn("Failed to leave Stream call during cleanup", err);
-        }
-        try {
-          // Only disconnect the user if we created this client instance; otherwise it may be shared.
-          if (createdByThisComponent) {
-            localClient?.disconnectUser?.();
-          }
-        } catch (err) {
-          console.warn(
-            "Failed to disconnect Stream client during cleanup",
-            err
-          );
-        }
-        // Reset state to avoid retaining references
-        setCallObj(null);
-        setClient(null);
-        joinedRef.current = false;
-      })();
+      void cleanupCall();
     };
     // Intentionally do NOT add `client` or `callObj` as dependencies to avoid re-init loops.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiKey, roomId]);
 
   // Lightweight UI: show helpful message if not configured
