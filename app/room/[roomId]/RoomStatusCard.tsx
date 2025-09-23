@@ -177,13 +177,14 @@ function ActionArea({
   const label = isLive ? "Join Room" : canStart ? "Start Room" : "Join Room";
   const onClick = isLive ? onJoin : canStart ? onStart : onJoin;
   const loading = isLive ? isJoining : canStart ? isStarting : isJoining;
+  const shouldDisable = disabled || Boolean(loading);
 
   return (
     <div className="space-y-2">
       <PrimaryAction
-        label={disabled && label !== "Start Room" ? "Unavailable" : label}
+        label={shouldDisable && label !== "Start Room" ? "Unavailable" : label}
         onClick={onClick}
-        disabled={disabled}
+        disabled={shouldDisable}
         loading={Boolean(loading)}
       />
 

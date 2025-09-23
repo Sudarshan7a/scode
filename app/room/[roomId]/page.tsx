@@ -4,8 +4,10 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useParams } from "next/navigation";
 import LiveEditorPanels from "./LiveEditorPanels";
 import { useRoomController } from "./useRoomController";
+import type { RoomInfo } from "@/types/room";
 
-// page component now focuses on orchestration and rendering decisions only
+// RoomPage orchestrates top-level room states and delegates UI to small components.
+// Controller hook encapsulates networking, role, and transitions.
 
 export default function RoomPage() {
   const params = useParams<{ roomId: string }>();
@@ -104,7 +106,7 @@ function NotFoundState({ visible }: VisibleProps) {
 
 interface ScheduledStateProps extends VisibleProps {
   isHost: boolean;
-  roomInfo: any; // already validated upstream for shape
+  roomInfo: RoomInfo; // lightweight metadata for scheduled banner
   roomId: string;
   isStarting: boolean;
   isJoining: boolean;
@@ -196,7 +198,7 @@ function EndedState({
 }
 
 interface ErrorStateProps extends VisibleProps {
-  roomInfo: any;
+  roomInfo: RoomInfo;
 }
 function ErrorState({ visible, roomInfo }: ErrorStateProps) {
   if (!visible) return null;

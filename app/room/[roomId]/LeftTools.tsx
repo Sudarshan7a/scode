@@ -4,13 +4,14 @@ import VideoCallContainer from "./VideoCallContainer";
 
 type Props = {
   roomId: string;
+  isHost: boolean;
 };
 
-function LeftTools({ roomId }: Props) {
+function LeftTools({ roomId, isHost }: Props) {
   return (
     <div className="w-full h-full flex flex-col">
       <div className="pt-2 px-2 h-full">
-        <VideoCallContainer roomId={roomId} />
+        <VideoCallContainer roomId={roomId} isHost={isHost} />
       </div>
       <div className="mt-auto">
         <BottomBar />

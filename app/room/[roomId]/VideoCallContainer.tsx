@@ -11,15 +11,17 @@ import {
   type User,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
+import { Popover, PopoverContent, PopoverAnchor } from "@/components/ui/popover";
 
 type Props = {
   roomId: string;
+  isHost: boolean;
 };
 
 // Minimal, self-contained video call container.
 // It expects a backend at /api/video/token to provide { token, userId } for the current user.
 // If not configured, it renders a small non-blocking message.
-export default function VideoCallContainer({ roomId }: Props) {
+export default function VideoCallContainer({ roomId, isHost }: Props) {
   const [client, setClient] = useState<StreamVideoClient | null>(null);
   const [callObj, setCallObj] = useState<ReturnType<
     StreamVideoClient["call"]
@@ -28,6 +30,7 @@ export default function VideoCallContainer({ roomId }: Props) {
   const [loading, setLoading] = useState(true);
   const [deviceError, setDeviceError] = useState<string | null>(null);
   const [enablingDevices, setEnablingDevices] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const joinedRef = useRef(false);
 
   const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY;
@@ -35,19 +38,17 @@ export default function VideoCallContainer({ roomId }: Props) {
   // Named handler for leaving the call
   const handleLeave = async () => {
     try {
-      // Try to end the room if the current user is the host.
-      // The API enforces host-only; non-hosts will get 403 which we ignore.
-      try {
-        await fetch("/api/rooms/end", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ roomId }),
-        });
-      } catch (err) {
-        console.warn(
-          "Failed to request end room (will ignore if not host)",
-          err
-        );
+      // End room only if the user is the host
+      if (isHost) {
+        try {
+          await fetch("/api/rooms/end", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ roomId }),
+          });
+        } catch (err) {
+          console.warn("Failed to request end room", err);
+        }
       }
 
       // Attempt to leave the Stream call gracefully
@@ -87,12 +88,18 @@ export default function VideoCallContainer({ roomId }: Props) {
     userId: string
   ) => {
     const user: User = { id: userId };
-    const ClientAny: any = StreamVideoClient as any;
-    // Prefer library provided singleton accessor if available to avoid duplicate client warnings.
-    const c: StreamVideoClient =
-      typeof ClientAny.getOrCreateInstance === "function"
-        ? ClientAny.getOrCreateInstance({ apiKey, user, token })
-        : new StreamVideoClient({ apiKey, user, token });
+    // Prefer library singleton accessor if available to avoid duplicate client warnings.
+    type StreamClientStatic = typeof StreamVideoClient & {
+      getOrCreateInstance?: (args: {
+        apiKey: string;
+        user: User;
+        token: string;
+      }) => StreamVideoClient;
+    };
+    const ClientStatic = StreamVideoClient as StreamClientStatic;
+    const c: StreamVideoClient = ClientStatic.getOrCreateInstance
+      ? ClientStatic.getOrCreateInstance({ apiKey, user, token })
+      : new ClientStatic({ apiKey, user, token });
 
     const call = c.call("default", roomId);
     await call.getOrCreate();
@@ -147,6 +154,8 @@ export default function VideoCallContainer({ roomId }: Props) {
       setEnablingDevices(false);
     }
   };
+
+  // isHost is provided via props from LiveEditorPanels
 
   useEffect(() => {
     let cancelled = false;
@@ -239,6 +248,7 @@ export default function VideoCallContainer({ roomId }: Props) {
       })();
     };
     // Intentionally do NOT add `client` or `callObj` as dependencies to avoid re-init loops.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiKey, roomId]);
 
   // Lightweight UI: show helpful message if not configured
@@ -290,7 +300,44 @@ export default function VideoCallContainer({ roomId }: Props) {
                 <SpeakerLayout />
               </div>{" "}
               <div className="border-t border-gray-200 ">
-                <CallControls onLeave={handleLeave} />
+                <CallControls onLeave={() => setConfirmOpen(true)} />
+                {/* Confirmation popover for leaving / ending room */}
+                <Popover open={confirmOpen} onOpenChange={setConfirmOpen}>
+                  <PopoverAnchor>
+                    <div aria-hidden className="w-0 h-0" />
+                  </PopoverAnchor>
+                  <PopoverContent align="end" className="w-80">
+                    <div className="space-y-3">
+                      <div className="text-sm font-medium">
+                        {isHost ? "End room for everyone?" : "Leave this room?"}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {isHost
+                          ? "You are the host. Ending will disconnect all participants and mark the session as ended."
+                          : "You'll leave the video call. The room will remain active for others."}
+                      </p>
+                      <div className="flex justify-end gap-2 pt-1">
+                        <button
+                          type="button"
+                          className="px-3 py-1.5 text-xs rounded border"
+                          onClick={() => setConfirmOpen(false)}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          className="px-3 py-1.5 text-xs rounded bg-red-600 text-white hover:bg-red-700"
+                          onClick={async () => {
+                            setConfirmOpen(false);
+                            await handleLeave();
+                          }}
+                        >
+                          {isHost ? "End room" : "Leave room"}
+                        </button>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
           </StreamTheme>

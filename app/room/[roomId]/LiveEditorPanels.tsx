@@ -36,7 +36,7 @@ export default function LiveEditorPanels({
             fallbackTitle="Tools Failed to Load"
             fallbackMessage="Unable to load the sidebar tools."
           >
-            <LeftTools roomId={roomId} />
+            <LeftTools roomId={roomId} isHost={isHost} />
           </AsyncErrorBoundary>
         </ResizablePanel>
         <ResizableHandle withHandle />

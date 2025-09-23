@@ -7,7 +7,7 @@ function respond(status: number, body: Record<string, unknown>) {
   return NextResponse.json(body, { status });
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   // 1. Static dev override
   // const staticToken = process.env.STREAM_VIDEO_DEFAULT_TOKEN;
   // if (staticToken) {
