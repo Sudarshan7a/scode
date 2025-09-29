@@ -10,7 +10,7 @@ import {
   CallControls,
   type User,
 } from "@stream-io/video-react-sdk";
-// @ts-ignore
+// @ts-expect-error - CSS import has no TypeScript definitions
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import {
   Popover,
