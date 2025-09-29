@@ -3,10 +3,6 @@ import type {
   RoomState,
   RoomInfo,
   RoomDetailsData,
-  ScheduledInfo,
-  EndedInfo,
-  LiveInfo,
-  ErrorInfo,
 } from "@/types/room";
 
 export const isObject = (value: unknown): value is Record<string, unknown> => {

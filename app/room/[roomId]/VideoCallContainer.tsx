@@ -11,7 +11,11 @@ import {
   type User,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
-import { Popover, PopoverContent, PopoverAnchor } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverAnchor,
+} from "@/components/ui/popover";
 
 type Props = {
   roomId: string;
@@ -104,7 +108,7 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
     const ClientStatic = StreamVideoClient as StreamClientStatic;
     const c: StreamVideoClient = ClientStatic.getOrCreateInstance
       ? ClientStatic.getOrCreateInstance({ apiKey, user, token })
-      : new ClientStatic({ apiKey, user, token });
+      : new StreamVideoClient({ apiKey, user, token });
 
     const call = c.call("default", roomId);
     await call.getOrCreate();
@@ -211,7 +215,9 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
       }
     } catch (e) {
       console.error("Stream video init error:", e);
-      setError(e instanceof Error ? e.message : "Failed to initialize video call.");
+      setError(
+        e instanceof Error ? e.message : "Failed to initialize video call."
+      );
     } finally {
       setLoading(false);
     }
@@ -252,7 +258,7 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
     return () => {
       void cleanupCall();
     };
-    // Intentionally do NOT add `client` or `callObj` as dependencies to avoid re-init loops.
+    // Intentionally do NOT add `client`, `callObj`, or `safeEnableDevices` as dependencies to avoid re-init loops.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiKey, roomId]);
 

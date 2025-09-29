@@ -126,7 +126,7 @@ function ScheduledState({
   if (!visible) return null;
   const subtitle = isHost
     ? "Click 'Start Room' when you're ready to begin the session"
-    : roomInfo && "scheduledAt" in roomInfo && roomInfo.scheduledAt
+    : roomInfo && typeof roomInfo === "object" && "scheduledAt" in roomInfo && roomInfo.scheduledAt
     ? `Scheduled for: ${new Date(
         String(roomInfo.scheduledAt)
       ).toLocaleString()}`
@@ -203,7 +203,7 @@ interface ErrorStateProps extends VisibleProps {
 function ErrorState({ visible, roomInfo }: ErrorStateProps) {
   if (!visible) return null;
   const subtitle = String(
-    roomInfo && "message" in roomInfo ? roomInfo.message : "Unknown error"
+    roomInfo && typeof roomInfo === "object" && "message" in roomInfo ? roomInfo.message : "Unknown error"
   );
   return <RoomStatusCard title="Unable to load room" subtitle={subtitle} />;
 }
