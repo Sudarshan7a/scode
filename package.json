@@ -38,7 +38,7 @@
     "@radix-ui/react-switch": "^1.2.5",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@stream-io/node-sdk": "^0.6.7",
-    "@stream-io/video-react-sdk": "^1.21.2",
+    "@stream-io/video-react-sdk": "^1.22.0",
     "@upstash/ratelimit": "^2.0.6",
     "@upstash/redis": "^1.35.3",
     "@y/websocket-server": "^0.1.1",
