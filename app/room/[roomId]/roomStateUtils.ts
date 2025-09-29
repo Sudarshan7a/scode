@@ -1,9 +1,5 @@
 // Utility helpers for the room page. Core shared types are imported from '@/types/room'.
-import type {
-  RoomState,
-  RoomInfo,
-  RoomDetailsData,
-} from "@/types/room";
+import type { RoomState, RoomInfo, RoomDetailsData } from "@/types/room";
 
 export const isObject = (value: unknown): value is Record<string, unknown> => {
   return value !== null && typeof value === "object";

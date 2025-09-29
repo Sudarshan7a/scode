@@ -10,6 +10,7 @@ import {
   CallControls,
   type User,
 } from "@stream-io/video-react-sdk";
+// @ts-ignore
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import {
   Popover,
@@ -108,7 +109,7 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
     const ClientStatic = StreamVideoClient as StreamClientStatic;
     const c: StreamVideoClient = ClientStatic.getOrCreateInstance
       ? ClientStatic.getOrCreateInstance({ apiKey, user, token })
-      : new StreamVideoClient({ apiKey, user, token });
+      : new ClientStatic({ apiKey, user, token });
 
     const call = c.call("default", roomId);
     await call.getOrCreate();
@@ -258,7 +259,7 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
     return () => {
       void cleanupCall();
     };
-    // Intentionally do NOT add `client`, `callObj`, or `safeEnableDevices` as dependencies to avoid re-init loops.
+    // Intentionally do NOT add `client` or `callObj` as dependencies to avoid re-init loops.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiKey, roomId]);
 
