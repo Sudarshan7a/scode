@@ -30,6 +30,7 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [joined, setJoined] = useState(false); // whether user has actually joined the call
   const [callEnded, setCallEnded] = useState(false); // whether call has ended
+  const [rejoinCounter, setRejoinCounter] = useState(0); // track rejoins to force component remount
 
   const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY;
 
@@ -39,23 +40,31 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
       setClient(c);
       setCall(callInstance);
       setJoined(true);
+      setCallEnded(false); // Reset callEnded when rejoining
     },
     []
   );
 
   const handleLeaveConfirmed = async () => {
     try {
-      setCallEnded(true); // Show "call ended" immediately
-
-      // Just leave the call, don't end the room
+      // Leave the call and dispose of the call instance
       await call?.leave();
       console.log("Left call");
+
+      // Reset call state to allow rejoining with a fresh instance
+      setCall(null);
+      setJoined(false);
+      setCallEnded(true);
+      setRejoinCounter(prev => prev + 1); // Increment to force PreJoinVideoPanel remount
     } catch (err) {
       console.warn("Failed to leave call gracefully", err);
-    } finally {
-      client?.disconnectUser?.();
-      // Don't redirect, just stay on the page
+      // Still reset states even if leave fails
+      setCall(null);
+      setJoined(false);
+      setCallEnded(true);
+      setRejoinCounter(prev => prev + 1);
     }
+    // Don't disconnect the client - we'll reuse it for rejoining
   };
 
   // Lightweight UI: show helpful message if not configured
@@ -77,10 +86,11 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
   }
 
   // If not joined yet show pre-join panel
-  if (!joined) {
+  if (!joined || callEnded) {
     return (
       <div className="w-full h-full flex items-center justify-center">
         <PreJoinVideoPanel
+          key={rejoinCounter} // Force remount on each rejoin to create fresh call instance
           roomId={roomId}
           isHost={isHost}
           onJoined={handleJoined}
