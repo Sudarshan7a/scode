@@ -62,9 +62,12 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.2.7
         version: 1.2.7(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@stream-io/node-sdk':
+        specifier: ^0.6.7
+        version: 0.6.7
       '@stream-io/video-react-sdk':
-        specifier: ^1.21.2
-        version: 1.21.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.8.3)
+        specifier: ^1.22.0
+        version: 1.22.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.8.3)
       '@upstash/ratelimit':
         specifier: ^2.0.6
         version: 2.0.6(@upstash/redis@1.35.3)
@@ -1274,23 +1277,38 @@ packages:
   '@standard-schema/utils@0.3.0':
     resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
 
-  '@stream-io/video-client@1.30.1':
-    resolution: {integrity: sha512-In2FhDoGXI9pu7Mde7Xx2SDOUWeshfxNxrrc/z7QeaKTB2Ceu2NEOz0Ey+g+YnGVOMJFpR+nK6r35JJ4lZn7Ww==}
+  '@stream-io/logger@1.1.4':
+    resolution: {integrity: sha512-96k+8fsy7b0fIxs1MmPX32KBENgpj3RthSSIXo2v/qxGmJ8bK10IHfDNZISpW8pLrgCkVv+8g1l81JmLqvs4fA==}
 
-  '@stream-io/video-filters-web@0.2.1':
-    resolution: {integrity: sha512-zIOu/2S0BNAOjFixsk0oO1kNq4nnAB6vOW/IJsng39cnNyQ59hzO4t4cCQMnLSiWk2X97gw94xyhM9c/CDX1bA==}
-
-  '@stream-io/video-react-bindings@1.8.2':
-    resolution: {integrity: sha512-xqhSFPRA16L1c5shgSneK0vpZp4Wwif3sYnij3k5WmFjrxIu1ds2dpr1KCO6On0fnx/PRFAqgSFxAhz1qNuX1g==}
+  '@stream-io/node-sdk@0.6.7':
+    resolution: {integrity: sha512-GPQKxvJ5URNn26KGaDYC6SY6i4B7OGG02uToSXAR6X/FlhpTJMqYHiUitIC7QVNT8gJ5+vRw7IhbDGcQ1w484Q==}
+    engines: {node: '>=18.0.0'}
     peerDependencies:
-      '@stream-io/video-client': ^1.30.1
+      '@stream-io/openai-realtime-api': ~0.1.3 || ~0.2.0 || ~0.3.0
+    peerDependenciesMeta:
+      '@stream-io/openai-realtime-api':
+        optional: true
+
+  '@stream-io/video-client@1.32.0':
+    resolution: {integrity: sha512-jv56N+zILFFRYEoKRGnH7SK2ok4YwrZcSlitmIIx8Wd0M2D11nIWeiRSHVvIY7Bf4o2hWjHYSY18ksDBrLXP0Q==}
+
+  '@stream-io/video-filters-web@0.2.2':
+    resolution: {integrity: sha512-fWNvk7YAr8F5V/qUsKqaS7d/Ag4G1Llm5ndk6Nv5VGjz8l+0Yx04rAo9oj/EUmNomgZTdIDIe4k06PIy7yzMKg==}
+
+  '@stream-io/video-react-bindings@1.8.4':
+    resolution: {integrity: sha512-wgsx3kvPz/mnYlalqLgtZe3CD07EjDZmvdho92mIA56cb+7oS4Xw8b5/KHXoNgFv4FUR3+CrzIiLbJZtItMS0A==}
+    peerDependencies:
+      '@stream-io/video-client': ^1.32.0
       react: ^17 || ^18 || ^19
 
-  '@stream-io/video-react-sdk@1.21.2':
-    resolution: {integrity: sha512-bi2jNprXUWGSeFkrZOmZ2Uw2TKHhfEgVOBGFi6o4N73uWIlKpVEp9D48VDfZsbtu/9kItKz7+IY/E4C2fUxxCw==}
+  '@stream-io/video-react-sdk@1.22.0':
+    resolution: {integrity: sha512-PPVDmN4PIldjKMzj/HgRca08iVa2gW3eQkJ/qwSu7KquvdSAmcwmbLU6EeeIuC/3CMlcKzAsfPLNqQvdZCZQFQ==}
     peerDependencies:
       react: ^17 || ^18 || ^19
       react-dom: ^17 || ^18 || ^19
+
+  '@stream-io/worker-timer@1.2.4':
+    resolution: {integrity: sha512-fSjDdSZz4OLGWOpMNoymSnYwIssrxcjhLdvcTiItYyuY7B05F7fu7mE0n2tvRxGbRyffmonEjKWQMo42s09Q2w==}
 
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
@@ -1403,6 +1421,15 @@ packages:
 
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+
+  '@types/jsonwebtoken@9.0.10':
+    resolution: {integrity: sha512-asx5hIG9Qmf/1oStypjanR7iKTv0gXQ1Ov/jfrX6kS/EO0OFni8orbmGCn0672NHR3kXHwpAwR+B368ZGN/2rA==}
+
+  '@types/ms@2.1.0':
+    resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
+
+  '@types/node@18.19.126':
+    resolution: {integrity: sha512-8AXQlBfrGmtYJEJUPs63F/uZQqVeFiN9o6NUjbDJYfxNxFnArlZufANPw4h6dGhYGKxcyw+TapXFvEsguzIQow==}
 
   '@types/node@20.19.14':
     resolution: {integrity: sha512-gqiKWld3YIkmtrrg9zDvg9jfksZCcPywXVN7IauUGhilwGV/yOyeUsvpR796m/Jye0zUzMXPKe8Ct1B79A7N5Q==}
@@ -3567,6 +3594,9 @@ packages:
   uncrypto@0.1.3:
     resolution: {integrity: sha512-Ql87qFHB3s/De2ClA9e0gsnS6zXG27SkTiSJwjCc9MebbfapQfuPzumMIUMi38ezPZVNFcHI9sUIepeQfw8J8Q==}
 
+  undici-types@5.26.5:
+    resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
+
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
@@ -3612,6 +3642,10 @@ packages:
 
   uuid@11.1.0:
     resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
+    hasBin: true
+
+  uuid@9.0.1:
+    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
     hasBin: true
 
   w3c-xmlserializer@5.0.0:
@@ -4834,11 +4868,21 @@ snapshots:
 
   '@standard-schema/utils@0.3.0': {}
 
-  '@stream-io/video-client@1.30.1':
+  '@stream-io/logger@1.1.4': {}
+
+  '@stream-io/node-sdk@0.6.7':
+    dependencies:
+      '@types/jsonwebtoken': 9.0.10
+      '@types/node': 18.19.126
+      jsonwebtoken: 9.0.2
+      uuid: 9.0.1
+
+  '@stream-io/video-client@1.32.0':
     dependencies:
       '@protobuf-ts/runtime': 2.11.1
       '@protobuf-ts/runtime-rpc': 2.11.1
       '@protobuf-ts/twirp-transport': 2.11.1
+      '@stream-io/worker-timer': 1.2.4
       axios: 1.11.0
       rxjs: 7.8.2
       sdp-transform: 2.15.0
@@ -4847,25 +4891,26 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@stream-io/video-filters-web@0.2.1':
+  '@stream-io/video-filters-web@0.2.2':
     dependencies:
+      '@stream-io/worker-timer': 1.2.4
       wasm-feature-detect: 1.8.0
 
-  '@stream-io/video-react-bindings@1.8.2(@stream-io/video-client@1.30.1)(react@19.1.0)(typescript@5.8.3)':
+  '@stream-io/video-react-bindings@1.8.4(@stream-io/video-client@1.32.0)(react@19.1.0)(typescript@5.8.3)':
     dependencies:
-      '@stream-io/video-client': 1.30.1
+      '@stream-io/video-client': 1.32.0
       i18next: 25.5.2(typescript@5.8.3)
       react: 19.1.0
       rxjs: 7.8.2
     transitivePeerDependencies:
       - typescript
 
-  '@stream-io/video-react-sdk@1.21.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.8.3)':
+  '@stream-io/video-react-sdk@1.22.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.8.3)':
     dependencies:
       '@floating-ui/react': 0.27.16(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@stream-io/video-client': 1.30.1
-      '@stream-io/video-filters-web': 0.2.1
-      '@stream-io/video-react-bindings': 1.8.2(@stream-io/video-client@1.30.1)(react@19.1.0)(typescript@5.8.3)
+      '@stream-io/video-client': 1.32.0
+      '@stream-io/video-filters-web': 0.2.2
+      '@stream-io/video-react-bindings': 1.8.4(@stream-io/video-client@1.32.0)(react@19.1.0)(typescript@5.8.3)
       chart.js: 4.5.0
       clsx: 2.1.1
       react: 19.1.0
@@ -4874,6 +4919,10 @@ snapshots:
     transitivePeerDependencies:
       - debug
       - typescript
+
+  '@stream-io/worker-timer@1.2.4':
+    dependencies:
+      '@stream-io/logger': 1.1.4
 
   '@swc/helpers@0.5.15':
     dependencies:
@@ -4975,6 +5024,17 @@ snapshots:
   '@types/json-schema@7.0.15': {}
 
   '@types/json5@0.0.29': {}
+
+  '@types/jsonwebtoken@9.0.10':
+    dependencies:
+      '@types/ms': 2.1.0
+      '@types/node': 20.19.14
+
+  '@types/ms@2.1.0': {}
+
+  '@types/node@18.19.126':
+    dependencies:
+      undici-types: 5.26.5
 
   '@types/node@20.19.14':
     dependencies:
@@ -7390,6 +7450,8 @@ snapshots:
 
   uncrypto@0.1.3: {}
 
+  undici-types@5.26.5: {}
+
   undici-types@6.21.0: {}
 
   unrs-resolver@1.11.1:
@@ -7449,6 +7511,8 @@ snapshots:
     optional: true
 
   uuid@11.1.0: {}
+
+  uuid@9.0.1: {}
 
   w3c-xmlserializer@5.0.0:
     dependencies:

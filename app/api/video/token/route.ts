@@ -1,35 +1,76 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { ObjectId } from "mongodb";
+import { StreamClient } from "@stream-io/node-sdk";
 
-// Minimal token endpoint stub. Replace with real implementation that signs a Stream JWT for the current user.
-export async function GET(req: NextRequest) {
+function respond(status: number, body: Record<string, unknown>) {
+  return NextResponse.json(body, { status });
+}
+
+export async function GET(_req: NextRequest) {
+  // 1. Static dev override
+  // const staticToken = process.env.STREAM_VIDEO_DEFAULT_TOKEN;
+  // if (staticToken) {
+  //   return respond(200, {
+  //     ok: true,
+  //     mode: "static",
+  //     token: staticToken,
+  //     userId: process.env.STREAM_VIDEO_DEFAULT_USER_ID || null,
+  //   });
+  // }
+
+  // 2. Signed token path with user upsert
+  const apiKey =
+    process.env.NEXT_PUBLIC_STREAM_API_KEY || process.env.STREAM_API_KEY;
+  const apiSecret = process.env.STREAM_API_SECRET;
+
+  if (!apiKey || !apiSecret) {
+    return respond(500, {
+      ok: false,
+      message:
+        "Video service not configured (missing STREAM_API_KEY / STREAM_API_SECRET)",
+    });
+  }
+
+  const store = await cookies();
+  const userId = store.get("userId")?.value;
+  if (!userId)
+    return respond(401, { ok: false, message: "Authentication required" });
+  if (!ObjectId.isValid(userId))
+    return respond(400, { ok: false, message: "Invalid user id" });
+
+  // Build a basic user object (could be enriched from DB later)
+  const user = {
+    id: userId,
+    role: "user",
+    name: `User-${userId.slice(0, 6)}`,
+    image: "https://wallpapercave.com/wp/wp7151807.jpg",
+    custom: {
+      color: "red",
+    },
+  } as const;
+
   try {
-    const { searchParams } = new URL(req.url);
-    const roomId = searchParams.get("roomId");
-    if (!roomId) {
-      return NextResponse.json(
-        { ok: false, message: "roomId is required" },
-        { status: 400 }
-      );
-    }
-    //send this token to the client
+    const server = new StreamClient(apiKey, apiSecret);
 
-    // TODO: Implement real Stream token minting using your server secret and authenticated user id
-    // For now, indicate to the client that it's not implemented.
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjhiZDM4NTA0MjI3ZTEwMzYwNWQwODNiIiwiZXhwIjoxNzU4MDQ1MDIxfQ.g2jfN7aG1Ivv4BFCPtMy6bZrqc3Qeo6gVZSMuET0cmU";
-    return NextResponse.json(
-      {
-        ok: true,
-        message: "Stream token generated",
-        token,
-        userId: "68bd38504227e103605d083b",
-      },
-      { status: 200 }
-    );
+    await server.upsertUsers([user]);
+
+    const validitySeconds = 60 * 60; // 1 hour
+    const token = server.generateUserToken({
+      user_id: userId,
+      validity_in_seconds: validitySeconds,
+    });
+
+    return respond(200, {
+      ok: true,
+      mode: "signed",
+      token,
+      userId,
+      validitySeconds,
+      user,
+    });
   } catch (e) {
-    return NextResponse.json(
-      { ok: false, message: "Internal error" },
-      { status: 500 }
-    );
+    console.error("[video/token] user upsert or token generation error", e);
+    return respond(500, { ok: false, message: "Failed to generate token" });
   }
 }

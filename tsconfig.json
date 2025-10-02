@@ -33,6 +33,7 @@
     "next-env.d.ts",
     "**/*.{js,jsx,ts,tsx}",
     ".next/types/**/*.ts",
+    "types/**/*.d.ts",
     "passgen.js"
   ],
   "exclude": ["node_modules"]

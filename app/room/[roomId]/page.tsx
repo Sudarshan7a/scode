@@ -1,329 +1,293 @@
 "use client";
-import { useEffect, useState } from "react";
 import RoomStatusCard from "./RoomStatusCard";
-import { axiosInstance } from "@/lib/axiosInstance";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { useParams, useRouter } from "next/navigation";
-import { useToast, TOAST_MESSAGES } from "@/hooks/useToast";
+import { useParams } from "next/navigation";
 import LiveEditorPanels from "./LiveEditorPanels";
-import {
-  RoomInfo,
-  RoomState,
-  isValidObjectId,
-  hasAxiosResponse,
-  logRequestError,
-  deriveRoomState,
-  deriveErrorState,
-  isObject,
-} from "./roomStateUtils";
+import { useRoomController } from "./useRoomController";
+import type { RoomInfo } from "@/types/room";
 
-// page component now focuses on orchestration and rendering decisions only
+// RoomPage orchestrates top-level room states and delegates UI to small components.
+// Controller hook encapsulates networking, role, and transitions.
 
 export default function RoomPage() {
   const params = useParams<{ roomId: string }>();
   const roomId = params.roomId;
-  const router = useRouter();
-  const { success } = useToast();
-
-  // roomState: loading | not-found | scheduled | ended | live | error
-  const [roomState, setRoomState] = useState<RoomState>("loading");
-
-  const [isStarting, setIsStarting] = useState(false);
-  const [isJoining, setIsJoining] = useState(false);
-  const [isEnding, setIsEnding] = useState(false);
-  const [isLeaving, setIsLeaving] = useState(false);
-  const [isHost, setIsHost] = useState(false);
-  const [hasJoinedEditor, setHasJoinedEditor] = useState(false);
-
-  const [roomInfo, setRoomInfo] = useState<RoomInfo>(null);
-
-  // Button handlers
-  const handleStartRoom = async () => {
-    setIsStarting(true);
-    try {
-      // Basic client-side validation: Mongo ObjectId is 24 hex chars
-      if (!isValidObjectId(roomId)) {
-        console.error("Invalid roomId format, aborting start:", roomId);
-        setIsStarting(false);
-        return;
-      }
-      const resp = await axiosInstance.post("/api/rooms/start", {
-        roomId,
-      });
-
-      if (resp.data) {
-        // Room started successfully, update state to live and set joined flag
-        setRoomState("live");
-        setHasJoinedEditor(true);
-      }
-    } catch (error: unknown) {
-      // Log server response body when available for easier debugging
-      logRequestError("Failed to start room", error);
-      // You could show an error message here
-    } finally {
-      setIsStarting(false);
-    }
-  };
-
-  const handleJoinRoom = async () => {
-    setIsJoining(true);
-    try {
-      if (!isValidObjectId(roomId)) {
-        console.error("Invalid roomId format, aborting join:", roomId);
-        setIsJoining(false);
-        return;
-      }
-      const resp = await axiosInstance.post("/api/rooms/join", {
-        roomId,
-      });
-
-      if (resp.data) {
-        // Successfully joined, set joined flag
-        setHasJoinedEditor(true);
-      }
-    } catch (error: unknown) {
-      logRequestError("Failed to join room", error);
-      // You could show an error message here
-    } finally {
-      setIsJoining(false);
-    }
-  };
-
-  const handleEndSession = async () => {
-    setIsEnding(true);
-    try {
-      // Attempt to end session for room
-
-      const resp = await axiosInstance.post("/api/rooms/end", {
-        roomId,
-      });
-
-      if (resp.data && resp.data.status === "success") {
-        // Session ended successfully, update state to ended
-        setRoomState("ended");
-        setHasJoinedEditor(false);
-      }
-    } catch (error: unknown) {
-      // If authentication failed, redirect to login. Also log server response.
-      if (hasAxiosResponse(error)) {
-        console.error(
-          "Failed to end session - server response:",
-          error.response.data
-        );
-        if (error.response.status === 401) {
-          router.push("/login");
-        }
-      } else {
-        console.error("Failed to end session:", error);
-      }
-      // You could show an error message here
-    } finally {
-      setIsEnding(false);
-    }
-  };
-
-  const handleLeaveRoom = async () => {
-    setIsLeaving(true);
-    try {
-      // No server route required: unmounting the editor will disconnect.
-      setHasJoinedEditor(false);
-      // Show confirmation toast and navigate using client routing so toast persists
-      success(TOAST_MESSAGES.ROOM.LEFT);
-      router.push("/dashboard");
-    } catch (error) {
-      console.error("Failed to leave room:", error);
-    } finally {
-      setIsLeaving(false);
-    }
-  };
-
-  useEffect(() => {
-    let mounted = true;
-
-    async function checkRoom() {
-      try {
-        const resp = await axiosInstance.post("/api/rooms/details", {
-          roomId,
-        });
-
-        if (!mounted) return;
-        const data = resp.data as unknown;
-        if (isObject(data)) {
-          const { nextState, nextInfo, isHost } = deriveRoomState(
-            data as {
-              isHost?: boolean;
-              status?: string;
-              scheduledAt?: string | null;
-              title?: unknown;
-              description?: unknown;
-              endedAt?: unknown;
-              room?: unknown;
-            }
-          );
-          setIsHost(isHost);
-          setRoomState(nextState);
-          setRoomInfo(nextInfo);
-          return;
-        }
-      } catch (err: unknown) {
-        if (!mounted) return;
-        const { nextState, nextInfo } = deriveErrorState(err);
-        setRoomState(nextState);
-        setRoomInfo(nextInfo);
-      }
-    }
-
-    checkRoom();
-
-    return () => {
-      mounted = false;
-    };
-  }, [roomId]);
+  const {
+    roomState,
+    isStarting,
+    isJoining,
+    isEnding,
+    isLeaving,
+    isHost,
+    hasJoinedEditor,
+    roomInfo,
+    handleStartRoom,
+    handleJoinRoom,
+    handleEndSession,
+    handleLeaveRoom,
+  } = useRoomController(roomId);
 
   return (
     <div className="flex flex-col h-screen w-full">
-      {/* Render different UIs based on room state */}
-      {roomState === "loading" && (
-        <RoomStatusCard
-          title="Loading room"
-          subtitle="Please wait while we verify the room."
-          details={
-            <div className="flex items-center justify-center py-4">
-              <LoadingSpinner
-                size="medium"
-                text="Verifying room access..."
-                showText
-              />
-            </div>
-          }
-        />
-      )}
+      <LoadingState visible={roomState === "loading"} />
+      <NotFoundState visible={roomState === "not-found"} />
+      <ScheduledState
+        visible={roomState === "scheduled"}
+        isHost={isHost}
+        roomInfo={roomInfo}
+        roomId={roomId}
+        isStarting={isStarting}
+        isJoining={isJoining}
+        onStart={handleStartRoom}
+        onJoin={handleJoinRoom}
+      />
+      <EndedState
+        visible={roomState === "ended"}
+        isHost={isHost}
+        isStarting={isStarting}
+        isJoining={isJoining}
+        onStart={handleStartRoom}
+        onJoin={handleJoinRoom}
+      />
+      <ErrorState visible={roomState === "error"} roomInfo={roomInfo} />
+      <LivePreJoinState
+        visible={roomState === "live" && !hasJoinedEditor}
+        isHost={isHost}
+        isStarting={isStarting}
+        isJoining={isJoining}
+        onStart={handleStartRoom}
+        onJoin={handleJoinRoom}
+        roomId={roomId}
+      />
+      <LiveEditorState
+        visible={roomState === "live" && hasJoinedEditor}
+        roomId={roomId}
+        isHost={isHost}
+        onEndSession={handleEndSession}
+        isEnding={isEnding}
+        onLeaveRoom={handleLeaveRoom}
+        isLeaving={isLeaving}
+      />
+    </div>
+  );
+}
 
-      {roomState === "not-found" && (
-        <RoomStatusCard
-          title="404 — Room not found"
-          subtitle="The room does not exist."
-        />
-      )}
+// --- Small presentation components (pure) ---
+type VisibleProps = { visible: boolean };
 
-      {/* For scheduled rooms: different behavior for host vs participants */}
-      {roomState === "scheduled" && (
-        <RoomStatusCard
-          title={isHost ? "Ready to start your room" : "Room is scheduled"}
-          subtitle={
-            isHost
-              ? "Click 'Start Room' when you're ready to begin the session"
-              : roomInfo && "scheduledAt" in roomInfo && roomInfo.scheduledAt
-              ? `Scheduled for: ${new Date(
-                  String(roomInfo.scheduledAt)
-                ).toLocaleString()}`
-              : "Waiting for the host to start the session"
-          }
-          details={
-            isHost ? (
-              <p>
-                Starting the room will make it live and allow participants to
-                join the collaborative session.
-              </p>
-            ) : (
-              <p>
-                The room will become available when the host starts the session.
-                You&apos;ll be able to join once it&apos;s live.
-              </p>
-            )
-          }
-          roomState="scheduled"
-          isHost={isHost}
-          onStart={handleStartRoom}
-          onJoin={handleJoinRoom}
-          isStarting={isStarting}
-          isJoining={isJoining}
-          roomId={roomId}
-        />
-      )}
-
-      {roomState === "ended" && (
-        <RoomStatusCard
-          title={isHost ? "Your room has ended" : "This room has ended"}
-          subtitle="The live session is over"
-          details={
-            isHost ? (
-              <p>
-                Your coding session has concluded. You can create a new room to
-                start another session.
-              </p>
-            ) : (
-              <p>
-                The collaborative session has ended. Thank you for
-                participating!
-              </p>
-            )
-          }
-          roomState="ended"
-          isHost={isHost}
-          onStart={handleStartRoom}
-          onJoin={handleJoinRoom}
-          isStarting={isStarting}
-          isJoining={isJoining}
-        />
-      )}
-
-      {roomState === "error" && (
-        <RoomStatusCard
-          title="Unable to load room"
-          subtitle={String(
-            roomInfo && "message" in roomInfo
-              ? roomInfo.message
-              : "Unknown error"
-          )}
-        />
-      )}
-
-      {/* For live rooms: show status card until user explicitly joins */}
-      {roomState === "live" && !hasJoinedEditor && (
-        <RoomStatusCard
-          title="Room is live!"
-          subtitle={
-            isHost
-              ? "Your room is now active and ready for collaboration"
-              : "The host has started the room - you can now join"
-          }
-          details={
-            isHost ? (
-              <p>
-                Click &apos;Join Room&apos; to enter the collaborative editor
-                and start coding with your participants.
-              </p>
-            ) : (
-              <p>
-                Join the room to start collaborating with other participants in
-                real-time.
-              </p>
-            )
-          }
-          roomState="live"
-          isHost={isHost}
-          onStart={handleStartRoom}
-          onJoin={handleJoinRoom}
-          isStarting={isStarting}
-          isJoining={isJoining}
-          roomId={roomId}
-        />
-      )}
-
-      {/* Show collaborative editor ONLY for live rooms where user has joined */}
-      {roomState === "live" && hasJoinedEditor && (
-        <div className="flex-1 min-h-0">
-          <LiveEditorPanels
-            roomId={roomId}
-            isHost={isHost}
-            onEndSession={handleEndSession}
-            isEnding={isEnding}
-            onLeaveRoom={handleLeaveRoom}
-            isLeaving={isLeaving}
+function LoadingState({ visible }: VisibleProps) {
+  if (!visible) return null;
+  return (
+    <RoomStatusCard
+      title="Loading room"
+      subtitle="Please wait while we verify the room."
+      details={
+        <div className="flex items-center justify-center py-4">
+          <LoadingSpinner
+            size="medium"
+            text="Verifying room access..."
+            showText
           />
         </div>
-      )}
+      }
+    />
+  );
+}
+
+function NotFoundState({ visible }: VisibleProps) {
+  if (!visible) return null;
+  return (
+    <RoomStatusCard
+      title="404 — Room not found"
+      subtitle="The room does not exist."
+    />
+  );
+}
+
+interface ScheduledStateProps extends VisibleProps {
+  isHost: boolean;
+  roomInfo: RoomInfo; // lightweight metadata for scheduled banner
+  roomId: string;
+  isStarting: boolean;
+  isJoining: boolean;
+  onStart: () => void;
+  onJoin: () => void;
+}
+function ScheduledState({
+  visible,
+  isHost,
+  roomInfo,
+  roomId,
+  isStarting,
+  isJoining,
+  onStart,
+  onJoin,
+}: ScheduledStateProps) {
+  if (!visible) return null;
+  const subtitle = isHost
+    ? "Click 'Start Room' when you're ready to begin the session"
+    : roomInfo &&
+      typeof roomInfo === "object" &&
+      "scheduledAt" in roomInfo &&
+      roomInfo.scheduledAt
+    ? `Scheduled for: ${new Date(
+        String(roomInfo.scheduledAt)
+      ).toLocaleString()}`
+    : "Waiting for the host to start the session";
+  const details = isHost ? (
+    <p>
+      Starting the room will make it live and allow participants to join the
+      collaborative session.
+    </p>
+  ) : (
+    <p>
+      The room will become available when the host starts the session.
+      You&apos;ll be able to join once it&apos;s live.
+    </p>
+  );
+  return (
+    <RoomStatusCard
+      title={isHost ? "Ready to start your room" : "Room is scheduled"}
+      subtitle={subtitle}
+      details={details}
+      roomState="scheduled"
+      isHost={isHost}
+      onStart={onStart}
+      onJoin={onJoin}
+      isStarting={isStarting}
+      isJoining={isJoining}
+      roomId={roomId}
+    />
+  );
+}
+
+interface EndedStateProps extends VisibleProps {
+  isHost: boolean;
+  isStarting: boolean;
+  isJoining: boolean;
+  onStart: () => void;
+  onJoin: () => void;
+}
+function EndedState({
+  visible,
+  isHost,
+  isStarting,
+  isJoining,
+  onStart,
+  onJoin,
+}: EndedStateProps) {
+  if (!visible) return null;
+  const details = isHost ? (
+    <p>
+      Your coding session has concluded. You can create a new room to start
+      another session.
+    </p>
+  ) : (
+    <p>The collaborative session has ended. Thank you for participating!</p>
+  );
+  return (
+    <RoomStatusCard
+      title={isHost ? "Your room has ended" : "This room has ended"}
+      subtitle="The live session is over"
+      details={details}
+      roomState="ended"
+      isHost={isHost}
+      onStart={onStart}
+      onJoin={onJoin}
+      isStarting={isStarting}
+      isJoining={isJoining}
+    />
+  );
+}
+
+interface ErrorStateProps extends VisibleProps {
+  roomInfo: RoomInfo;
+}
+function ErrorState({ visible, roomInfo }: ErrorStateProps) {
+  if (!visible) return null;
+  const subtitle = String(
+    roomInfo && typeof roomInfo === "object" && "message" in roomInfo
+      ? roomInfo.message
+      : "Unknown error"
+  );
+  return <RoomStatusCard title="Unable to load room" subtitle={subtitle} />;
+}
+
+interface LivePreJoinStateProps extends VisibleProps {
+  isHost: boolean;
+  isStarting: boolean;
+  isJoining: boolean;
+  onStart: () => void;
+  onJoin: () => void;
+  roomId: string;
+}
+function LivePreJoinState({
+  visible,
+  isHost,
+  isStarting,
+  isJoining,
+  onStart,
+  onJoin,
+  roomId,
+}: LivePreJoinStateProps) {
+  if (!visible) return null;
+  const subtitle = isHost
+    ? "Your room is now active and ready for collaboration"
+    : "The host has started the room - you can now join";
+  const details = isHost ? (
+    <p>
+      Click &apos;Join Room&apos; to enter the collaborative editor and start
+      coding with your participants.
+    </p>
+  ) : (
+    <p>
+      Join the room to start collaborating with other participants in real-time.
+    </p>
+  );
+  return (
+    <RoomStatusCard
+      title="Room is live!"
+      subtitle={subtitle}
+      details={details}
+      roomState="live"
+      isHost={isHost}
+      onStart={onStart}
+      onJoin={onJoin}
+      isStarting={isStarting}
+      isJoining={isJoining}
+      roomId={roomId}
+    />
+  );
+}
+
+interface LiveEditorStateProps extends VisibleProps {
+  roomId: string;
+  isHost: boolean;
+  onEndSession: () => Promise<void>;
+  isEnding: boolean;
+  onLeaveRoom: () => Promise<void>;
+  isLeaving: boolean;
+}
+function LiveEditorState({
+  visible,
+  roomId,
+  isHost,
+  onEndSession,
+  isEnding,
+  onLeaveRoom,
+  isLeaving,
+}: LiveEditorStateProps) {
+  if (!visible) return null;
+  return (
+    <div className="flex-1 min-h-0">
+      <LiveEditorPanels
+        roomId={roomId}
+        isHost={isHost}
+        onEndSession={onEndSession}
+        isEnding={isEnding}
+        onLeaveRoom={onLeaveRoom}
+        isLeaving={isLeaving}
+      />
     </div>
   );
 }

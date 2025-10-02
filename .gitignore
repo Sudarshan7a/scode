@@ -70,3 +70,7 @@ execute-commits.bat
 
 #ignore learn_Doc folder
 /learn_Doc/*
+
+#ignore codeviz folder
+/codeviz/*/*
+.codeviz/Workspace 1/Workspace-1.drawio
