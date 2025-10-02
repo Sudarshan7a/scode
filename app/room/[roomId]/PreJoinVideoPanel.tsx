@@ -11,6 +11,7 @@ import {
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { PreviewControls } from "./PreviewControls";
+import { useToast } from "@/hooks/useToast";
 
 type Props = {
   roomId: string;
@@ -34,6 +35,7 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
   const [isMicMuted, setIsMicMuted] = useState(false);
   const [isCameraMuted, setIsCameraMuted] = useState(false);
   const initializedRef = useRef(false);
+  const { error: showErrorToast, info: showInfoToast } = useToast();
 
   const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY;
 
@@ -122,6 +124,7 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
     if (!call) return;
 
     let cancelled = false;
+    let timeoutId: NodeJS.Timeout;
     setPreviewError(null);
 
     call.camera.enable().catch((err) => {
@@ -130,11 +133,19 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
         setPreviewError(
           "Camera preview unavailable. Check your browser permissions."
         );
+
+        // Auto-hide error message after 5 seconds
+        timeoutId = setTimeout(() => {
+          if (!cancelled) {
+            setPreviewError(null);
+          }
+        }, 5000);
       }
     });
 
     return () => {
       cancelled = true;
+      if (timeoutId) clearTimeout(timeoutId);
       if (!initializedRef.current) {
         call.camera.disable().catch(() => undefined);
       }
@@ -160,33 +171,30 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
       }
 
       // Attempt to join - for participants, this will fail if host hasn't started
+      console.log(isHost);
       await call.join({ create: isHost });
       initializedRef.current = true;
       onJoined(client, call);
     } catch (e: any) {
       console.error("Join failed", e);
-      
+
       // Check if it's a 404 (call doesn't exist yet)
-      const isCallNotFound = e && typeof e === "object" && "status" in e && e.status === 404;
-      
+      const isCallNotFound =
+        e && typeof e === "object" && "status" in e && e.status === 404;
+
       if (!isHost && isCallNotFound) {
-        setError("The host hasn't started the call yet. Please try again.");
+        showInfoToast("The host hasn't started the call yet. Please try again.", {
+          duration: 4000,
+        });
         setHostRoomExists(false);
       } else {
-        setError(e instanceof Error ? e.message : "Failed to join call");
+        const errorMessage = e instanceof Error ? e.message : "Failed to join call";
+        showErrorToast(errorMessage, { duration: 5000 });
       }
     } finally {
       setJoining(false);
     }
-  }, [
-    client,
-    call,
-    isHost,
-    joining,
-    onJoined,
-    isMicMuted,
-    isCameraMuted,
-  ]);
+  }, [client, call, isHost, joining, onJoined, isMicMuted, isCameraMuted, showErrorToast, showInfoToast]);
 
   if (!apiKey) {
     return (
@@ -247,11 +255,7 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
                 disabled={joining}
                 onClick={handleJoin}
               >
-                {joining
-                  ? "Joining…"
-                  : isHost
-                  ? "Start & Join"
-                  : "Join Call"}
+                {joining ? "Joining…" : "Join Call"}
               </Button>
             </div>
           </StreamCall>
