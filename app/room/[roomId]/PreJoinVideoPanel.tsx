@@ -144,35 +144,49 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
   const handleJoin = useCallback(async () => {
     if (!client || !call || joining) return;
     setJoining(true);
+    setError(null); // Clear previous errors
     try {
-      // Host: if not yet created (should be) ensure getOrCreate; Participant: if call not exists -> block
-      if (!isHost && hostRoomExists === false) {
-        return; // guard; button should be disabled anyway
-      }
-      
       // Set device states based on preview settings before joining
       if (!isCameraMuted) {
         await call.camera.enable();
       } else {
         await call.camera.disable();
       }
-      
+
       if (!isMicMuted) {
         await call.microphone.enable();
       } else {
         await call.microphone.disable();
       }
-      
+
+      // Attempt to join - for participants, this will fail if host hasn't started
       await call.join({ create: isHost });
       initializedRef.current = true;
       onJoined(client, call);
-    } catch (e) {
+    } catch (e: any) {
       console.error("Join failed", e);
-      setError(e instanceof Error ? e.message : "Failed to join call");
+      
+      // Check if it's a 404 (call doesn't exist yet)
+      const isCallNotFound = e && typeof e === "object" && "status" in e && e.status === 404;
+      
+      if (!isHost && isCallNotFound) {
+        setError("The host hasn't started the call yet. Please try again.");
+        setHostRoomExists(false);
+      } else {
+        setError(e instanceof Error ? e.message : "Failed to join call");
+      }
     } finally {
       setJoining(false);
     }
-  }, [client, call, isHost, joining, hostRoomExists, onJoined, isMicMuted, isCameraMuted]);
+  }, [
+    client,
+    call,
+    isHost,
+    joining,
+    onJoined,
+    isMicMuted,
+    isCameraMuted,
+  ]);
 
   if (!apiKey) {
     return (
@@ -213,14 +227,14 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
                 )}
               </div>
               {!isHost && (
-                <div className="text-center text-xs text-muted-foreground">
+                <div className="text-center text-xs text-foreground">
                   {hostRoomExists === false
-                    ? "Waiting for the host to start the call."
-                    : "Ready to join once the host starts the call."}
+                    ? "Click 'Join Call' to check if the host has started."
+                    : "Ready to join the call."}
                 </div>
               )}
               <div className="flex gap-2 justify-center">
-                <PreviewControls 
+                <PreviewControls
                   isMicMuted={isMicMuted}
                   isCameraMuted={isCameraMuted}
                   onMicToggle={setIsMicMuted}
@@ -230,15 +244,13 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
               <Button
                 size="default"
                 className="w-full font-semibold"
-                disabled={joining || (!isHost && hostRoomExists === false)}
+                disabled={joining}
                 onClick={handleJoin}
               >
                 {joining
                   ? "Joining…"
                   : isHost
                   ? "Start & Join"
-                  : hostRoomExists === false
-                  ? "Waiting…"
                   : "Join Call"}
               </Button>
             </div>
