@@ -113,7 +113,7 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
           <StreamTheme className="h-full">
             <div className="flex flex-col justify-end h-full">
               <div className="min-h-64 h-full overflow-hidden">
-                <SpeakerLayout />
+                <SpeakerLayout mirrorLocalParticipantVideo={true} />
               </div>
               <div className="border-t border-gray-200 ">
                 <CallControls onLeave={() => setConfirmOpen(true)} />

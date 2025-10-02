@@ -183,8 +183,13 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
         <StreamVideo client={client}>
           <StreamCall call={call}>
             <div className="flex flex-col gap-3">
-              <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black/60">
-                <VideoPreview className="h-full w-full object-cover" />
+              <div
+                className="relative w-full overflow-hidden rounded-lg bg-black/60"
+                style={{ aspectRatio: "16/9" }}
+              >
+                <div className=" [&_video]:!object-contain [&_video]:object-[0%_0%]">
+                  <VideoPreview className="!max-h-full !max-w-full" />
+                </div>
                 {previewError && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/70 px-3 text-center text-xs text-red-200">
                     {previewError}
