@@ -10,11 +10,6 @@ import {
   type User,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
-import {
-  Popover,
-  PopoverContent,
-  PopoverAnchor,
-} from "@/components/ui/popover";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import PreJoinVideoPanel from "./PreJoinVideoPanel";
 
@@ -33,8 +28,8 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
   > | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
   const [joined, setJoined] = useState(false); // whether user has actually joined the call
+  const [callEnded, setCallEnded] = useState(false); // whether call has ended
 
   const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY;
 
@@ -50,19 +45,16 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
 
   const handleLeaveConfirmed = async () => {
     try {
-      if (isHost) {
-        await fetch("/api/rooms/end", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ roomId }),
-        }).catch((err) => console.warn("Failed to request end room", err));
-      }
+      setCallEnded(true); // Show "call ended" immediately
+
+      // Just leave the call, don't end the room
       await call?.leave();
+      console.log("Left call");
     } catch (err) {
       console.warn("Failed to leave call gracefully", err);
     } finally {
       client?.disconnectUser?.();
-      window.location.reload();
+      // Don't redirect, just stay on the page
     }
   };
 
@@ -107,7 +99,7 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
   }
 
   return (
-    <div className="w-full h-full rounded-md border border-mysecodary bg-background overflow-hidden">
+    <div className="w-full h-full rounded-md border border-mysecodary bg-background overflow-hidden relative">
       <StreamVideo client={client}>
         <StreamCall call={call}>
           <StreamTheme className="h-full">
@@ -115,49 +107,46 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
               <div className="min-h-64 h-full overflow-hidden">
                 <SpeakerLayout mirrorLocalParticipantVideo={true} />
               </div>
-              <div className="border-t border-gray-200 ">
-                <CallControls onLeave={() => setConfirmOpen(true)} />
-                <Popover open={confirmOpen} onOpenChange={setConfirmOpen}>
-                  <PopoverAnchor>
-                    <div aria-hidden className="w-0 h-0" />
-                  </PopoverAnchor>
-                  <PopoverContent align="end" className="w-80">
-                    <div className="space-y-3">
-                      <div className="text-sm font-medium">
-                        {isHost ? "End room for everyone?" : "Leave this room?"}
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {isHost
-                          ? "You are the host. Ending will disconnect all participants and mark the session as ended."
-                          : "You'll leave the video call. The room will remain active for others."}
-                      </p>
-                      <div className="flex justify-end gap-2 pt-1">
-                        <button
-                          type="button"
-                          className="px-3 py-1.5 text-xs rounded border"
-                          onClick={() => setConfirmOpen(false)}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="button"
-                          className="px-3 py-1.5 text-xs rounded bg-red-600 text-white hover:bg-red-700"
-                          onClick={async () => {
-                            setConfirmOpen(false);
-                            await handleLeaveConfirmed();
-                          }}
-                        >
-                          {isHost ? "End room" : "Leave room"}
-                        </button>
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
+              {!callEnded && (
+                <div className="border-t border-gray-200 ">
+                  <CallControls onLeave={handleLeaveConfirmed} />
+                </div>
+              )}
             </div>
           </StreamTheme>
         </StreamCall>
       </StreamVideo>
+
+      {/* Call Ended Overlay */}
+      {callEnded && (
+        <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="text-center space-y-4 p-6">
+            <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center mx-auto">
+              <svg
+                className="w-8 h-8 text-red-600 dark:text-red-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-foreground mb-2">
+                Call Ended
+              </h3>
+              <p className="text-sm text-foreground">
+                You have left the video call
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

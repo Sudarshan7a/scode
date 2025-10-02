@@ -17,7 +17,7 @@ export function PreviewControls() {
   // Handle mic toggle with debounce
   const handleMicToggle = async () => {
     if (isMicTransitioning) return;
-    
+
     setIsMicTransitioning(true);
     try {
       await (isMicMuted ? microphone.enable() : microphone.disable());
@@ -31,7 +31,7 @@ export function PreviewControls() {
   // Handle camera toggle with debounce
   const handleCameraToggle = async () => {
     if (isCameraTransitioning) return;
-    
+
     setIsCameraTransitioning(true);
     try {
       await (isCameraMuted ? camera.enable() : camera.disable());
@@ -63,7 +63,10 @@ export function PreviewControls() {
         title={isMicMuted ? "Unmute microphone" : "Mute microphone"}
       >
         {isMicTransitioning ? (
-          <Loader2 className="h-5 w-5 text-foreground animate-spin" aria-hidden="true" />
+          <Loader2
+            className="h-5 w-5 text-foreground animate-spin"
+            aria-hidden="true"
+          />
         ) : isMicMuted ? (
           <MicOff className="h-5 w-5 text-foreground" aria-hidden="true" />
         ) : (
@@ -90,7 +93,10 @@ export function PreviewControls() {
         title={isCameraMuted ? "Turn on camera" : "Turn off camera"}
       >
         {isCameraTransitioning ? (
-          <Loader2 className="h-5 w-5 text-foreground animate-spin" aria-hidden="true" />
+          <Loader2
+            className="h-5 w-5 text-foreground animate-spin"
+            aria-hidden="true"
+          />
         ) : isCameraMuted ? (
           <VideoOff className="h-5 w-5 text-foreground" aria-hidden="true" />
         ) : (
