@@ -4,13 +4,25 @@ import { useCallStateHooks } from "@stream-io/video-react-sdk";
 import { Mic, MicOff, Video, VideoOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 
+interface PreviewControlsProps {
+  isMicMuted: boolean;
+  isCameraMuted: boolean;
+  onMicToggle: (muted: boolean) => void;
+  onCameraToggle: (muted: boolean) => void;
+}
+
 /**
  * Accessible preview control buttons for camera and microphone
  */
-export function PreviewControls() {
+export function PreviewControls({
+  isMicMuted,
+  isCameraMuted,
+  onMicToggle,
+  onCameraToggle,
+}: PreviewControlsProps) {
   const { useMicrophoneState, useCameraState } = useCallStateHooks();
-  const { microphone, isMute: isMicMuted } = useMicrophoneState();
-  const { camera, isMute: isCameraMuted } = useCameraState();
+  const { microphone } = useMicrophoneState();
+  const { camera } = useCameraState();
   const [isMicTransitioning, setIsMicTransitioning] = useState(false);
   const [isCameraTransitioning, setIsCameraTransitioning] = useState(false);
 
@@ -21,6 +33,7 @@ export function PreviewControls() {
     setIsMicTransitioning(true);
     try {
       await (isMicMuted ? microphone.enable() : microphone.disable());
+      onMicToggle(!isMicMuted);
     } catch (err) {
       console.error("Mic toggle failed", err);
     } finally {
@@ -35,6 +48,7 @@ export function PreviewControls() {
     setIsCameraTransitioning(true);
     try {
       await (isCameraMuted ? camera.enable() : camera.disable());
+      onCameraToggle(!isCameraMuted);
     } catch (err) {
       console.error("Camera toggle failed", err);
     } finally {

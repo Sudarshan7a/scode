@@ -31,6 +31,8 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
   const [joining, setJoining] = useState(false);
   const [hostRoomExists, setHostRoomExists] = useState<boolean | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
+  const [isMicMuted, setIsMicMuted] = useState(false);
+  const [isCameraMuted, setIsCameraMuted] = useState(false);
   const initializedRef = useRef(false);
 
   const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY;
@@ -147,6 +149,20 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
       if (!isHost && hostRoomExists === false) {
         return; // guard; button should be disabled anyway
       }
+      
+      // Set device states based on preview settings before joining
+      if (!isCameraMuted) {
+        await call.camera.enable();
+      } else {
+        await call.camera.disable();
+      }
+      
+      if (!isMicMuted) {
+        await call.microphone.enable();
+      } else {
+        await call.microphone.disable();
+      }
+      
       await call.join({ create: isHost });
       initializedRef.current = true;
       onJoined(client, call);
@@ -156,7 +172,7 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
     } finally {
       setJoining(false);
     }
-  }, [client, call, isHost, joining, hostRoomExists, onJoined]);
+  }, [client, call, isHost, joining, hostRoomExists, onJoined, isMicMuted, isCameraMuted]);
 
   if (!apiKey) {
     return (
@@ -204,7 +220,12 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
                 </div>
               )}
               <div className="flex gap-2 justify-center">
-                <PreviewControls />
+                <PreviewControls 
+                  isMicMuted={isMicMuted}
+                  isCameraMuted={isCameraMuted}
+                  onMicToggle={setIsMicMuted}
+                  onCameraToggle={setIsCameraMuted}
+                />
               </div>
               <Button
                 size="default"
