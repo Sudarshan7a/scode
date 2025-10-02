@@ -157,11 +157,18 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
     setJoining(true);
     setError(null); // Clear previous errors
     try {
-      // Disable camara and microphone initially
+      // Set device states based on preview settings before joining
+      if (!isCameraMuted) {
+        await call.camera.enable();
+      } else {
+        await call.camera.disable();
+      }
 
-      await call.camera.disable();
-
-      await call.microphone.disable();
+      if (!isMicMuted) {
+        await call.microphone.enable();
+      } else {
+        await call.microphone.disable();
+      }
 
       // Attempt to join - for participants, this will fail if host hasn't started
       console.log(isHost);
