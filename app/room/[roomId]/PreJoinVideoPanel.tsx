@@ -157,18 +157,11 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
     setJoining(true);
     setError(null); // Clear previous errors
     try {
-      // Set device states based on preview settings before joining
-      if (!isCameraMuted) {
-        await call.camera.enable();
-      } else {
-        await call.camera.disable();
-      }
+      // Disable camara and microphone initially
 
-      if (!isMicMuted) {
-        await call.microphone.enable();
-      } else {
-        await call.microphone.disable();
-      }
+      await call.camera.disable();
+
+      await call.microphone.disable();
 
       // Attempt to join - for participants, this will fail if host hasn't started
       console.log(isHost);
@@ -183,18 +176,32 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
         e && typeof e === "object" && "status" in e && e.status === 404;
 
       if (!isHost && isCallNotFound) {
-        showInfoToast("The host hasn't started the call yet. Please try again.", {
-          duration: 4000,
-        });
+        showInfoToast(
+          "The host hasn't started the call yet. Please try again.",
+          {
+            duration: 4000,
+          }
+        );
         setHostRoomExists(false);
       } else {
-        const errorMessage = e instanceof Error ? e.message : "Failed to join call";
+        const errorMessage =
+          e instanceof Error ? e.message : "Failed to join call";
         showErrorToast(errorMessage, { duration: 5000 });
       }
     } finally {
       setJoining(false);
     }
-  }, [client, call, isHost, joining, onJoined, isMicMuted, isCameraMuted, showErrorToast, showInfoToast]);
+  }, [
+    client,
+    call,
+    isHost,
+    joining,
+    onJoined,
+    isMicMuted,
+    isCameraMuted,
+    showErrorToast,
+    showInfoToast,
+  ]);
 
   if (!apiKey) {
     return (
