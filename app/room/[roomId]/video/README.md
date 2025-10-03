@@ -7,26 +7,35 @@ This directory contains all video call functionality using Stream Video SDK. The
 ### Core Files
 
 #### `index.ts`
+
 Central export point for all video utilities. Import from this file to access any video functionality:
 
 ```typescript
-import { usePreJoinResources, useCameraPreview, applyInitialDeviceState } from './video';
+import {
+  usePreJoinResources,
+  useCameraPreview,
+  applyInitialDeviceState,
+} from "./video";
 ```
 
 ### API Layer
 
 #### `tokenApi.ts`
+
 Handles video authentication token fetching from the backend API.
 
 **Exports:**
+
 - `fetchVideoToken(roomId: string)` - Fetches token and userId for Stream Video authentication
 
 ### Call Management
 
 #### `callOperations.ts`
+
 Stream Video call lifecycle operations.
 
 **Exports:**
+
 - `isCallNotFound(error: unknown)` - Type guard for 404 errors
 - `ensureHostCall(call: Call)` - Creates or retrieves a call (host only)
 - `checkCallExists(call: Call)` - Checks if a call exists (participants)
@@ -34,41 +43,49 @@ Stream Video call lifecycle operations.
 ### Device Control
 
 #### `deviceState.ts`
+
 Camera and microphone state management.
 
 **Exports:**
+
 - `applyInitialDeviceState(call: Call, state: DeviceState)` - Sets camera/mic state before joining
 
 ### React Hooks
 
 #### `usePreJoinResources.ts`
+
 Hook for initializing Stream Video client and call.
 
 **Purpose:**
+
 - Fetches authentication token
 - Creates `StreamVideoClient` instance
 - Initializes `Call` object
 - Verifies call existence (or creates if host)
 
 **Usage:**
+
 ```typescript
 const { status, client, call, hostRoomExists, error } = usePreJoinResources({
   apiKey,
   roomId,
-  isHost
+  isHost,
 });
 ```
 
 #### `useCameraPreview.ts`
+
 Hook for managing camera preview lifecycle.
 
 **Purpose:**
+
 - Enables camera for preview
 - Handles permission errors gracefully
 - Auto-hides error messages after 5 seconds
 - Cleans up camera when unmounting (unless user joined)
 
 **Usage:**
+
 ```typescript
 const { previewError, markJoined } = useCameraPreview(call);
 ```
@@ -92,15 +109,15 @@ const { previewError, markJoined } = useCameraPreview(call);
 import {
   usePreJoinResources,
   useCameraPreview,
-  applyInitialDeviceState
-} from './video';
+  applyInitialDeviceState,
+} from "./video";
 
 function PreJoinPanel({ roomId, isHost }) {
   // Initialize video resources
   const { status, client, call, error } = usePreJoinResources({
     apiKey: process.env.NEXT_PUBLIC_STREAM_API_KEY,
     roomId,
-    isHost
+    isHost,
   });
 
   // Manage camera preview
@@ -110,7 +127,7 @@ function PreJoinPanel({ roomId, isHost }) {
   const handleJoin = async () => {
     await applyInitialDeviceState(call, {
       micMuted: false,
-      cameraMuted: false
+      cameraMuted: false,
     });
     await call.join({ create: isHost });
     markJoined();
@@ -121,6 +138,7 @@ function PreJoinPanel({ roomId, isHost }) {
 ## Refactoring History
 
 This module was refactored from a single `preJoinHooks.ts` file to improve:
+
 - **Code maintainability** - Smaller, focused files are easier to understand
 - **Testability** - Individual utilities can be tested in isolation
 - **Reusability** - Functions can be imported independently

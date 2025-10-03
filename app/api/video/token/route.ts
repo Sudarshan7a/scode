@@ -8,18 +8,6 @@ function respond(status: number, body: Record<string, unknown>) {
 }
 
 export async function GET(_req: NextRequest) {
-  // 1. Static dev override
-  // const staticToken = process.env.STREAM_VIDEO_DEFAULT_TOKEN;
-  // if (staticToken) {
-  //   return respond(200, {
-  //     ok: true,
-  //     mode: "static",
-  //     token: staticToken,
-  //     userId: process.env.STREAM_VIDEO_DEFAULT_USER_ID || null,
-  //   });
-  // }
-
-  // 2. Signed token path with user upsert
   const apiKey =
     process.env.NEXT_PUBLIC_STREAM_API_KEY || process.env.STREAM_API_KEY;
   const apiSecret = process.env.STREAM_API_SECRET;

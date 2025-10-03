@@ -13,12 +13,12 @@ interface CameraPreviewResult {
 
 /**
  * Hook to manage camera preview for pre-join screens
- * 
+ *
  * - Enables camera preview when call is available
  * - Handles permission errors gracefully
  * - Auto-hides error messages after 5 seconds
  * - Disables camera on cleanup (unless user has joined)
- * 
+ *
  * @param call - The Stream Video call instance (null before ready)
  * @returns Preview error state and markJoined callback
  */
@@ -39,7 +39,7 @@ export function useCameraPreview(call: Call | null): CameraPreviewResult {
       setPreviewError(
         "Camera preview unavailable. Check your browser permissions."
       );
-      
+
       // Auto-hide error after 5 seconds
       hideTimer.current = setTimeout(() => {
         if (!cancelled) {

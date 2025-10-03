@@ -13,7 +13,7 @@ interface DeviceState {
 /**
  * Applies initial device state before joining a call
  * Ensures camera and microphone are in the desired state
- * 
+ *
  * @param call - The Stream Video call instance
  * @param state - The desired device state (muted/unmuted)
  */

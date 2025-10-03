@@ -25,13 +25,13 @@ interface PreJoinResourceState {
 
 /**
  * Hook to initialize Stream Video resources for pre-join preview
- * 
+ *
  * Responsibilities:
  * - Fetch authentication token from backend
  * - Create StreamVideoClient instance
  * - Initialize Call object
  * - Verify call exists (or create if host)
- * 
+ *
  * @param params - Configuration including API key, room ID, and host status
  * @returns Resource state including client, call, and loading/error states
  */
