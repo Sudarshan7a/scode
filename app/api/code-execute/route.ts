@@ -1,6 +1,8 @@
 // app/api/code/execute/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
+import { getLanguageFileName } from "@/constants/languageFileNames";
+
 const EXECUTION_API_KEY = process.env.CODE_EXECUTION_API_KEY!;
 const EXECUTION_API_URL = process.env.CODE_EXECUTION_API_URL!;
 const EXECUTION_API_HOST = process.env.CODE_EXECUTION_API_HOST!;
@@ -39,7 +41,7 @@ export async function POST(req: NextRequest) {
         stdin: "", // No stdin support yet
         files: [
           {
-            name: "index.py",
+            name: getLanguageFileName(language),
             content: code,
           },
         ], // 5 second max
