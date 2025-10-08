@@ -1,9 +1,6 @@
 // app/api/code/execute/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
-const EXECUTION_API_KEY = process.env.CODE_EXECUTION_API_KEY!;
-const EXECUTION_API_URL = process.env.CODE_EXECUTION_API_URL!;
-
 export async function POST(req: NextRequest) {
   // 3. Parse and validate request
   const body = await req.json();
