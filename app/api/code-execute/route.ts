@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
       ok: true,
       output: result.stdout || "",
       error: result.stderr || "",
-      executionTime: result.time || 0,
+      executionTime: result.executionTime || 0,
     });
   } catch (error: any) {
     console.error("Code execution failed:", error);
