@@ -1,6 +1,10 @@
 // app/api/code/execute/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
+const EXECUTION_API_KEY = process.env.CODE_EXECUTION_API_KEY!;
+const EXECUTION_API_URL = process.env.CODE_EXECUTION_API_URL!;
+const EXECUTION_API_HOST = process.env.CODE_EXECUTION_API_HOST!;
+
 export async function POST(req: NextRequest) {
   // 3. Parse and validate request
   const body = await req.json();
@@ -24,15 +28,45 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
-  return NextResponse.json(
-    {
-      ok: true,
-      message: "Code execution request received",
-      data: {
-        language,
-        codeLength: code.length,
+
+  try {
+    // 5. Call external execution API with YOUR secret key
+    const response = await fetch(EXECUTION_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-rapidapi-key": EXECUTION_API_KEY, // Secret stays server-side
+        "x-rapidapi-host": EXECUTION_API_HOST,
       },
-    },
-    { status: 200 }
-  );
+      body: JSON.stringify({
+        language,
+        stdin: "", // No stdin support yet
+        files: [
+          {
+            name: "index.py",
+            content: code,
+          },
+        ], // 5 second max
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Execution API returned ${response.status}`);
+    }
+    const result = await response.json();
+    console.log("[Code Execution] Result:", result);
+    // 6. Sanitize response (remove sensitive data if needed)
+    return NextResponse.json({
+      ok: true,
+      output: result.stdout || "",
+      error: result.stderr || "",
+      executionTime: result.time || 0,
+    });
+  } catch (error: any) {
+    console.error("Code execution failed:", error);
+    return NextResponse.json(
+      { ok: false, message: "Execution failed. Please try again." },
+      { status: 500 }
+    );
+  }
 }
