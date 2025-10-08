@@ -17,10 +17,6 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
-  // Log execution details for debugging during initial development
-  console.log("[Code Execution] Language:", language);
-  console.log("[Code Execution] Code length:", code.length);
-  console.log("[Code Execution] Code snippet:", code.substring(0, 100) + "...");
   // 4. Validate code length (prevent abuse)
   if (code.length > 50000) {
     return NextResponse.json(
@@ -55,6 +51,56 @@ export async function POST(req: NextRequest) {
     }
     const result = await response.json();
     console.log("[Code Execution] Result:", result);
+
+    // Handle error responses from the execution API
+    if (result.status === "failed" || result.error) {
+      const errorCode = result.error;
+
+      // Extract error code (E001, E002, etc.)
+      const errorMatch = errorCode?.match(/E00\d/);
+      const code = errorMatch ? errorMatch[0] : null;
+
+      // Map error codes to user-friendly messages
+      // Only expose errors that users can control
+      switch (code) {
+        case "E001":
+          return NextResponse.json(
+            {
+              ok: false,
+              message:
+                "Code execution timed out. Please optimize your code or reduce execution time.",
+            },
+            { status: 408 }
+          );
+        case "E005":
+          return NextResponse.json(
+            {
+              ok: false,
+              message: "Input data is too long. Please reduce the input size.",
+            },
+            { status: 400 }
+          );
+        case "E006":
+          return NextResponse.json(
+            {
+              ok: false,
+              message: `The language '${language}' is not supported. Please select a different language.`,
+            },
+            { status: 400 }
+          );
+        default:
+          // For API-related errors (E002, E003, E004), return generic message
+          return NextResponse.json(
+            {
+              ok: false,
+              message:
+                "Service temporarily unavailable. Please try again later.",
+            },
+            { status: 503 }
+          );
+      }
+    }
+
     // 6. Sanitize response (remove sensitive data if needed)
     return NextResponse.json({
       ok: true,
