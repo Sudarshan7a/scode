@@ -58,6 +58,7 @@ export async function GET() {
       user,
     });
   } catch (e) {
+    void e;
     // Error during user upsert or token generation
     return respond(500, { ok: false, message: "Failed to generate token" });
   }
