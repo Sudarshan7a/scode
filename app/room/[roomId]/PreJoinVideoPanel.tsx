@@ -29,8 +29,6 @@ type Props = {
 };
 
 export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
-  const [isMicMuted, setIsMicMuted] = useState(false);
-  const [isCameraMuted, setIsCameraMuted] = useState(false);
   const [joining, setJoining] = useState(false);
   const { error: showErrorToast, info: showInfoToast } = useToast();
 
@@ -41,8 +39,6 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
   const handleJoin = useJoinHandler({
     ...resources,
     isHost,
-    isCameraMuted,
-    isMicMuted,
     joining,
     setJoining,
     markJoined,
@@ -62,11 +58,7 @@ export default function PreJoinVideoPanel({ roomId, isHost, onJoined }: Props) {
       previewError={previewError}
       isHost={isHost}
       hostRoomExists={resources.hostRoomExists}
-      isMicMuted={isMicMuted}
-      isCameraMuted={isCameraMuted}
       joining={joining}
-      onMicToggle={setIsMicMuted}
-      onCameraToggle={setIsCameraMuted}
       onJoin={handleJoin}
       client={resources.client}
       call={resources.call}
@@ -88,11 +80,7 @@ type PreJoinCardProps = {
   previewError: string | null;
   isHost: boolean;
   hostRoomExists: boolean | null;
-  isMicMuted: boolean;
-  isCameraMuted: boolean;
   joining: boolean;
-  onMicToggle: (next: boolean) => void;
-  onCameraToggle: (next: boolean) => void;
   onJoin: () => void;
   client: StreamVideoClient | null;
   call: Call | null;
@@ -104,11 +92,7 @@ function PreJoinCard({
   previewError,
   isHost,
   hostRoomExists,
-  isMicMuted,
-  isCameraMuted,
   joining,
-  onMicToggle,
-  onCameraToggle,
   onJoin,
   client,
   call,
@@ -126,11 +110,7 @@ function PreJoinCard({
           previewError={previewError}
           isHost={isHost}
           hostRoomExists={hostRoomExists}
-          isMicMuted={isMicMuted}
-          isCameraMuted={isCameraMuted}
           joining={joining}
-          onMicToggle={onMicToggle}
-          onCameraToggle={onCameraToggle}
           onJoin={onJoin}
         />
       )}
@@ -144,11 +124,7 @@ function PreviewContent({
   previewError,
   isHost,
   hostRoomExists,
-  isMicMuted,
-  isCameraMuted,
   joining,
-  onMicToggle,
-  onCameraToggle,
   onJoin,
 }: {
   client: StreamVideoClient;
@@ -156,11 +132,7 @@ function PreviewContent({
   previewError: string | null;
   isHost: boolean;
   hostRoomExists: boolean | null;
-  isMicMuted: boolean;
-  isCameraMuted: boolean;
   joining: boolean;
-  onMicToggle: (next: boolean) => void;
-  onCameraToggle: (next: boolean) => void;
   onJoin: () => void;
 }) {
   return (
@@ -176,12 +148,7 @@ function PreviewContent({
             </div>
           )}
           <div className="flex gap-2 justify-center">
-            <PreviewControls
-              isMicMuted={isMicMuted}
-              isCameraMuted={isCameraMuted}
-              onMicToggle={onMicToggle}
-              onCameraToggle={onCameraToggle}
-            />
+            <PreviewControls />
           </div>
           <Button
             size="default"
@@ -236,8 +203,6 @@ interface JoinHandlerParams {
   client: StreamVideoClient | null;
   call: Call | null;
   isHost: boolean;
-  isCameraMuted: boolean;
-  isMicMuted: boolean;
   joining: boolean;
   setJoining: Dispatch<SetStateAction<boolean>>;
   markJoined: () => void;
@@ -251,8 +216,6 @@ function useJoinHandler(params: JoinHandlerParams) {
     client,
     call,
     isHost,
-    isCameraMuted,
-    isMicMuted,
     joining,
     setJoining,
     markJoined,
@@ -269,6 +232,13 @@ function useJoinHandler(params: JoinHandlerParams) {
 
     setJoining(true);
     try {
+      // Get current mic and camera state from the call
+      const isMicMuted =
+        !call.microphone.state.status ||
+        call.microphone.state.status === "disabled";
+      const isCameraMuted =
+        !call.camera.state.status || call.camera.state.status === "disabled";
+
       await applyInitialDeviceState(call, {
         micMuted: isMicMuted,
         cameraMuted: isCameraMuted,
@@ -296,9 +266,7 @@ function useJoinHandler(params: JoinHandlerParams) {
   }, [
     call,
     client,
-    isCameraMuted,
     isHost,
-    isMicMuted,
     joining,
     markJoined,
     onJoined,
