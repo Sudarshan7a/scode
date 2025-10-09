@@ -52,7 +52,6 @@ export async function POST(req: NextRequest) {
       throw new Error(`Execution API returned ${response.status}`);
     }
     const result = await response.json();
-    console.log("[Code Execution] Result:", result);
 
     // Handle error responses from the execution API
     if (result.status === "failed" || result.error) {
@@ -110,8 +109,9 @@ export async function POST(req: NextRequest) {
       error: result.stderr || "",
       executionTime: result.executionTime || 0,
     });
-  } catch (error: any) {
-    console.error("Code execution failed:", error);
+  } catch (error: unknown) {
+    // Log error for debugging (can be replaced with proper logging service)
+    void error;
     return NextResponse.json(
       { ok: false, message: "Execution failed. Please try again." },
       { status: 500 }

@@ -8,7 +8,8 @@ export const GET = withAuth(
       .get("Authorization")
       ?.replace("Bearer ", "");
 
-    if (accessToken) console.log("accessToken confirmed");
+    // Access token validation (if needed, can add logic here)
+    void accessToken;
 
     return NextResponse.json(
       { message: "Token received", userId: userId },

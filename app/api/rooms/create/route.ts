@@ -32,7 +32,6 @@ export const POST = withAuth(async (request: NextRequest) => {
     const userCookieId = request.cookies.get("userId");
     // if no userId then return error
     if (!userCookieId?.value) {
-      console.log("No userId found in cookies");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -64,7 +63,6 @@ export const POST = withAuth(async (request: NextRequest) => {
     // now insert this to rooms collection in db
     const { roomsCollection } = await connectToMongo();
     const result = await roomsCollection.insertOne(doc);
-    console.log("Inserted room with id:", result.insertedId.toString());
     // now return response with roomid as number
 
     return NextResponse.json(

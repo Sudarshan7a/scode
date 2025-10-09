@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { ObjectId } from "mongodb";
 import { StreamClient } from "@stream-io/node-sdk";
@@ -7,7 +7,7 @@ function respond(status: number, body: Record<string, unknown>) {
   return NextResponse.json(body, { status });
 }
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   const apiKey =
     process.env.NEXT_PUBLIC_STREAM_API_KEY || process.env.STREAM_API_KEY;
   const apiSecret = process.env.STREAM_API_SECRET;
@@ -58,7 +58,7 @@ export async function GET(_req: NextRequest) {
       user,
     });
   } catch (e) {
-    console.error("[video/token] user upsert or token generation error", e);
+    // Error during user upsert or token generation
     return respond(500, { ok: false, message: "Failed to generate token" });
   }
 }
