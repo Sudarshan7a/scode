@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -12,8 +13,6 @@ const nextConfig: NextConfig = {
     },
   },
   webpack: (config, { isServer }) => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const path = require("path");
     config.resolve.alias = {
       ...config.resolve.alias,
       "@": path.resolve(__dirname),
@@ -30,6 +29,22 @@ const nextConfig: NextConfig = {
 
       // Ensure workers can be loaded properly
       config.output.globalObject = "self";
+
+      // Suppress Monaco Editor dynamic import warnings
+      config.ignoreWarnings = [
+        ...(config.ignoreWarnings || []),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (warning: any) => {
+          // Ignore all Monaco editor module resolution warnings
+          return (
+            warning.module &&
+            warning.module.resource &&
+            warning.module.resource.includes("monaco-editor") &&
+            warning.message &&
+            warning.message.includes("Can't resolve")
+          );
+        },
+      ];
     }
 
     return config;
