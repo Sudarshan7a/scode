@@ -64,7 +64,6 @@ export function useLoading(initialLoading = false): UseLoadingState {
           showErrorToast(errorMessage || errorMsg);
         }
 
-        console.error("Async operation failed:", err);
         return null;
       } finally {
         stopLoading();

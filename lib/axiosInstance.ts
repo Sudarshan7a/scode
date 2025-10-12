@@ -52,7 +52,7 @@ axiosInstance.interceptors.request.use(async (config) => {
         setAccessToken(token);
       }
     } catch (error) {
-      console.error("Failed to get access token:", error);
+      void error;
       clearAccessToken();
       window.location.href = "/login";
       return Promise.reject("Redirected to login after failed refresh");

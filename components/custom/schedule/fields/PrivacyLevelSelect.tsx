@@ -10,8 +10,10 @@ import {
 } from "@/components/ui/select";
 
 interface PrivacyLevelSelectProps {
-  setValue: UseFormSetValue<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-  errors: FieldErrors<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setValue: UseFormSetValue<any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  errors: FieldErrors<any>;
 }
 
 export function PrivacyLevelSelect({

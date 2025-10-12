@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 
 interface EditorEnabledCheckboxProps {
-  register: UseFormRegister<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  register: UseFormRegister<any>;
 }
 
 export function EditorEnabledCheckbox({

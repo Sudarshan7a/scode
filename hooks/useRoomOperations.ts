@@ -53,7 +53,8 @@ export function useRoomOperations(): RoomOperationsReturn {
         });
         onDelete?.();
       } catch (err) {
-        console.error("Failed to delete room:", err);
+        void err;
+        // Error already handled by promise toast
       }
     },
     [promise]
@@ -75,7 +76,8 @@ export function useRoomOperations(): RoomOperationsReturn {
           }
         );
       } catch (err) {
-        console.error("Failed to invite to room:", err);
+        void err;
+        // Error already handled by promise toast
       }
     },
     [promise]

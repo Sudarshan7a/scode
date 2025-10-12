@@ -47,7 +47,6 @@ export function useRooms(options: UseRoomsOptions = {}) {
       const errorMessage =
         e instanceof Error ? e.message : "Failed to load rooms";
       setError(errorMessage);
-      console.error("Failed to fetch rooms:", e);
     } finally {
       setIsLoading(false);
       fetchingRef.current = false;
