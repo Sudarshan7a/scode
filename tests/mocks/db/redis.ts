@@ -34,12 +34,17 @@ export function createRedisMock(
 }
 
 export function mockRateLimiterLimit(
-  result: { success: boolean } = { success: true }
+  result: { success: boolean } = { success: true },
+  limiter: "login" | "signup" = "login"
 ) {
+  const targetLimiter = limiter === "login" 
+    ? rateLimiterModule.loginLimiter 
+    : rateLimiterModule.signupLimiter;
+  
   const spy = vi
-    .spyOn(rateLimiterModule.loginLimiter, "limit")
+    .spyOn(targetLimiter, "limit")
     .mockResolvedValue(
-      result as Awaited<ReturnType<typeof rateLimiterModule.loginLimiter.limit>>
+      result as Awaited<ReturnType<typeof targetLimiter.limit>>
     );
   return spy;
 }
