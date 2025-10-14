@@ -14,9 +14,31 @@ export default defineConfig({
     clearMocks: true,
     coverage: {
       provider: "v8",
-      reporter: ["text", "lcov"],
+      reporter: ["text", "lcov", "json", "html"],
       include: ["app/**/*", "components/**/*", "hooks/**/*", "lib/**/*"],
-      exclude: ["tests/**/*", "**/*.d.ts", "**/index.ts"],
+      exclude: [
+        "tests/**/*",
+        "**/*.d.ts",
+        "**/index.ts",
+        "**/*.config.*",
+        "**/types.ts",
+        "**/*.test.*",
+        "**/*.spec.*",
+      ],
+      // Coverage thresholds - enforced in CI
+      thresholds: {
+        lines: 80,
+        functions: 66,
+        branches: 76,
+        statements: 11,
+      },
+    },
+    // Reporter configuration for CI/CD
+    reporters: process.env.CI
+      ? ["default", "junit"]
+      : ["default"],
+    outputFile: {
+      junit: "./vitest-results.xml",
     },
   },
   resolve: {

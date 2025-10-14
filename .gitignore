@@ -48,8 +48,8 @@ config/secrets.*
 auth.json
 credentials.json
 
-#github // copilot instructions
-.github/
+# github copilot instructions (keep workflows)
+.github/instructions/
 
 # vercel
 .vercel
