@@ -37,10 +37,11 @@ export function mockRateLimiterLimit(
   result: { success: boolean } = { success: true },
   limiter: "login" | "signup" = "login"
 ) {
-  const targetLimiter = limiter === "login" 
-    ? rateLimiterModule.loginLimiter 
-    : rateLimiterModule.signupLimiter;
-  
+  const targetLimiter =
+    limiter === "login"
+      ? rateLimiterModule.loginLimiter
+      : rateLimiterModule.signupLimiter;
+
   const spy = vi
     .spyOn(targetLimiter, "limit")
     .mockResolvedValue(
