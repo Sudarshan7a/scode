@@ -9,6 +9,10 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-green?logo=mongodb)](https://mongodb.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+[![Tests](https://github.com/Sudarshan7a/scode/actions/workflows/test.yml/badge.svg)](https://github.com/Sudarshan7a/scode/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/Sudarshan7a/scode/branch/main/graph/badge.svg)](https://codecov.io/gh/Sudarshan7a/scode)
+[![Coverage](https://img.shields.io/badge/coverage-11.46%25-red)](https://github.com/Sudarshan7a/scode/tree/main/coverage)
+
 [🌐 Live Demo](https://scode-app.vercel.app) • [📖 Documentation](#getting-started) • [🐛 Report Bug](https://github.com/Sudarshan7a/scode/issues) • [💡 Request Feature](https://github.com/Sudarshan7a/scode/issues)
 
 </div>
