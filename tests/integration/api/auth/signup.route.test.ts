@@ -35,12 +35,11 @@ import { isEmailDomainAllowed } from "@/types/mogodbValidation";
 import { createUser } from "@/app/api/auth/signup/service";
 
 describe("POST /api/auth/signup", () => {
-  let mongoMocks: ReturnType<typeof mockConnectToMongo>;
   let rateLimiterSpy: ReturnType<typeof mockRateLimiterLimit>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mongoMocks = mockConnectToMongo();
+    mockConnectToMongo();
     rateLimiterSpy = mockRateLimiterLimit({ success: true }, "signup");
     // Reset isEmailDomainAllowed to return true by default
     (isEmailDomainAllowed as ReturnType<typeof vi.fn>).mockReturnValue(true);

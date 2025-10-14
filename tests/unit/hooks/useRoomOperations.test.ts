@@ -6,7 +6,7 @@ import { installFetchMock, resetFetchMock, FetchMock } from "@/tests/mocks/next"
 // Mock useToast hook
 const mockSuccess = vi.fn();
 const mockError = vi.fn();
-const mockPromise = vi.fn((promise, options) => promise);
+const mockPromise = vi.fn((promise) => promise);
 
 vi.mock("@/hooks/useToast", () => ({
   useToast: () => ({

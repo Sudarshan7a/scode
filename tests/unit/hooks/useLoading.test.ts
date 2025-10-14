@@ -1,5 +1,5 @@
-import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { describe, expect, it, beforeEach, vi } from "vitest";
+import { renderHook, act } from "@testing-library/react";
 import { useLoading, useMultipleLoading } from "@/hooks/useLoading";
 
 // Mock useToast

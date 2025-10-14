@@ -7,7 +7,7 @@ function respond(status: number, body: Record<string, unknown>) {
   return NextResponse.json(body, { status });
 }
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   const apiKey =
     process.env.NEXT_PUBLIC_STREAM_API_KEY || process.env.STREAM_API_KEY;
   const apiSecret = process.env.STREAM_API_SECRET;

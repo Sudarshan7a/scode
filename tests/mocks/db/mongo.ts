@@ -1,7 +1,7 @@
 import { vi } from "vitest";
 import * as mongoModule from "../../../lib/mongodb";
 
-export type CollectionMock<T = unknown> = {
+export type CollectionMock = {
   findOne: ReturnType<typeof vi.fn>;
   find: ReturnType<typeof vi.fn>;
   insertOne: ReturnType<typeof vi.fn>;

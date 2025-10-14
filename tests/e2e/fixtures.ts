@@ -16,12 +16,15 @@ type CustomFixtures = {
  * Extended test with custom fixtures
  * Usage: import { test, expect } from './fixtures';
  */
+// eslint-disable-next-line react-hooks/rules-of-hooks
 export const test = base.extend<CustomFixtures>({
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   authPage: async ({ page }, use) => {
     const authPage = new AuthPage(page);
     await use(authPage);
   },
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   roomPage: async ({ page }, use) => {
     const roomPage = new RoomPage(page);
     await use(roomPage);
