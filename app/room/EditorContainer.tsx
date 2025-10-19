@@ -1,6 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import type {
   LanguageDef,
   EditorLike,
@@ -18,22 +18,44 @@ const Editor = dynamic(() => import("@monaco-editor/react"), {
   ),
 });
 
-export default function EditorContainer({
-  roomId,
-  languages,
-  languageId,
-}: {
+// Export type for parent components to use
+export type EditorContainerRef = {
+  getCode: () => string;
+  setCode: (code: string) => void;
+};
+
+type EditorContainerProps = {
   roomId: string;
   languages: LanguageDef[];
   languageId: string;
-}) {
-  const editorRef = useRef<EditorLike | null>(null);
-  const monacoRef = useRef<MonacoLike | null>(null);
-  const cleanupRef = useRef<() => void>(() => {});
+};
 
-  useEffect(() => {
-    return () => cleanupRef.current();
-  }, []);
+const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
+  ({ roomId, languages, languageId }, ref) => {
+    const editorRef = useRef<EditorLike | null>(null);
+    const monacoRef = useRef<MonacoLike | null>(null);
+    const cleanupRef = useRef<() => void>(() => {});
+
+    // Expose methods to parent via ref
+    useImperativeHandle(ref, () => ({
+      getCode: () => {
+        const model = editorRef.current?.getModel();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (model as any)?.getValue?.() || "";
+      },
+      setCode: (code: string) => {
+        const model = editorRef.current?.getModel();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if (model && typeof (model as any).setValue === "function") {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (model as any).setValue(code);
+        }
+      },
+    }));
+
+    useEffect(() => {
+      return () => cleanupRef.current();
+    }, []);
 
   const applyLanguageLocally = useCallback(
     (lang: string) => {
@@ -83,4 +105,8 @@ export default function EditorContainer({
       }}
     />
   );
-}
+});
+
+EditorContainer.displayName = "EditorContainer";
+
+export default EditorContainer;
