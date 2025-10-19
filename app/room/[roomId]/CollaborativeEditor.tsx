@@ -93,18 +93,24 @@ export default function CollaborativeEditor({
       const result = await response.json();
 
       if (result.ok) {
-        // Show both stdout and stderr from execution
-        setOutput(result.output || "Program executed successfully (no output)");
         // stderr might contain compilation errors, warnings, or runtime errors
         if (result.error && result.error.trim()) {
           setError(result.error);
+          // Don't show output when there's an error
+          setOutput("");
+        } else {
+          // Only show output when there's no error
+          setOutput(result.output || "Program executed successfully (no output)");
+          setError("");
         }
       } else {
         // API-level errors (timeouts, service errors, etc.)
         setError(result.message || result.error || "Execution failed");
+        setOutput("");
       }
     } catch (err) {
       setError("Failed to execute code. Please try again.");
+      setOutput("");
       console.error("Code execution error:", err);
     } finally {
       setIsExecuting(false);
