@@ -100,7 +100,9 @@ export default function CollaborativeEditor({
           setOutput("");
         } else {
           // Only show output when there's no error
-          setOutput(result.output || "Program executed successfully (no output)");
+          setOutput(
+            result.output || "Program executed successfully (no output)"
+          );
           setError("");
         }
       } else {
@@ -240,9 +242,11 @@ export default function CollaborativeEditor({
                 {error && (
                   <div className="mb-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-red-400 font-semibold">⚠ Error</span>
+                      <span className="text-red-400 font-semibold">
+                        ⚠ Error
+                      </span>
                     </div>
-                    <pre className="whitespace-pre-wrap font-mono text-sm text-red-300 bg-red-950/30 p-3 rounded border border-red-800">
+                    <pre className="whitespace-pre-wrap font-mono text-sm text-red-300 bg-red-950/30 p-3 rounded border border-red-800 overflow-auto scrollbar-hide">
                       {error}
                     </pre>
                   </div>
@@ -251,9 +255,11 @@ export default function CollaborativeEditor({
                 {output && (
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-green-400 font-semibold">✓ Output</span>
+                      <span className="text-green-400 font-semibold">
+                        ✓ Output
+                      </span>
                     </div>
-                    <pre className="whitespace-pre-wrap font-mono text-sm text-green-300 bg-green-950/30 p-3 rounded border border-green-800">
+                    <pre className="whitespace-pre-wrap font-mono text-sm text-green-300 bg-green-950/30 p-3 rounded border border-green-800 overflow-auto scrollbar-hide">
                       {output}
                     </pre>
                   </div>
