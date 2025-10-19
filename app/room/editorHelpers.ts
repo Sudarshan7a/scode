@@ -51,10 +51,15 @@ export function configureMonacoForTsJs(monaco: MonacoLike) {
         allowJs: true,
         checkJs: true,
         jsx: "preserve",
+        target: 99, // ES2020
+        module: 1, // CommonJS
+        noEmit: true,
+        esModuleInterop: true,
       });
       tsns.javascriptDefaults.setDiagnosticsOptions({
-        noSemanticValidation: false,
-        noSyntaxValidation: false,
+        noSemanticValidation: false, // Show type errors
+        noSyntaxValidation: false, // Show syntax errors
+        noSuggestionDiagnostics: false, // Show suggestions
       });
       // Keep models in sync eagerly so suggestions reflect file changes quickly
       if (typeof tsns.javascriptDefaults.setEagerModelSync === "function") {
@@ -64,7 +69,17 @@ export function configureMonacoForTsJs(monaco: MonacoLike) {
       try {
         if (typeof tsns.javascriptDefaults.addExtraLib === "function") {
           tsns.javascriptDefaults.addExtraLib(
-            "declare const globalThis: any; declare const window: any;",
+            `declare const globalThis: any; declare const window: any;
+declare var console: {
+  log(...args: any[]): void;
+  error(...args: any[]): void;
+  warn(...args: any[]): void;
+  info(...args: any[]): void;
+};
+declare function setTimeout(callback: () => void, ms: number): number;
+declare function setInterval(callback: () => void, ms: number): number;
+declare function clearTimeout(id: number): void;
+declare function clearInterval(id: number): void;`,
             "inmemory://global-js.d.ts"
           );
         }
@@ -78,10 +93,24 @@ export function configureMonacoForTsJs(monaco: MonacoLike) {
       tsns.typescriptDefaults.setCompilerOptions({
         jsx: "preserve",
         allowJs: true,
+        target: 99, // ES2020
+        module: 1, // CommonJS
+        noEmit: true,
+        esModuleInterop: true,
+        // Strict type checking
+        strict: true,
+        strictNullChecks: true,
+        strictFunctionTypes: true,
+        strictBindCallApply: true,
+        strictPropertyInitialization: true,
+        noImplicitAny: true,
+        noImplicitThis: true,
+        alwaysStrict: true,
       });
       tsns.typescriptDefaults.setDiagnosticsOptions({
-        noSemanticValidation: false,
-        noSyntaxValidation: false,
+        noSemanticValidation: false, // Show type errors
+        noSyntaxValidation: false, // Show syntax errors
+        noSuggestionDiagnostics: false, // Show suggestions
       });
       if (typeof tsns.typescriptDefaults.setEagerModelSync === "function") {
         tsns.typescriptDefaults.setEagerModelSync(true);
