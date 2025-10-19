@@ -46,7 +46,7 @@ export const NOTIFICATION_DATA: NotificationGroup[] = [
         key: "earlier-2",
         title: "Extension Recommendation",
         description:
-          "Based on your activity, we recommend installing the TypeScript extension.",
+          "Based on your activity, we recommend installing the Python extension.",
       },
       {
         key: "earlier-3",

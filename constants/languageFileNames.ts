@@ -4,7 +4,6 @@
  */
 export const LANGUAGE_FILE_NAMES: Record<string, string> = {
   javascript: "index.js",
-  typescript: "index.ts",
   python: "index.py",
   go: "main.go",
   java: "Main.java",

@@ -15,18 +15,19 @@ const chatHistory = [
   {
     id: 2,
     type: "user" as const,
-    message: "Hi! I need help setting up a new React project with TypeScript.",
+    message: "Hi! I need help setting up a new React project with Vite.",
     timestamp: "10:31 AM",
   },
   {
     id: 3,
     type: "ai" as const,
     message:
-      "I would be happy to help you set up a React project with TypeScript! Here are the steps:",
+      "I would be happy to help you set up a React project with Vite! Here are the steps:",
     timestamp: "10:31 AM",
-    codeSnippet: `npx create-react-app my-app --template typescript
+    codeSnippet: `npm create vite@latest my-app -- --template react
 cd my-app
-npm start`,
+npm install
+npm run dev`,
   },
   {
     id: 4,
@@ -38,7 +39,7 @@ npm start`,
     id: 5,
     type: "ai" as const,
     message:
-      "Excellent choice! Here is how to add Tailwind CSS to your React TypeScript project:",
+      "Excellent choice! Here is how to add Tailwind CSS to your React project:",
     timestamp: "10:33 AM",
     codeSnippet: `npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p`,
