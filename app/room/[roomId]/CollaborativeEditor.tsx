@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -14,7 +14,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 // All heavy/editor-specific libs (monaco, yjs, y-monaco, workers) are loaded only in the onMount handler.
 // This file stays as lightweight as possible to avoid accidental SSR evaluation of browser globals.
 
-import EditorContainer from "@/app/room/EditorContainer";
+import EditorContainer, { EditorContainerRef } from "@/app/room/EditorContainer";
 
 import { SUPPORTED_LANGUAGES } from "@/app/room/editorHelpers";
 
@@ -46,6 +46,9 @@ export default function CollaborativeEditor({
   // Supported languages (kept in a top-level constant for clarity)
   const languages = useMemo(() => SUPPORTED_LANGUAGES, []);
   const [languageId, setLanguageId] = useState("javascript");
+
+  // Editor ref to access code for execution
+  const editorRef = useRef<EditorContainerRef>(null);
 
   const selectLanguage = useCallback((lang: string) => setLanguageId(lang), []);
 
@@ -128,6 +131,7 @@ export default function CollaborativeEditor({
     <div style={{ height: "100vh" }}>
       <LanguageSelector />
       <EditorContainer
+        ref={editorRef}
         roomId={roomId}
         languages={languages}
         languageId={languageId}
