@@ -12,120 +12,16 @@ export type EditorLike = { getModel: () => { uri?: unknown } | null };
 // Minimal shape of the Monaco API surface used by this file.
 export type MonacoLike = {
   // Keep the shape loose since we load Monaco dynamically in the browser.
-  // We intentionally allow accessing the `typescript` namespace at runtime.
   languages: {
     getLanguages: () => Array<{ id?: string }>;
-    typescript?: unknown;
     // allow reading other language surfaces
     [key: string]: unknown;
   };
   editor?: { setModelLanguage?: (mdl: unknown, l: string) => void };
 };
 
-// Configure Monaco's JS/TS language service for better editor IntelliSense.
-export function configureMonacoForTsJs(monaco: MonacoLike) {
-  if (!monaco || !monaco.languages || !monaco.languages.typescript) return;
-
-  try {
-    // Minimal TS/JS surface we rely on from Monaco. Keep it local to avoid
-    // depending on Monaco types in the repo.
-    type TsNamespace = {
-      javascriptDefaults?: {
-        setCompilerOptions: (opts: Record<string, unknown>) => void;
-        setDiagnosticsOptions: (opts: Record<string, unknown>) => void;
-        setEagerModelSync?: (b: boolean) => void;
-        addExtraLib?: (code: string, uri?: string) => void;
-      };
-      typescriptDefaults?: {
-        setCompilerOptions: (opts: Record<string, unknown>) => void;
-        setDiagnosticsOptions: (opts: Record<string, unknown>) => void;
-        setEagerModelSync?: (b: boolean) => void;
-      };
-    };
-
-    const tsns = monaco.languages as unknown as TsNamespace;
-
-    // JavaScript defaults
-    if (tsns.javascriptDefaults) {
-      tsns.javascriptDefaults.setCompilerOptions({
-        allowJs: true,
-        checkJs: true,
-        jsx: "preserve",
-        target: 99, // ES2020
-        module: 1, // CommonJS
-        noEmit: true,
-        esModuleInterop: true,
-      });
-      tsns.javascriptDefaults.setDiagnosticsOptions({
-        noSemanticValidation: false, // Show type errors
-        noSyntaxValidation: false, // Show syntax errors
-        noSuggestionDiagnostics: false, // Show suggestions
-      });
-      // Keep models in sync eagerly so suggestions reflect file changes quickly
-      if (typeof tsns.javascriptDefaults.setEagerModelSync === "function") {
-        tsns.javascriptDefaults.setEagerModelSync(true);
-      }
-      // Minimal extra lib so editor offers DOM/JS globals in JS files.
-      try {
-        if (typeof tsns.javascriptDefaults.addExtraLib === "function") {
-          tsns.javascriptDefaults.addExtraLib(
-            `declare const globalThis: any; declare const window: any;
-declare var console: {
-  log(...args: any[]): void;
-  error(...args: any[]): void;
-  warn(...args: any[]): void;
-  info(...args: any[]): void;
-};
-declare function setTimeout(callback: () => void, ms: number): number;
-declare function setInterval(callback: () => void, ms: number): number;
-declare function clearTimeout(id: number): void;
-declare function clearInterval(id: number): void;`,
-            "inmemory://global-js.d.ts"
-          );
-        }
-      } catch {
-        // ignore if API not available in this runtime
-      }
-    }
-
-    // TypeScript defaults
-    if (tsns.typescriptDefaults) {
-      tsns.typescriptDefaults.setCompilerOptions({
-        jsx: "preserve",
-        allowJs: true,
-        target: 99, // ES2020
-        module: 1, // CommonJS
-        noEmit: true,
-        esModuleInterop: true,
-        // Strict type checking
-        strict: true,
-        strictNullChecks: true,
-        strictFunctionTypes: true,
-        strictBindCallApply: true,
-        strictPropertyInitialization: true,
-        noImplicitAny: true,
-        noImplicitThis: true,
-        alwaysStrict: true,
-      });
-      tsns.typescriptDefaults.setDiagnosticsOptions({
-        noSemanticValidation: false, // Show type errors
-        noSyntaxValidation: false, // Show syntax errors
-        noSuggestionDiagnostics: false, // Show suggestions
-      });
-      if (typeof tsns.typescriptDefaults.setEagerModelSync === "function") {
-        tsns.typescriptDefaults.setEagerModelSync(true);
-      }
-    }
-  } catch (err) {
-    // Non-fatal: if Monaco surface differs, fall back silently.
-    // Caller will still proceed with basic editor features.
-    console.warn("configureMonacoForTsJs failed:", err);
-  }
-}
-
 export const SUPPORTED_LANGUAGES: LanguageDef[] = [
   { id: "javascript", label: "JavaScript", monacoId: "javascript" },
-  { id: "typescript", label: "TypeScript", monacoId: "typescript" },
   {
     id: "python",
     label: "Python",
@@ -262,15 +158,6 @@ export async function initializeEditor(opts: {
 
     const model = editor.getModel();
     if (model) {
-      // Configure Monaco's JS/TS language service BEFORE binding
-      // (this sets compilerOptions, diagnostics and eager model sync).
-      try {
-        configureMonacoForTsJs(monaco);
-      } catch (e) {
-        // non-fatal
-        console.warn("Failed to configure Monaco TS/JS defaults:", e);
-      }
-
       // MonacoBinding's actual types are provided by the monaco/y-monaco packages.
       // To avoid pulling those types into this helper (and to satisfy the
       // no-explicit-any lint rule) we use `unknown` for the constructor shape
@@ -284,21 +171,6 @@ export async function initializeEditor(opts: {
         (provider as unknown as { awareness?: unknown }).awareness
       );
       applyLanguageToModel(languageId);
-
-      // For TypeScript/JavaScript, ensure diagnostics are enabled after model is ready
-      if (languageId === "typescript" || languageId === "javascript") {
-        // Give Monaco a moment to process the model
-        setTimeout(() => {
-          try {
-            configureMonacoForTsJs(monaco);
-          } catch (e) {
-            console.warn(
-              "Failed to reconfigure Monaco TS/JS after model ready:",
-              e
-            );
-          }
-        }, 100);
-      }
     }
 
     return () => {
