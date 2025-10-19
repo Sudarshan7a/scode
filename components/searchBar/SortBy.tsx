@@ -27,7 +27,6 @@ function SortBy() {
               "Java",
               "C++",
               "Go",
-              "TypeScript",
             ],
           },
           {
