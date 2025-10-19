@@ -93,8 +93,14 @@ export default function CollaborativeEditor({
       const result = await response.json();
 
       if (result.ok) {
+        // Show both stdout and stderr from execution
         setOutput(result.output || "Program executed successfully (no output)");
+        // stderr might contain compilation errors, warnings, or runtime errors
+        if (result.error && result.error.trim()) {
+          setError(result.error);
+        }
       } else {
+        // API-level errors (timeouts, service errors, etc.)
         setError(result.message || result.error || "Execution failed");
       }
     } catch (err) {
@@ -224,18 +230,24 @@ export default function CollaborativeEditor({
             <ResizableHandle withHandle />
             <ResizablePanel minSize={20} defaultSize={30}>
               <div className="h-full bg-gray-900 text-white p-4 overflow-auto">
+                {/* Show errors first (compilation/runtime errors) */}
                 {error && (
-                  <div className="text-red-400">
-                    <strong className="font-semibold">Error:</strong>
-                    <pre className="mt-1 whitespace-pre-wrap font-mono text-sm">
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-red-400 font-semibold">⚠ Error</span>
+                    </div>
+                    <pre className="whitespace-pre-wrap font-mono text-sm text-red-300 bg-red-950/30 p-3 rounded border border-red-800">
                       {error}
                     </pre>
                   </div>
                 )}
+                {/* Show output (stdout) */}
                 {output && (
-                  <div className="text-green-400">
-                    <strong className="font-semibold">Output:</strong>
-                    <pre className="mt-1 whitespace-pre-wrap font-mono text-sm">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-green-400 font-semibold">✓ Output</span>
+                    </div>
+                    <pre className="whitespace-pre-wrap font-mono text-sm text-green-300 bg-green-950/30 p-3 rounded border border-green-800">
                       {output}
                     </pre>
                   </div>
