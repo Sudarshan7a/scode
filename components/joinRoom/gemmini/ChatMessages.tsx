@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea } from "../../../components/ui/scroll-area";
 import ChatMessage from "./ChatMessage";
 import TypingIndicator from "./TypingIndicator";
 
