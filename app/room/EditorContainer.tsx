@@ -96,7 +96,7 @@ const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
         height="100%"
         theme="vs-dark"
         language={languageId}
-        path={`inmemory://model/${roomId}.${languageId === 'typescript' ? 'ts' : languageId === 'javascript' ? 'js' : 'txt'}`}
+        path={`inmemory://model/${roomId}`}
         defaultValue="// Start coding together!"
         onMount={async (editor, monaco) => {
           editorRef.current = editor as EditorLike;
