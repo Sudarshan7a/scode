@@ -229,7 +229,7 @@ export async function initializeEditor(opts: {
     }
 
     setupMonacoEnvironment();
-    
+
     const ydoc = new Y.Doc();
     new IndexeddbPersistence(roomId, ydoc);
 
@@ -284,15 +284,18 @@ export async function initializeEditor(opts: {
         (provider as unknown as { awareness?: unknown }).awareness
       );
       applyLanguageToModel(languageId);
-      
+
       // For TypeScript/JavaScript, ensure diagnostics are enabled after model is ready
-      if (languageId === 'typescript' || languageId === 'javascript') {
+      if (languageId === "typescript" || languageId === "javascript") {
         // Give Monaco a moment to process the model
         setTimeout(() => {
           try {
             configureMonacoForTsJs(monaco);
           } catch (e) {
-            console.warn("Failed to reconfigure Monaco TS/JS after model ready:", e);
+            console.warn(
+              "Failed to reconfigure Monaco TS/JS after model ready:",
+              e
+            );
           }
         }, 100);
       }
