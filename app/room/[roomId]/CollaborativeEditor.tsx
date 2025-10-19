@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -10,13 +10,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Play } from "lucide-react";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 // All heavy/editor-specific libs (monaco, yjs, y-monaco, workers) are loaded only in the onMount handler.
 // This file stays as lightweight as possible to avoid accidental SSR evaluation of browser globals.
 
-import EditorContainer from "@/app/room/EditorContainer";
+import EditorContainer, {
+  EditorContainerRef,
+} from "@/app/room/EditorContainer";
 
 import { SUPPORTED_LANGUAGES } from "@/app/room/editorHelpers";
+import { LANGUAGE_FILE_NAMES } from "@/constants/languageFileNames";
 
 // --- Component ---
 
@@ -47,15 +56,79 @@ export default function CollaborativeEditor({
   const languages = useMemo(() => SUPPORTED_LANGUAGES, []);
   const [languageId, setLanguageId] = useState("javascript");
 
+  // Editor ref to access code for execution
+  const editorRef = useRef<EditorContainerRef>(null);
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [output, setOutput] = useState("");
+  const [error, setError] = useState("");
+
   const selectLanguage = useCallback((lang: string) => setLanguageId(lang), []);
 
-  // Single event handler using data attributes
-  const handleLanguageSelect = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const langId = e.currentTarget.dataset.langId;
-    if (langId) {
-      selectLanguage(langId);
+  // Handle code execution
+  const handleRunCode = useCallback(async () => {
+    // Get code from editor using ref
+    const code = editorRef.current?.getCode();
+
+    if (!code || code.trim() === "") {
+      setError("No code to execute");
+      setOutput("");
+      return;
     }
-  }, [selectLanguage]);
+
+    setIsExecuting(true);
+    setError("");
+    setOutput("");
+
+    try {
+      const response = await fetch("/api/code-execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code,
+          language: languageId,
+          fileName: LANGUAGE_FILE_NAMES[languageId],
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.ok) {
+        // stderr might contain compilation errors, warnings, or runtime errors
+        if (result.error && result.error.trim()) {
+          setError(result.error);
+          // Don't show output when there's an error
+          setOutput("");
+        } else {
+          // Only show output when there's no error
+          setOutput(
+            result.output || "Program executed successfully (no output)"
+          );
+          setError("");
+        }
+      } else {
+        // API-level errors (timeouts, service errors, etc.)
+        setError(result.message || result.error || "Execution failed");
+        setOutput("");
+      }
+    } catch (err) {
+      setError("Failed to execute code. Please try again.");
+      setOutput("");
+      console.error("Code execution error:", err);
+    } finally {
+      setIsExecuting(false);
+    }
+  }, [languageId]);
+
+  // Single event handler using data attributes
+  const handleLanguageSelect = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const langId = e.currentTarget.dataset.langId;
+      if (langId) {
+        selectLanguage(langId);
+      }
+    },
+    [selectLanguage]
+  );
 
   // container handles cleanup on unmount
   function LanguageSelector() {
@@ -81,6 +154,27 @@ export default function CollaborativeEditor({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* Run Code Button */}
+        <Button
+          onClick={handleRunCode}
+          disabled={isExecuting}
+          variant="default"
+          size="sm"
+          className="gap-2"
+        >
+          {isExecuting ? (
+            <>
+              <LoadingSpinner size="small" />
+              Running...
+            </>
+          ) : (
+            <>
+              <Play className="w-4 h-4" />
+              Run Code
+            </>
+          )}
+        </Button>
 
         {/* Host sees End Session; participants see Leave Room */}
         {isHost && onEndSession && (
@@ -125,13 +219,56 @@ export default function CollaborativeEditor({
   }
 
   return (
-    <div style={{ height: "100vh" }}>
+    <div className="flex flex-col h-full">
       <LanguageSelector />
-      <EditorContainer
-        roomId={roomId}
-        languages={languages}
-        languageId={languageId}
-      />
+      <ResizablePanelGroup direction="vertical" className="flex-1">
+        {/* Editor Panel */}
+        <ResizablePanel minSize={30} defaultSize={output || error ? 70 : 100}>
+          <EditorContainer
+            ref={editorRef}
+            roomId={roomId}
+            languages={languages}
+            languageId={languageId}
+          />
+        </ResizablePanel>
+
+        {/* Output/Error Panel - Only show when there's output or error */}
+        {(output || error) && (
+          <>
+            <ResizableHandle withHandle />
+            <ResizablePanel minSize={20} defaultSize={30}>
+              <div className="h-full bg-gray-900 text-white p-4 overflow-auto scrollbar-hide">
+                {/* Show errors first (compilation/runtime errors) */}
+                {error && (
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-red-400 font-semibold">
+                        ⚠ Error
+                      </span>
+                    </div>
+                    <pre className="whitespace-pre-wrap font-mono text-sm text-red-300 bg-red-950/30 p-3 rounded border border-red-800 overflow-auto scrollbar-hide">
+                      {error}
+                    </pre>
+                  </div>
+                )}
+                {/* Show output (stdout) */}
+                {output && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-green-400 font-semibold">
+                        ✓ Output
+                      </span>
+                    </div>
+                    <pre className="whitespace-pre-wrap font-mono text-sm text-green-300 bg-green-950/30 p-3 rounded border border-green-800 overflow-auto scrollbar-hide">
+                      {output}
+                    </pre>
+                  </div>
+                )}
+              </div>
+            </ResizablePanel>
+          </>
+        )}
+      </ResizablePanelGroup>
     </div>
   );
 }

@@ -51,10 +51,15 @@ export function configureMonacoForTsJs(monaco: MonacoLike) {
         allowJs: true,
         checkJs: true,
         jsx: "preserve",
+        target: 99, // ES2020
+        module: 1, // CommonJS
+        noEmit: true,
+        esModuleInterop: true,
       });
       tsns.javascriptDefaults.setDiagnosticsOptions({
-        noSemanticValidation: false,
-        noSyntaxValidation: false,
+        noSemanticValidation: false, // Show type errors
+        noSyntaxValidation: false, // Show syntax errors
+        noSuggestionDiagnostics: false, // Show suggestions
       });
       // Keep models in sync eagerly so suggestions reflect file changes quickly
       if (typeof tsns.javascriptDefaults.setEagerModelSync === "function") {
@@ -64,7 +69,17 @@ export function configureMonacoForTsJs(monaco: MonacoLike) {
       try {
         if (typeof tsns.javascriptDefaults.addExtraLib === "function") {
           tsns.javascriptDefaults.addExtraLib(
-            "declare const globalThis: any; declare const window: any;",
+            `declare const globalThis: any; declare const window: any;
+declare var console: {
+  log(...args: any[]): void;
+  error(...args: any[]): void;
+  warn(...args: any[]): void;
+  info(...args: any[]): void;
+};
+declare function setTimeout(callback: () => void, ms: number): number;
+declare function setInterval(callback: () => void, ms: number): number;
+declare function clearTimeout(id: number): void;
+declare function clearInterval(id: number): void;`,
             "inmemory://global-js.d.ts"
           );
         }
@@ -78,10 +93,24 @@ export function configureMonacoForTsJs(monaco: MonacoLike) {
       tsns.typescriptDefaults.setCompilerOptions({
         jsx: "preserve",
         allowJs: true,
+        target: 99, // ES2020
+        module: 1, // CommonJS
+        noEmit: true,
+        esModuleInterop: true,
+        // Strict type checking
+        strict: true,
+        strictNullChecks: true,
+        strictFunctionTypes: true,
+        strictBindCallApply: true,
+        strictPropertyInitialization: true,
+        noImplicitAny: true,
+        noImplicitThis: true,
+        alwaysStrict: true,
       });
       tsns.typescriptDefaults.setDiagnosticsOptions({
-        noSemanticValidation: false,
-        noSyntaxValidation: false,
+        noSemanticValidation: false, // Show type errors
+        noSyntaxValidation: false, // Show syntax errors
+        noSuggestionDiagnostics: false, // Show suggestions
       });
       if (typeof tsns.typescriptDefaults.setEagerModelSync === "function") {
         tsns.typescriptDefaults.setEagerModelSync(true);
@@ -200,14 +229,6 @@ export async function initializeEditor(opts: {
     }
 
     setupMonacoEnvironment();
-    // Configure Monaco's JS/TS language service for better IntelliSense
-    // (this sets compilerOptions, diagnostics and eager model sync).
-    try {
-      configureMonacoForTsJs(monaco);
-    } catch (e) {
-      // non-fatal
-      console.warn("Failed to configure Monaco TS/JS defaults:", e);
-    }
 
     const ydoc = new Y.Doc();
     new IndexeddbPersistence(roomId, ydoc);
@@ -241,6 +262,15 @@ export async function initializeEditor(opts: {
 
     const model = editor.getModel();
     if (model) {
+      // Configure Monaco's JS/TS language service BEFORE binding
+      // (this sets compilerOptions, diagnostics and eager model sync).
+      try {
+        configureMonacoForTsJs(monaco);
+      } catch (e) {
+        // non-fatal
+        console.warn("Failed to configure Monaco TS/JS defaults:", e);
+      }
+
       // MonacoBinding's actual types are provided by the monaco/y-monaco packages.
       // To avoid pulling those types into this helper (and to satisfy the
       // no-explicit-any lint rule) we use `unknown` for the constructor shape
@@ -254,6 +284,21 @@ export async function initializeEditor(opts: {
         (provider as unknown as { awareness?: unknown }).awareness
       );
       applyLanguageToModel(languageId);
+
+      // For TypeScript/JavaScript, ensure diagnostics are enabled after model is ready
+      if (languageId === "typescript" || languageId === "javascript") {
+        // Give Monaco a moment to process the model
+        setTimeout(() => {
+          try {
+            configureMonacoForTsJs(monaco);
+          } catch (e) {
+            console.warn(
+              "Failed to reconfigure Monaco TS/JS after model ready:",
+              e
+            );
+          }
+        }, 100);
+      }
     }
 
     return () => {
