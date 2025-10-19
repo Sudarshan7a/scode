@@ -229,15 +229,7 @@ export async function initializeEditor(opts: {
     }
 
     setupMonacoEnvironment();
-    // Configure Monaco's JS/TS language service for better IntelliSense
-    // (this sets compilerOptions, diagnostics and eager model sync).
-    try {
-      configureMonacoForTsJs(monaco);
-    } catch (e) {
-      // non-fatal
-      console.warn("Failed to configure Monaco TS/JS defaults:", e);
-    }
-
+    
     const ydoc = new Y.Doc();
     new IndexeddbPersistence(roomId, ydoc);
 
@@ -270,6 +262,15 @@ export async function initializeEditor(opts: {
 
     const model = editor.getModel();
     if (model) {
+      // Configure Monaco's JS/TS language service BEFORE binding
+      // (this sets compilerOptions, diagnostics and eager model sync).
+      try {
+        configureMonacoForTsJs(monaco);
+      } catch (e) {
+        // non-fatal
+        console.warn("Failed to configure Monaco TS/JS defaults:", e);
+      }
+
       // MonacoBinding's actual types are provided by the monaco/y-monaco packages.
       // To avoid pulling those types into this helper (and to satisfy the
       // no-explicit-any lint rule) we use `unknown` for the constructor shape
@@ -283,6 +284,18 @@ export async function initializeEditor(opts: {
         (provider as unknown as { awareness?: unknown }).awareness
       );
       applyLanguageToModel(languageId);
+      
+      // For TypeScript/JavaScript, ensure diagnostics are enabled after model is ready
+      if (languageId === 'typescript' || languageId === 'javascript') {
+        // Give Monaco a moment to process the model
+        setTimeout(() => {
+          try {
+            configureMonacoForTsJs(monaco);
+          } catch (e) {
+            console.warn("Failed to reconfigure Monaco TS/JS after model ready:", e);
+          }
+        }, 100);
+      }
     }
 
     return () => {
