@@ -235,7 +235,7 @@ export default function CollaborativeEditor({
           <>
             <ResizableHandle withHandle />
             <ResizablePanel minSize={20} defaultSize={30}>
-              <div className="h-full bg-gray-900 text-white p-4 overflow-auto">
+              <div className="h-full bg-gray-900 text-white p-4 overflow-auto scrollbar-hide">
                 {/* Show errors first (compilation/runtime errors) */}
                 {error && (
                   <div className="mb-4">
