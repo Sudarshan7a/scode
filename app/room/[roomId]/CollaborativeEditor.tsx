@@ -17,6 +17,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import EditorContainer, { EditorContainerRef } from "@/app/room/EditorContainer";
 
 import { SUPPORTED_LANGUAGES } from "@/app/room/editorHelpers";
+import { LANGUAGE_FILE_NAMES } from "@/constants/languageFileNames";
 
 // --- Component ---
 
@@ -49,8 +50,47 @@ export default function CollaborativeEditor({
 
   // Editor ref to access code for execution
   const editorRef = useRef<EditorContainerRef>(null);
+  const [isExecuting, setIsExecuting] = useState(false);
 
   const selectLanguage = useCallback((lang: string) => setLanguageId(lang), []);
+
+  // Handle code execution
+  const handleRunCode = useCallback(async () => {
+    // Get code from editor using ref
+    const code = editorRef.current?.getCode();
+    
+    if (!code || code.trim() === "") {
+      return;
+    }
+
+    setIsExecuting(true);
+
+    try {
+      const response = await fetch("/api/code-execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code,
+          language: languageId,
+          fileName: LANGUAGE_FILE_NAMES[languageId],
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.ok) {
+        // Success - we'll handle output display in next step
+        console.log("Execution successful:", result.output);
+      } else {
+        // Error - we'll handle error display in next step
+        console.error("Execution failed:", result.message);
+      }
+    } catch (err) {
+      console.error("Code execution error:", err);
+    } finally {
+      setIsExecuting(false);
+    }
+  }, [languageId]);
 
   // Single event handler using data attributes
   const handleLanguageSelect = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
