@@ -10,11 +10,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Play } from "lucide-react";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 // All heavy/editor-specific libs (monaco, yjs, y-monaco, workers) are loaded only in the onMount handler.
 // This file stays as lightweight as possible to avoid accidental SSR evaluation of browser globals.
 
-import EditorContainer, { EditorContainerRef } from "@/app/room/EditorContainer";
+import EditorContainer, {
+  EditorContainerRef,
+} from "@/app/room/EditorContainer";
 
 import { SUPPORTED_LANGUAGES } from "@/app/room/editorHelpers";
 import { LANGUAGE_FILE_NAMES } from "@/constants/languageFileNames";
@@ -51,6 +59,8 @@ export default function CollaborativeEditor({
   // Editor ref to access code for execution
   const editorRef = useRef<EditorContainerRef>(null);
   const [isExecuting, setIsExecuting] = useState(false);
+  const [output, setOutput] = useState("");
+  const [error, setError] = useState("");
 
   const selectLanguage = useCallback((lang: string) => setLanguageId(lang), []);
 
@@ -58,12 +68,16 @@ export default function CollaborativeEditor({
   const handleRunCode = useCallback(async () => {
     // Get code from editor using ref
     const code = editorRef.current?.getCode();
-    
+
     if (!code || code.trim() === "") {
+      setError("No code to execute");
+      setOutput("");
       return;
     }
 
     setIsExecuting(true);
+    setError("");
+    setOutput("");
 
     try {
       const response = await fetch("/api/code-execute", {
@@ -79,13 +93,12 @@ export default function CollaborativeEditor({
       const result = await response.json();
 
       if (result.ok) {
-        // Success - we'll handle output display in next step
-        console.log("Execution successful:", result.output);
+        setOutput(result.output || "Program executed successfully (no output)");
       } else {
-        // Error - we'll handle error display in next step
-        console.error("Execution failed:", result.message);
+        setError(result.message || result.error || "Execution failed");
       }
     } catch (err) {
+      setError("Failed to execute code. Please try again.");
       console.error("Code execution error:", err);
     } finally {
       setIsExecuting(false);
@@ -93,12 +106,15 @@ export default function CollaborativeEditor({
   }, [languageId]);
 
   // Single event handler using data attributes
-  const handleLanguageSelect = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const langId = e.currentTarget.dataset.langId;
-    if (langId) {
-      selectLanguage(langId);
-    }
-  }, [selectLanguage]);
+  const handleLanguageSelect = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const langId = e.currentTarget.dataset.langId;
+      if (langId) {
+        selectLanguage(langId);
+      }
+    },
+    [selectLanguage]
+  );
 
   // container handles cleanup on unmount
   function LanguageSelector() {
@@ -124,6 +140,27 @@ export default function CollaborativeEditor({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* Run Code Button */}
+        <Button
+          onClick={handleRunCode}
+          disabled={isExecuting}
+          variant="default"
+          size="sm"
+          className="gap-2"
+        >
+          {isExecuting ? (
+            <>
+              <LoadingSpinner size="small" />
+              Running...
+            </>
+          ) : (
+            <>
+              <Play className="w-4 h-4" />
+              Run Code
+            </>
+          )}
+        </Button>
 
         {/* Host sees End Session; participants see Leave Room */}
         {isHost && onEndSession && (
@@ -168,14 +205,46 @@ export default function CollaborativeEditor({
   }
 
   return (
-    <div style={{ height: "100vh" }}>
+    <div className="flex flex-col h-full">
       <LanguageSelector />
-      <EditorContainer
-        ref={editorRef}
-        roomId={roomId}
-        languages={languages}
-        languageId={languageId}
-      />
+      <ResizablePanelGroup direction="vertical" className="flex-1">
+        {/* Editor Panel */}
+        <ResizablePanel minSize={30} defaultSize={output || error ? 70 : 100}>
+          <EditorContainer
+            ref={editorRef}
+            roomId={roomId}
+            languages={languages}
+            languageId={languageId}
+          />
+        </ResizablePanel>
+
+        {/* Output/Error Panel - Only show when there's output or error */}
+        {(output || error) && (
+          <>
+            <ResizableHandle withHandle />
+            <ResizablePanel minSize={20} defaultSize={30}>
+              <div className="h-full bg-gray-900 text-white p-4 overflow-auto">
+                {error && (
+                  <div className="text-red-400">
+                    <strong className="font-semibold">Error:</strong>
+                    <pre className="mt-1 whitespace-pre-wrap font-mono text-sm">
+                      {error}
+                    </pre>
+                  </div>
+                )}
+                {output && (
+                  <div className="text-green-400">
+                    <strong className="font-semibold">Output:</strong>
+                    <pre className="mt-1 whitespace-pre-wrap font-mono text-sm">
+                      {output}
+                    </pre>
+                  </div>
+                )}
+              </div>
+            </ResizablePanel>
+          </>
+        )}
+      </ResizablePanelGroup>
     </div>
   );
 }
