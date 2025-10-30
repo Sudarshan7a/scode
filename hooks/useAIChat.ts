@@ -10,17 +10,21 @@ interface Message {
   codeSnippet?: string;
 }
 
+const MAX_MESSAGE_LENGTH = 5000;
+
+function getFormattedTimestamp(): string {
+  return new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 const INITIAL_MESSAGE: Message = {
   id: 0,
   type: "ai",
   message: "Hello! I'm your AI coding assistant. I can help you with programming questions, code debugging, computer science concepts, and software development. How can I assist you today?",
-  timestamp: new Date().toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  }),
+  timestamp: getFormattedTimestamp(),
 };
-
-const MAX_MESSAGE_LENGTH = 5000;
 
 function extractCodeSnippet(text: string): { message: string; codeSnippet?: string } {
   const codeBlockRegex = /```[\w]*\n([\s\S]*?)```/;
@@ -53,10 +57,7 @@ export function useAIChat() {
       id: Date.now(),
       type: "user",
       message: userMessage,
-      timestamp: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      timestamp: getFormattedTimestamp(),
     };
 
     setMessages((prev) => [...prev, userMsg]);
@@ -88,10 +89,7 @@ export function useAIChat() {
         id: Date.now() + 1,
         type: "ai",
         message,
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
+        timestamp: getFormattedTimestamp(),
         codeSnippet,
       };
 
