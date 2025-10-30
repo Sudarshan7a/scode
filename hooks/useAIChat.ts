@@ -20,6 +20,8 @@ const INITIAL_MESSAGE: Message = {
   }),
 };
 
+const MAX_MESSAGE_LENGTH = 5000;
+
 function extractCodeSnippet(text: string): { message: string; codeSnippet?: string } {
   const codeBlockRegex = /```[\w]*\n([\s\S]*?)```/;
   const match = text.match(codeBlockRegex);
@@ -39,8 +41,13 @@ export function useAIChat() {
   const [error, setError] = useState<string | null>(null);
   const { editorCode, languageId } = useEditorContext();
 
-  const sendMessage = useCallback(async (userMessage: string) => {
+  const sendMessage = useCallback(async (userMessage: string, retryCount = 0) => {
     if (!userMessage.trim()) return;
+
+    if (userMessage.length > MAX_MESSAGE_LENGTH) {
+      setError(`Message too long. Maximum ${MAX_MESSAGE_LENGTH} characters.`);
+      return;
+    }
 
     const userMsg: Message = {
       id: Date.now(),
@@ -57,12 +64,11 @@ export function useAIChat() {
     setError(null);
 
     // Client-side logging
-    console.log("[CLIENT] Sending AI request:", {
-      message: userMessage,
+    console.log("[CLIENT] AI request:", {
+      messageLength: userMessage.length,
       language: languageId,
-      hasEditorCode: !!editorCode.trim(),
-      editorCodeLength: editorCode.length,
-      editorCodePreview: editorCode.slice(0, 100) + (editorCode.length > 100 ? "..." : ""),
+      hasCode: !!editorCode.trim(),
+      codeLength: editorCode.length,
     });
 
     try {
@@ -71,6 +77,10 @@ export function useAIChat() {
         editorCode: editorCode.trim() ? editorCode : undefined,
         language: languageId,
       });
+
+      if (!response.data?.message) {
+        throw new Error("Invalid response from server");
+      }
 
       const { message, codeSnippet } = extractCodeSnippet(response.data.message);
 
@@ -87,12 +97,21 @@ export function useAIChat() {
 
       setMessages((prev) => [...prev, aiMsg]);
     } catch (err) {
-      setError("Failed to get AI response. Please try again.");
-      console.error("AI chat error:", err);
+      const errorMsg = err instanceof Error ? err.message : "Unknown error";
+      console.error("[CLIENT] AI error:", errorMsg);
+      
+      if (retryCount < 2) {
+        console.log(`[CLIENT] Retrying... (${retryCount + 1}/2)`);
+        setTimeout(() => sendMessage(userMessage, retryCount + 1), 1000);
+      } else {
+        setError("Failed to get AI response. Please try again.");
+      }
     } finally {
-      setIsLoading(false);
+      if (retryCount >= 2 || !error) {
+        setIsLoading(false);
+      }
     }
-  }, [editorCode, languageId]);
+  }, [editorCode, languageId, error]);
 
   const clearMessages = useCallback(() => {
     setMessages([INITIAL_MESSAGE]);
