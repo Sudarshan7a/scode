@@ -14,7 +14,16 @@ Keep responses concise, accurate, and include code examples when relevant.`;
 
 export async function POST(req: NextRequest) {
   try {
-    const { message } = await req.json();
+    const { message, editorCode, language } = await req.json();
+
+    // Server-side logging
+    console.log("[SERVER] Received AI request:", {
+      message,
+      language,
+      hasEditorCode: !!editorCode,
+      editorCodeLength: editorCode?.length || 0,
+      editorCodePreview: editorCode ? editorCode.slice(0, 100) + (editorCode.length > 100 ? "..." : "") : "(no code)",
+    });
 
     if (!message || typeof message !== "string") {
       return NextResponse.json(
@@ -34,9 +43,15 @@ export async function POST(req: NextRequest) {
 
     const ai = new GoogleGenAI({ apiKey });
 
+    let prompt = `${SYSTEM_PROMPT}\n\nUser question: ${message}`;
+    
+    if (editorCode && editorCode.trim()) {
+      prompt += `\n\nCurrent code in editor (${language}):\n\`\`\`${language}\n${editorCode}\n\`\`\``;
+    }
+
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash-exp",
-      contents: `${SYSTEM_PROMPT}\n\nUser question: ${message}`,
+      contents: prompt,
     });
 
     return NextResponse.json({

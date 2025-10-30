@@ -7,6 +7,7 @@ import {
 import AsyncErrorBoundary from "@/components/AsyncErrorBoundary";
 import LeftTools from "./LeftTools";
 import CollaborativeEditor from "./CollaborativeEditor";
+import { EditorProvider } from "@/contexts/EditorContext";
 
 type Props = {
   roomId: string;
@@ -26,11 +27,12 @@ export default function LiveEditorPanels({
   isLeaving,
 }: Props) {
   return (
-    <AsyncErrorBoundary
-      fallbackTitle="Editor Failed to Load"
-      fallbackMessage="The collaborative editor encountered an error. Please refresh the page to continue."
-    >
-      <ResizablePanelGroup direction="horizontal">
+    <EditorProvider>
+      <AsyncErrorBoundary
+        fallbackTitle="Editor Failed to Load"
+        fallbackMessage="The collaborative editor encountered an error. Please refresh the page to continue."
+      >
+        <ResizablePanelGroup direction="horizontal">
         <ResizablePanel minSize={30} defaultSize={40}>
           <AsyncErrorBoundary
             fallbackTitle="Tools Failed to Load"
@@ -55,7 +57,8 @@ export default function LiveEditorPanels({
             />
           </AsyncErrorBoundary>
         </ResizablePanel>
-      </ResizablePanelGroup>
-    </AsyncErrorBoundary>
+        </ResizablePanelGroup>
+      </AsyncErrorBoundary>
+    </EditorProvider>
   );
 }

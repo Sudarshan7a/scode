@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { axiosInstance } from "@/lib/axiosInstance";
+import { useEditorContext } from "@/contexts/EditorContext";
 
 interface Message {
   id: number;
@@ -36,6 +37,7 @@ export function useAIChat() {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { editorCode, languageId } = useEditorContext();
 
   const sendMessage = useCallback(async (userMessage: string) => {
     if (!userMessage.trim()) return;
@@ -54,9 +56,20 @@ export function useAIChat() {
     setIsLoading(true);
     setError(null);
 
+    // Client-side logging
+    console.log("[CLIENT] Sending AI request:", {
+      message: userMessage,
+      language: languageId,
+      hasEditorCode: !!editorCode.trim(),
+      editorCodeLength: editorCode.length,
+      editorCodePreview: editorCode.slice(0, 100) + (editorCode.length > 100 ? "..." : ""),
+    });
+
     try {
       const response = await axiosInstance.post("/api/ai/chat", {
         message: userMessage,
+        editorCode: editorCode.trim() ? editorCode : undefined,
+        language: languageId,
       });
 
       const { message, codeSnippet } = extractCodeSnippet(response.data.message);
@@ -79,7 +92,7 @@ export function useAIChat() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [editorCode, languageId]);
 
   const clearMessages = useCallback(() => {
     setMessages([INITIAL_MESSAGE]);

@@ -16,6 +16,7 @@ import {
   initializeEditor,
   loadLanguageContribution,
 } from "@/app/room/editorHelpers";
+import { useEditorContext } from "@/contexts/EditorContext";
 
 const Editor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -41,6 +42,13 @@ const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
     const editorRef = useRef<EditorLike | null>(null);
     const monacoRef = useRef<MonacoLike | null>(null);
     const cleanupRef = useRef<() => void>(() => {});
+    const { setEditorCode, setLanguageId } = useEditorContext();
+
+    // Sync language to context
+    useEffect(() => {
+      setLanguageId(languageId);
+      console.log("[EditorContainer] Language synced:", languageId);
+    }, [languageId, setLanguageId]);
 
     // Expose methods to parent via ref
     useImperativeHandle(ref, () => ({
@@ -101,6 +109,22 @@ const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
         onMount={async (editor, monaco) => {
           editorRef.current = editor as EditorLike;
           monacoRef.current = monaco as unknown as MonacoLike;
+          
+          const model = editor.getModel();
+          if (model) {
+            // Initial sync
+            const initialCode = (model as any)?.getValue?.() || "";
+            setEditorCode(initialCode);
+            console.log("[EditorContainer] Initial code synced:", initialCode.length, "chars");
+
+            // Listen for changes
+            (model as any).onDidChangeContent?.(() => {
+              const code = (model as any)?.getValue?.() || "";
+              setEditorCode(code);
+              console.log("[EditorContainer] Code updated:", code.length, "chars");
+            });
+          }
+          
           const cleanup = await initializeEditor({
             editor: editor as EditorLike,
             monaco: monaco as unknown as MonacoLike,
