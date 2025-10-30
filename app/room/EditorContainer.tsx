@@ -47,7 +47,7 @@ const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
     // Sync language to context
     useEffect(() => {
       setLanguageId(languageId);
-      console.log("[EditorContainer] Language synced:", languageId);
+      console.log("[EditorContainer] Language synced:", { language: languageId });
     }, [languageId, setLanguageId]);
 
     // Expose methods to parent via ref
@@ -107,35 +107,44 @@ const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
         path={`inmemory://model/${roomId}`}
         defaultValue="// Start coding together!"
         onMount={async (editor, monaco) => {
-          editorRef.current = editor as EditorLike;
-          monacoRef.current = monaco as unknown as MonacoLike;
-          
-          const model = editor.getModel();
-          if (model) {
-            // Initial sync
-            const initialCode = (model as any)?.getValue?.() || "";
-            setEditorCode(initialCode);
-            console.log("[EditorContainer] Initial code synced:", initialCode.length, "chars");
+          try {
+            editorRef.current = editor as EditorLike;
+            monacoRef.current = monaco as unknown as MonacoLike;
+            
+            const model = editor.getModel();
+            if (model) {
+              // Initial sync
+              const initialCode = (model as any)?.getValue?.() || "";
+              setEditorCode(initialCode);
+              console.log("[EditorContainer] Initial sync:", {
+                codeLength: initialCode.length,
+                roomId: roomId.substring(0, 8),
+              });
 
-            // Listen for changes
-            (model as any).onDidChangeContent?.(() => {
-              const code = (model as any)?.getValue?.() || "";
-              setEditorCode(code);
-              console.log("[EditorContainer] Code updated:", code.length, "chars");
+              // Listen for changes
+              (model as any).onDidChangeContent?.(() => {
+                try {
+                  const code = (model as any)?.getValue?.() || "";
+                  setEditorCode(code);
+                  console.log("[EditorContainer] Code updated:", { length: code.length });
+                } catch (err) {
+                  console.error("[EditorContainer] Error syncing code:", err);
+                }
+              });
+            }
+            
+            const cleanup = await initializeEditor({
+              editor: editor as EditorLike,
+              monaco: monaco as unknown as MonacoLike,
+              roomId,
+              languages,
+              languageId,
+              applyLanguageToModel: applyLanguageLocally,
             });
+            cleanupRef.current = cleanup;
+          } catch (err) {
+            console.error("[EditorContainer] Mount error:", err);
           }
-          
-          const cleanup = await initializeEditor({
-            editor: editor as EditorLike,
-            monaco: monaco as unknown as MonacoLike,
-            roomId,
-            languages,
-            languageId,
-            // provide a local apply that uses the container refs (parent's callback
-            // may not have access to the container-local editor/monaco refs)
-            applyLanguageToModel: applyLanguageLocally,
-          });
-          cleanupRef.current = cleanup;
         }}
       />
     );
