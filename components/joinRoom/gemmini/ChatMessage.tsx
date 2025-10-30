@@ -17,17 +17,17 @@ function ChatMessage({
   if (type === "ai") {
     return (
       <div className="flex items-start space-x-3 mt-1">
-        <Avatar className="w-8 h-8 bg-mysecondary">
-          <AvatarFallback className="bg-mysecondary text-primary-foreground text-sm font-medium">
+        <Avatar className="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 shadow-md">
+          <AvatarFallback className="bg-transparent text-white text-sm font-bold">
             AI
           </AvatarFallback>
         </Avatar>
         <div className="flex-1">
-          <div className=" border border-border rounded-lg p-3 shadow-sm">
-            <p className="text-foreground font-secondary mb-3">{message}</p>
+          <div className="bg-gradient-to-br from-muted/50 to-muted/30 border border-border/50 rounded-xl p-4 shadow-sm backdrop-blur-sm">
+            <p className="text-foreground font-secondary leading-relaxed">{message}</p>
             {codeSnippet && (
-              <div className="bg-muted rounded-md p-3 mb-3">
-                <code className="text-sm text-foreground font-mono">
+              <div className="bg-black/40 border border-border/30 rounded-lg p-4 mt-3 overflow-x-auto">
+                <code className="text-sm text-green-400 font-mono whitespace-pre">
                   {codeSnippet}
                 </code>
               </div>
@@ -41,15 +41,15 @@ function ChatMessage({
   return (
     <div className="flex items-start space-x-3 justify-end">
       <div className="flex-1 max-w-2xl">
-        <div className="bg-muted-foreground text-primary-foreground rounded-lg p-4 shadow-sm ml-auto">
-          <p className="font-secondary">{message}</p>
-        </div>{" "}
-        <time className="text-xs text-foreground mt-1 block text-right">
+        <div className="bg-mysecondary/80 text-white rounded-xl p-4 shadow-md ml-auto border border-mysecondary/30">
+          <p className="font-secondary leading-relaxed">{message}</p>
+        </div>
+        <time className="text-xs text-muted-foreground mt-1 block text-right">
           {timestamp}
         </time>
       </div>
-      <Avatar className="w-8 h-8 bg-secondary">
-        <AvatarFallback className="bg-secondary text-secondary-foreground text-sm font-medium">
+      <Avatar className="w-8 h-8 bg-mysecondary/90 shadow-md ring-2 ring-mysecondary/20">
+        <AvatarFallback className="bg-transparent text-white text-sm font-bold">
           U
         </AvatarFallback>
       </Avatar>

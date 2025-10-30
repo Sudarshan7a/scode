@@ -4,19 +4,22 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 function ChatHeader() {
   return (
-    <header className="border-b border-border border-b-myforeground bg-card px-6 py-0.5 max-h-12">
+    <header className="border-b border-border/50 bg-gradient-to-r from-background via-muted/20 to-background px-6 py-3 backdrop-blur-sm">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <Avatar className="w-8 h-8 bg-mysecondary">
-            <AvatarFallback className="bg-mysecondary text-primary-foreground text-sm font-medium">
+          <Avatar className="w-9 h-9 bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg ring-2 ring-orange-500/20">
+            <AvatarFallback className="bg-transparent text-white text-sm font-bold">
               AI
             </AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-md font-semibold text-foreground font-secondary">
-              AI Assistant
+            <h1 className="text-base font-bold text-foreground font-secondary">
+              AI Coding Assistant
             </h1>
-            <p className="text-sm text-foreground">Online • Ready to help</p>
+            <p className="text-xs text-green-500 flex items-center gap-1">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              Online • Ready to help
+            </p>
           </div>
         </div>
         <Button variant="ghost" size="icon" aria-label="Clear chat">
