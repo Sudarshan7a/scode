@@ -33,6 +33,9 @@ function ChatMessage({
               </div>
             )}
           </div>
+          <time className="text-xs text-muted-foreground mt-1 block">
+            {timestamp}
+          </time>
         </div>
       </div>
     );
