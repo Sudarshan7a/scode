@@ -24,7 +24,9 @@ function ChatMessage({
         </Avatar>
         <div className="flex-1">
           <div className="bg-gradient-to-br from-muted/50 to-muted/30 border border-border/50 rounded-xl p-4 shadow-sm backdrop-blur-sm">
-            <p className="text-foreground font-secondary leading-relaxed">{message}</p>
+            <p className="text-foreground font-secondary leading-relaxed">
+              {message}
+            </p>
             {codeSnippet && (
               <div className="bg-black/40 border border-border/30 rounded-lg p-4 mt-3 overflow-x-auto">
                 <code className="text-sm text-green-400 font-mono whitespace-pre">
@@ -33,7 +35,7 @@ function ChatMessage({
               </div>
             )}
           </div>
-          <time className="text-xs text-muted-foreground mt-1 block">
+          <time className="text-xs text-foreground mt-1 block">
             {timestamp}
           </time>
         </div>
