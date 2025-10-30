@@ -31,11 +31,6 @@ function ChatMessages({ messages, isLoading, error }: ChatMessagesProps) {
       <ScrollArea className="h-full px-6">
         <hr className="h-2" />
         <div className="max-w-4xl mx-auto space-y-3">
-          {messages.length === 0 && (
-            <div className="text-center text-foreground py-8">
-              <p>Ask me anything about programming or computer science!</p>
-            </div>
-          )}
           {messages.map((chat) => (
             <ChatMessage
               key={chat.id}

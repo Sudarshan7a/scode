@@ -9,8 +9,31 @@ interface Message {
   codeSnippet?: string;
 }
 
+const INITIAL_MESSAGE: Message = {
+  id: 0,
+  type: "ai",
+  message: "Hello! I'm your AI coding assistant. I can help you with programming questions, code debugging, computer science concepts, and software development. How can I assist you today?",
+  timestamp: new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  }),
+};
+
+function extractCodeSnippet(text: string): { message: string; codeSnippet?: string } {
+  const codeBlockRegex = /```[\w]*\n([\s\S]*?)```/;
+  const match = text.match(codeBlockRegex);
+  
+  if (match) {
+    const codeSnippet = match[1].trim();
+    const message = text.replace(codeBlockRegex, "").trim();
+    return { message, codeSnippet };
+  }
+  
+  return { message: text };
+}
+
 export function useAIChat() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,14 +59,17 @@ export function useAIChat() {
         message: userMessage,
       });
 
+      const { message, codeSnippet } = extractCodeSnippet(response.data.message);
+
       const aiMsg: Message = {
         id: Date.now() + 1,
         type: "ai",
-        message: response.data.message,
+        message,
         timestamp: new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         }),
+        codeSnippet,
       };
 
       setMessages((prev) => [...prev, aiMsg]);
@@ -56,7 +82,7 @@ export function useAIChat() {
   }, []);
 
   const clearMessages = useCallback(() => {
-    setMessages([]);
+    setMessages([INITIAL_MESSAGE]);
     setError(null);
   }, []);
 
