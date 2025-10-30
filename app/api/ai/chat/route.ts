@@ -12,19 +12,15 @@ If the user asks about anything outside these topics, politely decline and remin
 
 Keep responses concise, accurate, and include code examples when relevant.`;
 
+const MAX_MESSAGE_LENGTH = 5000;
+const MAX_CODE_LENGTH = 10000;
+
 export async function POST(req: NextRequest) {
   try {
-    const { message, editorCode, language } = await req.json();
+    const body = await req.json();
+    const { message, editorCode, language } = body;
 
-    // Server-side logging
-    console.log("[SERVER] Received AI request:", {
-      message,
-      language,
-      hasEditorCode: !!editorCode,
-      editorCodeLength: editorCode?.length || 0,
-      editorCodePreview: editorCode ? editorCode.slice(0, 100) + (editorCode.length > 100 ? "..." : "") : "(no code)",
-    });
-
+    // Validate message
     if (!message || typeof message !== "string") {
       return NextResponse.json(
         { error: "Message is required" },
@@ -32,12 +28,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (message.length > MAX_MESSAGE_LENGTH) {
+      return NextResponse.json(
+        { error: `Message too long. Maximum ${MAX_MESSAGE_LENGTH} characters.` },
+        { status: 400 }
+      );
+    }
+
+    if (editorCode && editorCode.length > MAX_CODE_LENGTH) {
+      return NextResponse.json(
+        { error: `Code too long. Maximum ${MAX_CODE_LENGTH} characters.` },
+        { status: 400 }
+      );
+    }
+
+    // Server-side logging (sanitized)
+    console.log("[SERVER] AI request:", {
+      messageLength: message.length,
+      language: language || "none",
+      hasCode: !!editorCode,
+      codeLength: editorCode?.length || 0,
+    });
+
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      console.error("GEMINI_API_KEY not configured");
+      console.error("[SERVER] GEMINI_API_KEY not configured");
       return NextResponse.json(
         { error: "AI service not configured" },
-        { status: 500 }
+        { status: 503 }
       );
     }
 
@@ -46,7 +64,7 @@ export async function POST(req: NextRequest) {
     let prompt = `${SYSTEM_PROMPT}\n\nUser question: ${message}`;
     
     if (editorCode && editorCode.trim()) {
-      prompt += `\n\nCurrent code in editor (${language}):\n\`\`\`${language}\n${editorCode}\n\`\`\``;
+      prompt += `\n\nCurrent code in editor (${language || "unknown"}):\n\`\`\`${language || ""}\n${editorCode}\n\`\`\``;
     }
 
     const response = await ai.models.generateContent({
@@ -54,14 +72,20 @@ export async function POST(req: NextRequest) {
       contents: prompt,
     });
 
+    if (!response || !response.text) {
+      throw new Error("Invalid response from AI service");
+    }
+
     return NextResponse.json({
       message: response.text,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("AI chat error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("[SERVER] AI chat error:", errorMessage);
+    
     return NextResponse.json(
-      { error: "Failed to generate response" },
+      { error: "Failed to generate response. Please try again." },
       { status: 500 }
     );
   }
