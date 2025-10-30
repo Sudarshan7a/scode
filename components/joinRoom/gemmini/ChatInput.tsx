@@ -2,6 +2,8 @@ import React, { useState, FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+const MAX_MESSAGE_LENGTH = 5000;
+
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
   isLoading?: boolean;
@@ -9,6 +11,7 @@ interface ChatInputProps {
 
 function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
   const [message, setMessage] = useState("");
+  const remainingChars = MAX_MESSAGE_LENGTH - message.length;
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -27,11 +30,12 @@ function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
               <div className="relative">
                 <Input
                   value={message}
-                  onChange={(e) => setMessage(e.target.value)}
+                  onChange={(e) => setMessage(e.target.value.slice(0, MAX_MESSAGE_LENGTH))}
                   placeholder="Ask about code, programming, or computer science..."
-                  className="min-h-[2.5rem] pr-12 resize-none font-secondary"
+                  className={`min-h-[2.5rem] pr-12 resize-none font-secondary ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                   aria-label="Message input"
                   disabled={isLoading}
+                  maxLength={MAX_MESSAGE_LENGTH}
                 />
                 <Button
                   type="submit"
@@ -58,9 +62,16 @@ function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
             </div>
           </div>
         </form>
-        <p className="text-xs text-foreground mt-1 text-center">
-          AI can make mistakes. Please verify important information.
-        </p>
+        <div className="flex justify-between items-center mt-1">
+          <p className="text-xs text-muted-foreground">
+            AI can make mistakes. Verify important information.
+          </p>
+          {message.length > 0 && (
+            <p className={`text-xs ${remainingChars < 100 ? 'text-orange-500' : 'text-muted-foreground'}`}>
+              {remainingChars} chars left
+            </p>
+          )}
+        </div>
       </div>
     </footer>
   );
