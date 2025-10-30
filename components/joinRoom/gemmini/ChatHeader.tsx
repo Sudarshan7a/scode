@@ -2,7 +2,11 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-function ChatHeader() {
+interface ChatHeaderProps {
+  onClearChat?: () => void;
+}
+
+function ChatHeader({ onClearChat }: ChatHeaderProps) {
   return (
     <header className="border-b border-border/50 bg-gradient-to-r from-background via-muted/20 to-background px-6 py-3 backdrop-blur-sm">
       <div className="flex items-center justify-between">
@@ -22,7 +26,7 @@ function ChatHeader() {
             </p>
           </div>
         </div>
-        <Button variant="ghost" size="icon" aria-label="Clear chat">
+        <Button variant="ghost" size="icon" aria-label="Clear chat" onClick={onClearChat}>
           <svg
             className="w-4 h-4"
             fill="none"
