@@ -16,8 +16,13 @@ Welcome to S‑code! This guide will help you contribute effectively to our coll
 ```
 ├── app/              # Next.js 15 App Router pages and API routes
 ├── components/       # Reusable React components
+│   ├── joinRoom/    # Room-specific components (notes, AI chat)
+│   ├── dashboard/   # Dashboard components
+│   └── ui/          # Reusable UI components
 ├── hooks/           # Custom React hooks
 ├── lib/             # Utility functions and configurations
+│   ├── notesDB.ts   # IndexedDB for notes storage
+│   └── mongodb.ts   # Database connection
 ├── types/           # TypeScript type definitions
 ├── docs/            # Documentation files
 └── websocket/       # WebSocket server for real-time collaboration
@@ -72,7 +77,10 @@ chore(deps): update MongoDB driver to v6.18.0
 - **Test authentication flows**: signup → verify → login
 - **Verify API consistency**: ensure response schemas remain unchanged
 - **Test collaborative features**: room creation, joining, real-time editing
+- **Test notes system**: create, edit, delete pages (0-9 numbering)
+- **Verify IndexedDB storage**: notes persist across sessions
 - **Check error boundaries**: verify graceful error handling
+- **Test code execution**: run code in supported languages
 
 ## API Design Guidelines
 
@@ -165,7 +173,22 @@ Visual changes should include before/after screenshots.
 - [ ] No breaking changes (or breaking changes documented)
 ```
 
-Last updated: September 2025
+### Key Features to Test
+
+**Notes System**
+- Create up to 10 pages per room (numbered 0-9)
+- Edit page titles and content (5000 char limit)
+- Auto-save every 5 minutes
+- Delete pages (maintains at least 1 page)
+- Smart numbering fills gaps automatically
+
+**Collaborative Editor**
+- Real-time text synchronization via Y.js
+- Multi-language support (JS, TS, Python, Go, Java, C, C++)
+- Code execution with output display
+- No cursor tracking (optimized for performance)
+
+Last updated: January 2025
 
 ## 🤝 Community Guidelines
 
@@ -223,6 +246,8 @@ S‑code is built with modern web technologies:
 - **Database**: MongoDB with optimized connection pooling
 - **Caching**: Upstash Redis for rate limiting and sessions
 - **Real-time**: Y.js CRDTs with WebSocket synchronization
+- **Local Storage**: IndexedDB for notes (up to 10 pages per room)
+- **Code Editor**: Monaco Editor with multi-language support
 - **Authentication**: JWT with HttpOnly cookies
 - **Email**: Resend for transactional emails
 
