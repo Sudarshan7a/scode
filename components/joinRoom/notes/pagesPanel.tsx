@@ -1,30 +1,55 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
+import { getAllPages, type NotePage } from "@/lib/notesDB";
+import { Plus } from "lucide-react";
 
-const initialPageTitles = [
-  "Page 1",
-  "Page 2",
-  "Page 3",
-  "Page 4",
-  "Page 5",
-  "Page 6",
-]; // Define the array as a constant
+interface PagesPanelProps {
+  roomId: string;
+  currentPage: number;
+  onPageSelect: (pageNumber: number) => void;
+  onCreatePage: () => void;
+}
 
-function Pages() {
+function Pages({ roomId, currentPage, onPageSelect, onCreatePage }: PagesPanelProps) {
+  const [pages, setPages] = useState<NotePage[]>([]);
+
+  useEffect(() => {
+    loadPages();
+  }, [roomId]);
+
+  const loadPages = async () => {
+    try {
+      const allPages = await getAllPages(roomId);
+      setPages(allPages);
+    } catch (error) {
+      console.error("Failed to load pages:", error);
+    }
+  };
+
   return (
-    <div className="flex-1 py-8 p-4 border-r-1 border-r-foreground">
-      <h2 className="mb-4 text-mysecondary-hover font-semibold rounded-sm p-1 font-secondary text-2xl w-full">
-        Pages
-      </h2>
+    <div className="flex-1 max-w-36 py-8 p-4 border-r-1 border-r-foreground">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-mysecondary-hover font-semibold font-secondary text-2xl">
+          Pages
+        </h2>
+        <button
+          onClick={onCreatePage}
+          className="p-1 hover:bg-mysecondary-hover rounded transition-colors"
+          title="Create new page"
+        >
+          <Plus className="w-5 h-5 text-mysecondary" />
+        </button>
+      </div>
       <div className="flex flex-col space-y-2 text-md text-foreground">
-        {initialPageTitles.map((pageTitle, index) => (
-          <div key={pageTitle} className="bg-mysecondary-hover w-full">
-            <h3
-              className={`font-title ${
-                index === 0 ? "border-b-mysecondary border-b-4" : ""
-              }`}
-            >
-              {pageTitle}
-            </h3>
+        {pages.map((page) => (
+          <div
+            key={page.pageNumber}
+            onClick={() => onPageSelect(page.pageNumber)}
+            className={`bg-mysecondary-hover w-full cursor-pointer hover:opacity-80 transition-opacity ${
+              currentPage === page.pageNumber ? "border-b-mysecondary border-b-4" : ""
+            }`}
+          >
+            <h3 className="font-title p-1 truncate">{page.title}</h3>
           </div>
         ))}
       </div>
