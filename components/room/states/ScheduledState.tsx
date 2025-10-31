@@ -1,6 +1,5 @@
 import RoomStatusCard from "../../../app/room/[roomId]/RoomStatusCard";
 import { useRoomContext } from "../RoomContext";
-import type { RoomInfo } from "@/types/room";
 
 interface ScheduledStateProps {
   visible: boolean;

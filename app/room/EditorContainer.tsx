@@ -34,11 +34,10 @@ type EditorContainerProps = {
   roomId: string;
   languages: LanguageDef[];
   languageId: string;
-  userInfo?: { name: string; email: string; id: string };
 };
 
 const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
-  ({ roomId, languages, languageId, userInfo }, ref) => {
+  ({ roomId, languages, languageId }, ref) => {
     const editorRef = useRef<EditorLike | null>(null);
     const monacoRef = useRef<MonacoLike | null>(null);
     const cleanupRef = useRef<() => void>(() => {});
@@ -117,9 +116,6 @@ const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
               roomId,
               languages,
               languageId,
-              userInfo,
-              // provide a local apply that uses the container refs (parent's callback
-              // may not have access to the container-local editor/monaco refs)
               applyLanguageToModel: applyLanguageLocally,
             });
             cleanupRef.current =
