@@ -51,7 +51,8 @@ function Note({ sessionId, pageNumber, onTitleChange, onDelete }: NoteProps) {
 
   const handleContentChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setContent(e.target.value);
+      const newContent = e.target.value.slice(0, 5000);
+      setContent(newContent);
       setStatus("unsaved");
     },
     []
@@ -102,12 +103,15 @@ function Note({ sessionId, pageNumber, onTitleChange, onDelete }: NoteProps) {
                 <Trash2 className="w-4 h-4" />
               </button>
             )}
-            <div className="text-sm ">
-              {status === "saving" && "Saving..."}
-              {status === "saved" &&
-                lastSaved &&
-                `Saved at ${lastSaved.toLocaleTimeString()}`}
-              {status === "unsaved" && "⚠️ Unsaved changes"}
+            <div className="flex items-center gap-2 text-sm ">
+              <span className="text-xs text-gray-500">{content.length}/5000</span>
+              <span>
+                {status === "saving" && "Saving..."}
+                {status === "saved" &&
+                  lastSaved &&
+                  `Saved at ${lastSaved.toLocaleTimeString()}`}
+                {status === "unsaved" && "⚠️ Unsaved changes"}
+              </span>
             </div>
           </div>
         </div>
@@ -115,6 +119,7 @@ function Note({ sessionId, pageNumber, onTitleChange, onDelete }: NoteProps) {
         <textarea
           value={content}
           onChange={handleContentChange}
+          maxLength={5000}
           style={{
             lineHeight: "24px",
             backgroundSize: "100% 24px",
