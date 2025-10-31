@@ -28,18 +28,9 @@ function Pages({ roomId, currentPage, onPageSelect, onCreatePage }: PagesPanelPr
 
   return (
     <div className="flex-1 max-w-36 py-8 p-4 border-r-1 border-r-foreground">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-mysecondary-hover font-semibold font-secondary text-2xl">
-          Pages
-        </h2>
-        <button
-          onClick={onCreatePage}
-          className="p-1 hover:bg-mysecondary-hover rounded transition-colors"
-          title="Create new page"
-        >
-          <Plus className="w-5 h-5 text-mysecondary" />
-        </button>
-      </div>
+      <h2 className="mb-4 text-mysecondary-hover font-semibold font-secondary text-2xl">
+        Pages
+      </h2>
       <div className="flex flex-col space-y-2 text-md text-foreground">
         {pages.map((page) => (
           <div
@@ -52,6 +43,14 @@ function Pages({ roomId, currentPage, onPageSelect, onCreatePage }: PagesPanelPr
             <h3 className="font-title p-1 truncate">{page.title}</h3>
           </div>
         ))}
+        <div 
+          onClick={onCreatePage}
+          className="bg-mysecondary-hover w-full cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          <h3 className="font-title p-1 flex items-center justify-center">
+            <Plus className="w-5 h-5" />
+          </h3>
+        </div>
       </div>
     </div>
   );

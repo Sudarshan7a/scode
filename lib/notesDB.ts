@@ -3,7 +3,7 @@ const STORE_NAME = "notes";
 const DB_VERSION = 1;
 
 export interface NotePage {
-  id?: number;
+  id: string;
   roomId: string;
   pageNumber: number;
   title: string;
@@ -23,10 +23,6 @@ function openDB(): Promise<IDBDatabase> {
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         const store = db.createObjectStore(STORE_NAME, {
           keyPath: "id",
-          autoIncrement: true,
-        });
-        store.createIndex("roomId_pageNumber", ["roomId", "pageNumber"], {
-          unique: true,
         });
         store.createIndex("roomId", "roomId", { unique: false });
       }
@@ -39,22 +35,14 @@ export async function savePage(page: NotePage): Promise<void> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(STORE_NAME, "readwrite");
     const store = transaction.objectStore(STORE_NAME);
-    const index = store.index("roomId_pageNumber");
-    const getRequest = index.get([page.roomId, page.pageNumber]);
-
-    getRequest.onsuccess = () => {
-      const existing = getRequest.result;
-      const pageToSave = {
-        ...page,
-        id: existing?.id,
-        updatedAt: Date.now(),
-      };
-      const putRequest = store.put(pageToSave);
-      putRequest.onsuccess = () => resolve();
-      putRequest.onerror = () => reject(putRequest.error);
+    const pageToSave: NotePage = {
+      ...page,
+      id: `${page.roomId}-page-${page.pageNumber}`,
+      updatedAt: Date.now(),
     };
-
-    getRequest.onerror = () => reject(getRequest.error);
+    const putRequest = store.put(pageToSave);
+    putRequest.onsuccess = () => resolve();
+    putRequest.onerror = () => reject(putRequest.error);
   });
 }
 
@@ -66,8 +54,7 @@ export async function loadPage(
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(STORE_NAME, "readonly");
     const store = transaction.objectStore(STORE_NAME);
-    const index = store.index("roomId_pageNumber");
-    const request = index.get([roomId, pageNumber]);
+    const request = store.get(`${roomId}-page-${pageNumber}`);
 
     request.onsuccess = () => resolve(request.result || null);
     request.onerror = () => reject(request.error);
@@ -99,20 +86,8 @@ export async function deletePage(
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(STORE_NAME, "readwrite");
     const store = transaction.objectStore(STORE_NAME);
-    const index = store.index("roomId_pageNumber");
-    const getRequest = index.get([roomId, pageNumber]);
-
-    getRequest.onsuccess = () => {
-      const existing = getRequest.result;
-      if (existing) {
-        const deleteRequest = store.delete(existing.id);
-        deleteRequest.onsuccess = () => resolve();
-        deleteRequest.onerror = () => reject(deleteRequest.error);
-      } else {
-        resolve();
-      }
-    };
-
-    getRequest.onerror = () => reject(getRequest.error);
+    const deleteRequest = store.delete(`${roomId}-page-${pageNumber}`);
+    deleteRequest.onsuccess = () => resolve();
+    deleteRequest.onerror = () => reject(deleteRequest.error);
   });
 }
