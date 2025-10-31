@@ -1,43 +1,63 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { ScrollArea } from "../../../components/ui/scroll-area";
 import ChatMessage from "./ChatMessage";
 import TypingIndicator from "./TypingIndicator";
 
-const chatHistory = [
-  {
-    id: 1,
-    type: "ai" as const,
-    message:
-      "Hello! I'm your AI coding assistant. I'm here to help you with programming questions, code reviews, and technical guidance. How can I assist you today?",
-    timestamp: new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-    codeSnippet: "",
-  },
-];
+interface Message {
+  id: number;
+  type: "user" | "ai";
+  message: string;
+  timestamp: string;
+  codeSnippet?: string;
+}
 
-function ChatMessages() {
+interface ChatMessagesProps {
+  messages: Message[];
+  isLoading: boolean;
+  error?: string | null;
+}
+
+function ChatMessages({ messages, isLoading, error }: ChatMessagesProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (containerRef.current?.parentElement) {
+      containerRef.current.parentElement.style.display = "block";
+    }
+  }, []);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, isLoading]);
+
   return (
-    <>
-      <main className="flex-1 overflow-hidden">
-        <ScrollArea className="h-full px-6 ">
-          <hr className="h-2" />
-          <div className="max-w-4xl mx-auto space-y-3">
-            {chatHistory.map((chat) => (
-              <ChatMessage
-                key={chat.id}
-                type={chat.type}
-                message={chat.message}
-                timestamp={chat.timestamp}
-                codeSnippet={chat.codeSnippet}
-              />
-            ))}
-          </div>
-          <hr className="h-2" />
-        </ScrollArea>
-      </main>
-    </>
+    <main className="flex-1 overflow-hidden">
+      <ScrollArea className="h-full min-w-auto px-6">
+        <hr className="h-2" />
+        <div ref={containerRef} className="space-y-3">
+          {messages.map((chat) => (
+            <ChatMessage
+              key={chat.id}
+              type={chat.type}
+              message={chat.message}
+              timestamp={chat.timestamp}
+              codeSnippet={chat.codeSnippet}
+            />
+          ))}
+          {error && (
+            <div className="text-center text-destructive py-2">
+              <p>{error}</p>
+            </div>
+          )}
+          {isLoading && <TypingIndicator />}
+          <div ref={scrollRef} />
+        </div>
+        <hr className="h-2" />
+      </ScrollArea>
+    </main>
   );
 }
 

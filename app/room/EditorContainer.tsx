@@ -34,10 +34,11 @@ type EditorContainerProps = {
   roomId: string;
   languages: LanguageDef[];
   languageId: string;
+  userInfo?: { name: string; email: string; id: string };
 };
 
 const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
-  ({ roomId, languages, languageId }, ref) => {
+  ({ roomId, languages, languageId, userInfo }, ref) => {
     const editorRef = useRef<EditorLike | null>(null);
     const monacoRef = useRef<MonacoLike | null>(null);
     const cleanupRef = useRef<() => void>(() => {});
@@ -45,22 +46,25 @@ const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
     // Expose methods to parent via ref
     useImperativeHandle(ref, () => ({
       getCode: () => {
-        const model = editorRef.current?.getModel();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return (model as any)?.getValue?.() || "";
+        const model = editorRef.current?.getModel() as { getValue?: () => string } | null;
+        return model?.getValue?.() || "";
       },
       setCode: (code: string) => {
-        const model = editorRef.current?.getModel();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if (model && typeof (model as any).setValue === "function") {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (model as any).setValue(code);
+        const model = editorRef.current?.getModel() as { setValue?: (value: string) => void } | null;
+        if (model && typeof model.setValue === "function") {
+          model.setValue(code);
         }
       },
     }));
 
     useEffect(() => {
-      return () => cleanupRef.current();
+      return () => {
+        try {
+          cleanupRef.current();
+        } catch (err) {
+          console.error("Error during editor cleanup:", err);
+        }
+      };
     }, []);
 
     const applyLanguageLocally = useCallback(
@@ -80,14 +84,19 @@ const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
     // react to language changes at runtime (user selects a new language)
     useEffect(() => {
       if (!editorRef.current || !monacoRef.current) return;
-      const selected = languages.find((l) => l.id === languageId);
+      const selected =
+        languages.find((l) => l.id === languageId) || languages[0];
       // ensure Monaco has the language contribution loaded, then update model
       (async () => {
-        await loadLanguageContribution(
-          monacoRef.current as MonacoLike,
-          selected
-        );
-        applyLanguageLocally(languageId);
+        try {
+          await loadLanguageContribution(
+            monacoRef.current as MonacoLike,
+            selected
+          );
+          applyLanguageLocally(languageId);
+        } catch (err) {
+          console.error("Failed to load language contribution:", err);
+        }
       })();
     }, [languageId, languages, applyLanguageLocally]);
 
@@ -101,17 +110,24 @@ const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
         onMount={async (editor, monaco) => {
           editorRef.current = editor as EditorLike;
           monacoRef.current = monaco as unknown as MonacoLike;
-          const cleanup = await initializeEditor({
-            editor: editor as EditorLike,
-            monaco: monaco as unknown as MonacoLike,
-            roomId,
-            languages,
-            languageId,
-            // provide a local apply that uses the container refs (parent's callback
-            // may not have access to the container-local editor/monaco refs)
-            applyLanguageToModel: applyLanguageLocally,
-          });
-          cleanupRef.current = cleanup;
+          try {
+            const cleanup = await initializeEditor({
+              editor: editor as EditorLike,
+              monaco: monaco as unknown as MonacoLike,
+              roomId,
+              languages,
+              languageId,
+              userInfo,
+              // provide a local apply that uses the container refs (parent's callback
+              // may not have access to the container-local editor/monaco refs)
+              applyLanguageToModel: applyLanguageLocally,
+            });
+            cleanupRef.current =
+              typeof cleanup === "function" ? cleanup : () => {};
+          } catch (err) {
+            console.error("Failed to initialize editor:", err);
+            cleanupRef.current = () => {};
+          }
         }}
       />
     );

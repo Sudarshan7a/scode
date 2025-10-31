@@ -16,6 +16,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { useUser } from "@/hooks/useUser";
 
 // All heavy/editor-specific libs (monaco, yjs, y-monaco, workers) are loaded only in the onMount handler.
 // This file stays as lightweight as possible to avoid accidental SSR evaluation of browser globals.
@@ -55,6 +56,9 @@ export default function CollaborativeEditor({
   // Supported languages (kept in a top-level constant for clarity)
   const languages = useMemo(() => SUPPORTED_LANGUAGES, []);
   const [languageId, setLanguageId] = useState("javascript");
+
+  // Get user info for presence/awareness
+  const { user } = useUser();
 
   // Editor ref to access code for execution
   const editorRef = useRef<EditorContainerRef>(null);
@@ -229,6 +233,11 @@ export default function CollaborativeEditor({
             roomId={roomId}
             languages={languages}
             languageId={languageId}
+            userInfo={
+              user
+                ? { name: user.name, email: user.email, id: user.id }
+                : undefined
+            }
           />
         </ResizablePanel>
 
