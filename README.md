@@ -107,9 +107,9 @@ Privacy-first auth and token hygiene:
 - **Real-time Synchronization**: Y.js CRDTs for conflict-free collaboration
 - **Multi-language Support**: JavaScript, TypeScript, Python, Go, Java, C, C++
 - **Monaco Editor**: Full-featured code editor with syntax highlighting
-- **Offline Persistence**: IndexedDB storage for working offline
+- **Code Execution**: Run code directly in the browser with output display
 - **WebSocket Integration**: Seamless real-time updates
-- **Auto-save**: Continuous document synchronization
+- **Optimized Performance**: Removed cursor tracking for cleaner console logs
 
 ### 🏠 Room Management
 
@@ -127,6 +127,16 @@ Privacy-first auth and token hygiene:
 - **Activity Tracking**: Monitor your coding progress
 - **Quick Access**: Easy navigation to recent rooms
 
+### 📝 Notes System
+
+- **Multi-page Notes**: Create up to 10 pages per room (numbered 0-9)
+- **IndexedDB Storage**: Persistent local storage with roomId + pageNumber
+- **Editable Titles**: Customize page titles for better organization
+- **Character Limit**: 5000 characters per page with live counter
+- **Auto-save**: Automatic saving every 5 minutes
+- **Page Management**: Create, delete, and switch between pages
+- **Smart Numbering**: Automatically fills gaps when pages are deleted
+
 ### ⚙️ Developer Features
 
 - **Type Safety**: Full TypeScript implementation
@@ -141,12 +151,15 @@ Privacy-first auth and token hygiene:
 
 - Real-time collaborative code rooms (Monaco + Y.js)
 - Multi-language support (JavaScript, TypeScript, Python, Go, Java, C, C++)
+- Code execution engine with output display
+- Notes system with IndexedDB storage (up to 10 pages per room)
 - Room creation and management system
 - Registration form refactoring with modular components
 - Secure authentication system with email verification
 - Dashboard interface with session tracking
 - Explore page for discovering public coding sessions
 - Error boundary implementation for improved reliability
+- Performance optimization: Removed awareness/cursor tracking
 - Comprehensive development documentation and Git workflow guides
 
 ### 🚧 In Progress
@@ -343,6 +356,7 @@ app/                    # Next.js App Router pages
 lib/                    # Database, auth, and utility helpers
 ├── monaco/           # Monaco editor environment setup
 ├── mongodb.ts        # Database connection
+├── notesDB.ts        # IndexedDB for notes storage
 ├── refreshSession.ts # Session management
 └── ...               # Other utilities
 
@@ -353,6 +367,9 @@ types/                  # TypeScript types & validators
 
 components/             # UI and feature components
 ├── dashboard/        # Dashboard-specific components
+├── joinRoom/         # Room-specific components
+│   ├── notes/        # Notes system components
+│   └── gemmini/      # AI chat integration
 ├── custom/
 │   └── schedule/     # Registration forms (modular)
 │       ├── dialogs/  # Form dialogs
