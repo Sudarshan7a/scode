@@ -61,27 +61,29 @@ function Note({ sessionId, pageNumber, onTitleChange, onDelete }: NoteProps) {
   useEffect(() => {
     if (!isLoaded) return;
 
-    setStatus("saving");
-    const timeout = setTimeout(async () => {
-      try {
-        await savePage({
-          id: `${sessionId}-page-${pageNumber}`,
-          roomId: sessionId,
-          pageNumber,
-          title,
-          content,
-          updatedAt: Date.now(),
-        });
-        setStatus("saved");
-        setLastSaved(new Date());
-      } catch (error) {
-        console.error("Failed to save note:", error);
-        setStatus("unsaved");
+    const interval = setInterval(async () => {
+      if (status === "unsaved") {
+        setStatus("saving");
+        try {
+          await savePage({
+            id: `${sessionId}-page-${pageNumber}`,
+            roomId: sessionId,
+            pageNumber,
+            title,
+            content,
+            updatedAt: Date.now(),
+          });
+          setStatus("saved");
+          setLastSaved(new Date());
+        } catch (error) {
+          console.error("Failed to save note:", error);
+          setStatus("unsaved");
+        }
       }
-    }, 1000);
+    }, 300000); // 5 minutes
 
-    return () => clearTimeout(timeout);
-  }, [content, title, sessionId, pageNumber, isLoaded]);
+    return () => clearInterval(interval);
+  }, [content, title, sessionId, pageNumber, isLoaded, status]);
   return (
     <div className="flex-5 p-4 ">
       <div className="flex flex-col h-full">
