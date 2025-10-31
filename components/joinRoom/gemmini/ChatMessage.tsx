@@ -45,11 +45,11 @@ function ChatMessage({
 
   return (
     <div className="flex items-start space-x-3 justify-end">
-      <div className="flex-1 max-w-2xl">
+      <div className=" max-w-2xl">
         <div className="bg-mysecondary/80 text-white rounded-xl p-4 shadow-md ml-auto border border-mysecondary/30">
           <p className="font-secondary leading-relaxed">{message}</p>
         </div>
-        <time className="text-xs text-muted-foreground mt-1 block text-right">
+        <time className="text-xs text-foreground mt-1 block text-right">
           {timestamp}
         </time>
       </div>

@@ -19,6 +19,13 @@ interface ChatMessagesProps {
 
 function ChatMessages({ messages, isLoading, error }: ChatMessagesProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (containerRef.current?.parentElement) {
+      containerRef.current.parentElement.style.display = "block";
+    }
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -28,9 +35,9 @@ function ChatMessages({ messages, isLoading, error }: ChatMessagesProps) {
 
   return (
     <main className="flex-1 overflow-hidden">
-      <ScrollArea className="h-full px-6">
+      <ScrollArea className="h-full min-w-auto px-6">
         <hr className="h-2" />
-        <div className="max-w-4xl mx-auto space-y-3">
+        <div ref={containerRef} className="space-y-3">
           {messages.map((chat) => (
             <ChatMessage
               key={chat.id}

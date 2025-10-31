@@ -194,7 +194,7 @@ export async function initializeEditor(opts: {
       // MonacoBinding automatically syncs text but we need custom rendering for cursors
       type Newable = new (...args: unknown[]) => unknown;
       const BindingCtor = MonacoBinding as unknown as Newable;
-      const binding = new BindingCtor(
+      new BindingCtor(
         ytext,
         model as unknown,
         new Set([editor as unknown]),
@@ -213,7 +213,6 @@ export async function initializeEditor(opts: {
       // Use a flag to prevent recursive updates
       let isUpdatingCursor = false;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updateLocalCursor = () => {
         // Prevent recursive updates
         if (isUpdatingCursor) {
@@ -227,7 +226,13 @@ export async function initializeEditor(opts: {
         }
 
         cursorUpdateTimeout = setTimeout(() => {
-          const selection = (editor as any).getSelection?.();
+          const editorWithMethods = editor as { getSelection?: () => unknown };
+          const selection = editorWithMethods.getSelection?.() as {
+            startLineNumber?: number;
+            startColumn?: number;
+            endLineNumber?: number;
+            endColumn?: number;
+          } | null | undefined;
           if (selection && provider.awareness) {
             isUpdatingCursor = true;
             try {
@@ -261,10 +266,12 @@ export async function initializeEditor(opts: {
       };
 
       // Listen to cursor changes
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (editor as any).onDidChangeCursorPosition?.(updateLocalCursor);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (editor as any).onDidChangeCursorSelection?.(updateLocalCursor);
+      const editorWithEvents = editor as {
+        onDidChangeCursorPosition?: (callback: () => void) => void;
+        onDidChangeCursorSelection?: (callback: () => void) => void;
+      };
+      editorWithEvents.onDidChangeCursorPosition?.(updateLocalCursor);
+      editorWithEvents.onDidChangeCursorSelection?.(updateLocalCursor);
 
       // Custom remote cursor rendering
       const decorationsMap = new Map<number, string[]>();
@@ -293,10 +300,14 @@ export async function initializeEditor(opts: {
             return;
           }
 
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const stateAny = state as any;
-          const user = stateAny?.user;
-          const selection = stateAny?.selection;
+          const stateAny = state as Record<string, unknown>;
+          const user = stateAny?.user as { name?: string; color?: string } | undefined;
+          const selection = stateAny?.selection as {
+            startLineNumber?: number;
+            startColumn?: number;
+            endLineNumber?: number;
+            endColumn?: number;
+          } | undefined;
 
           console.log(`   User:`, user);
           console.log(`   Selection:`, selection);
@@ -356,20 +367,20 @@ export async function initializeEditor(opts: {
         });
 
         // Apply all decorations
+        const editorWithDecorations = editor as {
+          deltaDecorations?: (oldDecorations: string[], newDecorations: unknown[]) => string[];
+        };
         decorationsToSet.forEach(({ clientId, decorations }) => {
           const oldDecorations = decorationsMap.get(clientId) || [];
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const newDecorations =
-            (editor as any).deltaDecorations?.(oldDecorations, decorations) ||
-            [];
+            editorWithDecorations.deltaDecorations?.(oldDecorations, decorations) || [];
           decorationsMap.set(clientId, newDecorations);
         });
 
         // Remove decorations for users who left
         decorationsMap.forEach((oldDecorations, clientId) => {
           if (!states.has(clientId)) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (editor as any).deltaDecorations?.(oldDecorations, []);
+            editorWithDecorations.deltaDecorations?.(oldDecorations, []);
             decorationsMap.delete(clientId);
 
             // Remove CSS
