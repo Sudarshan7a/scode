@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Pages from "./pagesPanel";
 import Note from "./Note";
 import { getAllPages, savePage, deletePage } from "@/lib/notesDB";
@@ -13,11 +13,7 @@ function NotesPage({ sessionId }: NotesPageProps) {
   const [pages, setPages] = useState<Awaited<ReturnType<typeof getAllPages>>>([]);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  useEffect(() => {
-    initializePages();
-  }, [sessionId]);
-
-  const initializePages = async () => {
+  const initializePages = useCallback(async () => {
     try {
       const pages = await getAllPages(sessionId);
       if (pages.length === 0) {
@@ -39,7 +35,11 @@ function NotesPage({ sessionId }: NotesPageProps) {
     } catch (error) {
       console.error("Failed to initialize pages:", error);
     }
-  };
+  }, [sessionId]);
+
+  useEffect(() => {
+    initializePages();
+  }, [initializePages]);
 
   const handlePagesLoad = async (loadedPages: Awaited<ReturnType<typeof getAllPages>>) => {
     setPages(loadedPages);

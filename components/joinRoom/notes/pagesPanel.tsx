@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { getAllPages, type NotePage } from "@/lib/notesDB";
 import { Plus } from "lucide-react";
 
@@ -16,11 +16,7 @@ interface PagesPanelProps {
 function Pages({ roomId, currentPage, onPageSelect, onCreatePage, onPagesLoad }: PagesPanelProps) {
   const [pages, setPages] = useState<NotePage[]>([]);
 
-  useEffect(() => {
-    loadPages();
-  }, [roomId]);
-
-  const loadPages = async () => {
+  const loadPages = useCallback(async () => {
     try {
       const allPages = await getAllPages(roomId);
       setPages(allPages);
@@ -28,7 +24,11 @@ function Pages({ roomId, currentPage, onPageSelect, onCreatePage, onPagesLoad }:
     } catch (error) {
       console.error("Failed to load pages:", error);
     }
-  };
+  }, [roomId, onPagesLoad]);
+
+  useEffect(() => {
+    loadPages();
+  }, [loadPages]);
 
   const canAddMore = pages.length < MAX_PAGES;
 

@@ -18,11 +18,7 @@ function Note({ sessionId, pageNumber, onTitleChange, onDelete }: NoteProps) {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  useEffect(() => {
-    loadNote();
-  }, [sessionId, pageNumber]);
-
-  const loadNote = async () => {
+  const loadNote = useCallback(async () => {
     try {
       const page = await loadPage(sessionId, pageNumber);
       if (page) {
@@ -37,7 +33,11 @@ function Note({ sessionId, pageNumber, onTitleChange, onDelete }: NoteProps) {
       console.error("Failed to load note:", error);
       setIsLoaded(true);
     }
-  };
+  }, [sessionId, pageNumber]);
+
+  useEffect(() => {
+    loadNote();
+  }, [loadNote]);
 
   const handleTitleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

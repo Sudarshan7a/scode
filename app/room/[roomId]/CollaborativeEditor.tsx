@@ -61,9 +61,6 @@ export default function CollaborativeEditor({
   // Sync with EditorContext for AI chat
   const { setEditorCode, setLanguageId: setContextLanguage } = useEditorContext();
 
-  // Get user info for presence/awareness
-  const { user } = useUser();
-
   // Editor ref to access code for execution
   const editorRef = useRef<EditorContainerRef>(null);
   const [isExecuting, setIsExecuting] = useState(false);
@@ -252,11 +249,6 @@ export default function CollaborativeEditor({
             roomId={roomId}
             languages={languages}
             languageId={languageId}
-            userInfo={
-              user
-                ? { name: user.name, email: user.email, id: user.id }
-                : undefined
-            }
           />
         </ResizablePanel>
 
