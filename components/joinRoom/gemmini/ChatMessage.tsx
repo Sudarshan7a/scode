@@ -23,7 +23,7 @@ function ChatMessage({
           </AvatarFallback>
         </Avatar>
         <div className="flex-1">
-          <div className="bg-gradient-to-br from-muted/50 to-muted/30 border border-border/50 rounded-xl p-4 shadow-sm backdrop-blur-sm">
+          <div className="bg-gray-800 from-muted/50 to-muted/30 border border-border/50 rounded-xl p-4 shadow-sm backdrop-blur-sm">
             <p className="text-foreground font-secondary leading-relaxed">
               {message}
             </p>

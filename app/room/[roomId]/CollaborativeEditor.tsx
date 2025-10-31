@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -17,6 +17,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { useUser } from "@/hooks/useUser";
+import { useEditorContext } from "@/contexts/EditorContext";
 
 // All heavy/editor-specific libs (monaco, yjs, y-monaco, workers) are loaded only in the onMount handler.
 // This file stays as lightweight as possible to avoid accidental SSR evaluation of browser globals.
@@ -56,6 +57,9 @@ export default function CollaborativeEditor({
   // Supported languages (kept in a top-level constant for clarity)
   const languages = useMemo(() => SUPPORTED_LANGUAGES, []);
   const [languageId, setLanguageId] = useState("javascript");
+  
+  // Sync with EditorContext for AI chat
+  const { setEditorCode, setLanguageId: setContextLanguage } = useEditorContext();
 
   // Get user info for presence/awareness
   const { user } = useUser();
@@ -66,7 +70,22 @@ export default function CollaborativeEditor({
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
 
-  const selectLanguage = useCallback((lang: string) => setLanguageId(lang), []);
+  const selectLanguage = useCallback((lang: string) => {
+    setLanguageId(lang);
+    setContextLanguage(lang);
+  }, [setContextLanguage]);
+
+  // Sync editor code to context periodically for AI chat
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const code = editorRef.current?.getCode();
+      if (code !== undefined) {
+        setEditorCode(code);
+      }
+    }, 1000); // Update every second
+
+    return () => clearInterval(interval);
+  }, [setEditorCode]);
 
   // Handle code execution
   const handleRunCode = useCallback(async () => {
