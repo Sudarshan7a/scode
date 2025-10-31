@@ -1,20 +1,52 @@
 "use client";
 import React from "react";
 import { useEffect, useState, useCallback } from "react";
+import { savePage, loadPage } from "@/lib/notesDB";
 
-function Note({ sessionId }: { sessionId: string }) {
-  const storageKey = `note-${sessionId}`;
+interface NoteProps {
+  sessionId: string;
+  pageNumber: number;
+  onTitleChange?: (title: string) => void;
+}
 
+function Note({ sessionId, pageNumber, onTitleChange }: NoteProps) {
+  const [title, setTitle] = useState(`Page ${pageNumber}`);
   const [content, setContent] = useState("");
   const [status, setStatus] = useState<"saved" | "saving" | "unsaved">("saved");
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem(storageKey);
-    if (saved) setContent(saved);
-  }, [storageKey]);
+    loadNote();
+  }, [sessionId, pageNumber]);
 
-  // Memoized content change handler
+  const loadNote = async () => {
+    try {
+      const page = await loadPage(sessionId, pageNumber);
+      if (page) {
+        setTitle(page.title);
+        setContent(page.content);
+      } else {
+        setTitle(`Page ${pageNumber}`);
+        setContent("");
+      }
+      setIsLoaded(true);
+    } catch (error) {
+      console.error("Failed to load note:", error);
+      setIsLoaded(true);
+    }
+  };
+
+  const handleTitleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newTitle = e.target.value;
+      setTitle(newTitle);
+      setStatus("unsaved");
+      onTitleChange?.(newTitle);
+    },
+    [onTitleChange]
+  );
+
   const handleContentChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setContent(e.target.value);
@@ -24,22 +56,39 @@ function Note({ sessionId }: { sessionId: string }) {
   );
 
   useEffect(() => {
-    if (content === "") return;
+    if (!isLoaded) return;
 
     setStatus("saving");
-    const timeout = setTimeout(() => {
-      localStorage.setItem(storageKey, content);
-      setStatus("saved");
-      setLastSaved(new Date());
+    const timeout = setTimeout(async () => {
+      try {
+        await savePage({
+          roomId: sessionId,
+          pageNumber,
+          title,
+          content,
+          updatedAt: Date.now(),
+        });
+        setStatus("saved");
+        setLastSaved(new Date());
+      } catch (error) {
+        console.error("Failed to save note:", error);
+        setStatus("unsaved");
+      }
     }, 1000);
 
     return () => clearTimeout(timeout);
-  }, [content, storageKey]);
+  }, [content, title, sessionId, pageNumber, isLoaded]);
   return (
     <div className="flex-5 p-4 ">
       <div className="flex flex-col h-full">
         <div className="flex p-1 mb-3 px-2 justify-between items-center font-secondary text-md text-foreground">
-          <div>Title of the page</div>
+          <input
+            type="text"
+            value={title}
+            onChange={handleTitleChange}
+            className="bg-transparent outline-none border-b border-transparent hover:border-foreground focus:border-mysecondary transition-colors"
+            placeholder="Page title"
+          />
           <div className="text-sm ">
             {status === "saving" && "Saving..."}
             {status === "saved" &&
