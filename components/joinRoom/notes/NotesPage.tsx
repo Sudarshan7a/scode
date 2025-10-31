@@ -10,7 +10,7 @@ interface NotesPageProps {
 
 function NotesPage({ sessionId }: NotesPageProps) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageCount, setPageCount] = useState(0);
+  const [pages, setPages] = useState<Awaited<ReturnType<typeof getAllPages>>>([]);
 
   useEffect(() => {
     initializePages();
@@ -20,18 +20,19 @@ function NotesPage({ sessionId }: NotesPageProps) {
     try {
       const pages = await getAllPages(sessionId);
       if (pages.length === 0) {
-        // Create first page if none exist
         await savePage({
+          id: `${sessionId}-page-1`,
           roomId: sessionId,
           pageNumber: 1,
           title: "Page 1",
           content: "",
           updatedAt: Date.now(),
         });
-        setPageCount(1);
+        const newPages = await getAllPages(sessionId);
+        setPages(newPages);
         setCurrentPage(1);
       } else {
-        setPageCount(pages.length);
+        setPages(pages);
         setCurrentPage(pages[0].pageNumber);
       }
     } catch (error) {
@@ -39,14 +40,21 @@ function NotesPage({ sessionId }: NotesPageProps) {
     }
   };
 
+  const handlePagesLoad = (loadedPages: Awaited<ReturnType<typeof getAllPages>>) => {
+    setPages(loadedPages);
+  };
+
   const handleCreatePage = async () => {
     try {
-      const pages = await getAllPages(sessionId);
-      const newPageNumber = pages.length > 0 
-        ? Math.max(...pages.map(p => p.pageNumber)) + 1 
+      if (pages.length >= 10) return;
+
+      const currentPages = await getAllPages(sessionId);
+      const newPageNumber = currentPages.length > 0 
+        ? Math.max(...currentPages.map(p => p.pageNumber)) + 1 
         : 1;
       
       await savePage({
+        id: `${sessionId}-page-${newPageNumber}`,
         roomId: sessionId,
         pageNumber: newPageNumber,
         title: `Page ${newPageNumber}`,
@@ -54,7 +62,8 @@ function NotesPage({ sessionId }: NotesPageProps) {
         updatedAt: Date.now(),
       });
       
-      setPageCount(prev => prev + 1);
+      const updatedPages = await getAllPages(sessionId);
+      setPages(updatedPages);
       setCurrentPage(newPageNumber);
     } catch (error) {
       console.error("Failed to create page:", error);
@@ -72,6 +81,7 @@ function NotesPage({ sessionId }: NotesPageProps) {
         currentPage={currentPage}
         onPageSelect={handlePageSelect}
         onCreatePage={handleCreatePage}
+        onPagesLoad={handlePagesLoad}
       />
       <Note 
         key={currentPage}

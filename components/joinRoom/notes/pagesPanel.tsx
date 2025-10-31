@@ -3,14 +3,17 @@ import React, { useEffect, useState } from "react";
 import { getAllPages, type NotePage } from "@/lib/notesDB";
 import { Plus } from "lucide-react";
 
+const MAX_PAGES = 10;
+
 interface PagesPanelProps {
   roomId: string;
   currentPage: number;
   onPageSelect: (pageNumber: number) => void;
   onCreatePage: () => void;
+  onPagesLoad: (pages: NotePage[]) => void;
 }
 
-function Pages({ roomId, currentPage, onPageSelect, onCreatePage }: PagesPanelProps) {
+function Pages({ roomId, currentPage, onPageSelect, onCreatePage, onPagesLoad }: PagesPanelProps) {
   const [pages, setPages] = useState<NotePage[]>([]);
 
   useEffect(() => {
@@ -21,10 +24,13 @@ function Pages({ roomId, currentPage, onPageSelect, onCreatePage }: PagesPanelPr
     try {
       const allPages = await getAllPages(roomId);
       setPages(allPages);
+      onPagesLoad(allPages);
     } catch (error) {
       console.error("Failed to load pages:", error);
     }
   };
+
+  const canAddMore = pages.length < MAX_PAGES;
 
   return (
     <div className="flex-1 max-w-36 py-8 p-4 border-r-1 border-r-foreground">
@@ -43,14 +49,21 @@ function Pages({ roomId, currentPage, onPageSelect, onCreatePage }: PagesPanelPr
             <h3 className="font-title p-1 truncate">{page.title}</h3>
           </div>
         ))}
-        <div 
-          onClick={onCreatePage}
-          className="bg-mysecondary-hover w-full cursor-pointer hover:opacity-80 transition-opacity"
-        >
-          <h3 className="font-title p-1 flex items-center justify-center">
-            <Plus className="w-5 h-5" />
-          </h3>
-        </div>
+        {canAddMore && (
+          <div 
+            onClick={onCreatePage}
+            className="bg-mysecondary-hover w-full cursor-pointer hover:opacity-80 transition-opacity"
+          >
+            <h3 className="font-title p-1 flex items-center justify-center">
+              <Plus className="w-5 h-5" />
+            </h3>
+          </div>
+        )}
+        {!canAddMore && (
+          <div className="bg-gray-600 w-full opacity-50 cursor-not-allowed">
+            <h3 className="font-title p-1 text-xs text-center">Max pages</h3>
+          </div>
+        )}
       </div>
     </div>
   );
