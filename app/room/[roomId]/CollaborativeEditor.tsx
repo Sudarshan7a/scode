@@ -16,7 +16,6 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { useUser } from "@/hooks/useUser";
 import { useEditorContext } from "@/contexts/EditorContext";
 
 // All heavy/editor-specific libs (monaco, yjs, y-monaco, workers) are loaded only in the onMount handler.
