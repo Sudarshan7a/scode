@@ -2,14 +2,16 @@
 import React from "react";
 import { useEffect, useState, useCallback } from "react";
 import { savePage, loadPage } from "@/lib/notesDB";
+import { Trash2 } from "lucide-react";
 
 interface NoteProps {
   sessionId: string;
   pageNumber: number;
   onTitleChange?: (title: string) => void;
+  onDelete?: () => void;
 }
 
-function Note({ sessionId, pageNumber, onTitleChange }: NoteProps) {
+function Note({ sessionId, pageNumber, onTitleChange, onDelete }: NoteProps) {
   const [title, setTitle] = useState(`Page ${pageNumber}`);
   const [content, setContent] = useState("");
   const [status, setStatus] = useState<"saved" | "saving" | "unsaved">("saved");
@@ -62,6 +64,7 @@ function Note({ sessionId, pageNumber, onTitleChange }: NoteProps) {
     const timeout = setTimeout(async () => {
       try {
         await savePage({
+          id: `${sessionId}-page-${pageNumber}`,
           roomId: sessionId,
           pageNumber,
           title,
@@ -89,12 +92,23 @@ function Note({ sessionId, pageNumber, onTitleChange }: NoteProps) {
             className="bg-transparent outline-none border-b border-transparent hover:border-foreground focus:border-mysecondary transition-colors"
             placeholder="Page title"
           />
-          <div className="text-sm ">
-            {status === "saving" && "Saving..."}
-            {status === "saved" &&
-              lastSaved &&
-              `Saved at ${lastSaved.toLocaleTimeString()}`}
-            {status === "unsaved" && "⚠️ Unsaved changes"}
+          <div className="flex items-center gap-3">
+            {onDelete && (
+              <button
+                onClick={onDelete}
+                className="p-1 hover:bg-red-500/20 rounded transition-colors text-red-500"
+                title="Delete page"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
+            <div className="text-sm ">
+              {status === "saving" && "Saving..."}
+              {status === "saved" &&
+                lastSaved &&
+                `Saved at ${lastSaved.toLocaleTimeString()}`}
+              {status === "unsaved" && "⚠️ Unsaved changes"}
+            </div>
           </div>
         </div>
 
