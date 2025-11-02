@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import MyButton from "./custom/button/MyButton";
 import { mockRooms } from "../types/roomsTypes";
+import { axiosInstance } from "@/lib/axiosInstance";
 
 interface RoomCardProps {
   recreate?: boolean;
   className?: string;
   room: mockRooms;
+  isOwner?: boolean;
 }
 
 interface ButtonProps {
@@ -14,7 +16,18 @@ interface ButtonProps {
   onClick?: () => void;
 }
 
-const RoomCard = ({ recreate = false, room, className }: RoomCardProps) => {
+const RoomCard = ({
+  recreate = false,
+  room,
+  className,
+  isOwner = false,
+}: RoomCardProps) => {
+  const [isNotifying, setIsNotifying] = useState(false);
+
+  // Debug logging
+  console.log("RoomCard received room data:", room);
+  console.log("Room _id:", room?._id);
+
   const {
     title,
     description,
@@ -27,6 +40,7 @@ const RoomCard = ({ recreate = false, room, className }: RoomCardProps) => {
     participants,
     maxParticipants,
     duration,
+    _id,
   } = room || {};
 
   // Format date for display
@@ -46,10 +60,50 @@ const RoomCard = ({ recreate = false, room, className }: RoomCardProps) => {
     ? formatDate(startedAt)
     : "Date not set";
 
+  const handleNotify = async () => {
+    // Handle different possible formats of room ID
+    const roomId = _id?.$oid || _id?.toString() || _id;
+
+    if (!roomId) {
+      alert("Room ID is missing");
+      console.error("Room ID debugging:", { _id, roomId, room });
+      return;
+    }
+
+    setIsNotifying(true);
+    try {
+      const { data: userData } = await axiosInstance.get("/api/auth/me");
+
+      if (!userData.user?.id) {
+        alert("Please log in to subscribe to notifications");
+        return;
+      }
+
+      const { data } = await axiosInstance.post("/api/rooms/notify", {
+        roomId: roomId,
+        userId: userData.user.id,
+      });
+
+      alert(data.message || data.error);
+    } catch (error) {
+      alert("Failed to subscribe to notifications");
+    } finally {
+      setIsNotifying(false);
+    }
+  };
+
   const buttons: Record<"live" | "scheduled" | "ended" | "saved", ButtonProps> =
     {
       live: { label: "Join Now", variant: "default" },
-      scheduled: { label: "Notify Me", variant: "default" },
+      scheduled: {
+        label: isOwner
+          ? "Start Room"
+          : isNotifying
+          ? "Subscribing..."
+          : "Notify Me",
+        variant: "default",
+        onClick: !isOwner ? handleNotify : undefined,
+      },
       ended: { label: "View Details", variant: "default" },
       saved: { label: "View Notes", variant: "default" },
     };
@@ -100,13 +154,16 @@ const RoomCard = ({ recreate = false, room, className }: RoomCardProps) => {
             status === "ended" && recreate ? "flex gap-2" : ""
           }`}
         >
-          <MyButton
-            variant={button.variant || "default"}
-            label={button.label}
-            className={`${
-              !recreate ? "flex-1" : "w-full"
-            } cursor-pointer bg-[#ff9819] hover:bg-mysecondary text-[#f8f8f8] rounded-full px-4 py-2`}
-          />
+          <div
+            onClick={button.onClick}
+            className={`${!recreate ? "flex-1" : "w-full"} cursor-pointer`}
+          >
+            <MyButton
+              variant={button.variant || "default"}
+              label={button.label}
+              className="w-full bg-[#ff9819] hover:bg-mysecondary text-[#f8f8f8] rounded-full px-4 py-2"
+            />
+          </div>
           {recreate && (
             <MyButton
               variant="default"
