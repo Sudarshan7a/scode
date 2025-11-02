@@ -1,6 +1,5 @@
 import HeroSection from "./heroSection/HeroSection";
 import UpcomingRoomsClient from "./upcommingRooms/UpcomingRoomsClient";
-import YourActivitiesClient from "./yourActivities/YourActivitiesClient";
 import WelcomeBanner from "./WelcomeBanner";
 import React from "react";
 import { cookies } from "next/headers";
