@@ -19,23 +19,111 @@ export async function getUser(userId: string): Promise<User> {
   };
 }
 
-export async function getUpcomingRooms(): Promise<mockRooms[]> {
+export async function getUpcomingRooms(
+  userId?: string,
+  limit?: number
+): Promise<mockRooms[]> {
   const { roomsCollection } = await connectToMongo();
-  // Return rooms that are scheduled
-  return (await roomsCollection
-    .find({ status: "scheduled" })
-    .toArray()) as unknown as mockRooms[];
+
+  if (!userId) {
+    console.log("No userId provided");
+    return [];
+  }
+
+  console.log("Fetching rooms for userId:", userId, "limit:", limit);
+  const userObjectId = new ObjectId(userId);
+
+  const query: any = {
+    $or: [{ ownerId: userObjectId }, { "collaborators.userId": userObjectId }],
+    status: "scheduled",
+    scheduledAt: { $ne: null },
+  };
+
+  console.log("Query:", JSON.stringify(query));
+  let cursor = roomsCollection.find(query).sort({ scheduledAt: 1 });
+
+  if (limit) {
+    cursor = cursor.limit(limit);
+  }
+
+  const results = await cursor.toArray();
+
+  console.log("Found rooms:", results.length);
+
+  // Transform the data to match the expected format
+  const transformedResults = results.map((room) => ({
+    ...room,
+    _id: { $oid: room._id.toString() },
+    ownerId: { $oid: room.ownerId.toString() },
+    createdAt: room.createdAt ? { $date: room.createdAt.toISOString() } : null,
+    scheduledAt: room.scheduledAt
+      ? { $date: room.scheduledAt.toISOString() }
+      : null,
+    startedAt: room.startedAt ? { $date: room.startedAt.toISOString() } : null,
+    participants: room.collaborators?.length || 0,
+    collaborators:
+      room.collaborators?.map((collab: any) => ({
+        ...collab,
+        userId: { $oid: collab.userId.toString() },
+        joinedAt: { $date: collab.joinedAt.toISOString() },
+      })) || [],
+  }));
+
+  return transformedResults as unknown as mockRooms[];
 }
 
 export async function getOldRooms() {
   const { roomsCollection } = await connectToMongo();
-  return (await roomsCollection
+  const results = await roomsCollection
     .find({ endTime: { $lt: new Date() } })
-    .toArray()) as unknown as mockRooms[];
+    .toArray();
+
+  // Transform the data to match the expected format
+  const transformedResults = results.map((room) => ({
+    ...room,
+    _id: { $oid: room._id.toString() },
+    ownerId: { $oid: room.ownerId.toString() },
+    createdAt: room.createdAt ? { $date: room.createdAt.toISOString() } : null,
+    scheduledAt: room.scheduledAt
+      ? { $date: room.scheduledAt.toISOString() }
+      : null,
+    startedAt: room.startedAt ? { $date: room.startedAt.toISOString() } : null,
+    participants: room.collaborators?.length || 0,
+    collaborators:
+      room.collaborators?.map((collab: any) => ({
+        ...collab,
+        userId: { $oid: collab.userId.toString() },
+        joinedAt: { $date: collab.joinedAt.toISOString() },
+      })) || [],
+  }));
+
+  return transformedResults as unknown as mockRooms[];
 }
+
 export async function getAllRooms() {
   const { roomsCollection } = await connectToMongo();
-  return (await roomsCollection.find({}).toArray()) as unknown as mockRooms[];
+  const results = await roomsCollection.find({}).toArray();
+
+  // Transform the data to match the expected format
+  const transformedResults = results.map((room) => ({
+    ...room,
+    _id: { $oid: room._id.toString() },
+    ownerId: { $oid: room.ownerId.toString() },
+    createdAt: room.createdAt ? { $date: room.createdAt.toISOString() } : null,
+    scheduledAt: room.scheduledAt
+      ? { $date: room.scheduledAt.toISOString() }
+      : null,
+    startedAt: room.startedAt ? { $date: room.startedAt.toISOString() } : null,
+    participants: room.collaborators?.length || 0,
+    collaborators:
+      room.collaborators?.map((collab: any) => ({
+        ...collab,
+        userId: { $oid: collab.userId.toString() },
+        joinedAt: { $date: collab.joinedAt.toISOString() },
+      })) || [],
+  }));
+
+  return transformedResults as unknown as mockRooms[];
 }
 
 //room validation mongo db
