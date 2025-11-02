@@ -75,15 +75,17 @@ const RoomCard = ({
         return;
       }
 
-      const { data } = await axiosInstance.post("/api/rooms/notify", {
+      const response = await axiosInstance.post("/api/rooms/notify", {
         roomId: roomId,
         userId: userData.user.id,
       });
 
-      alert(data.message || data.error);
+      alert(response.data.message || "Successfully subscribed to notifications");
     } catch (error) {
       console.error("Notification subscription failed:", error);
-      alert("Failed to subscribe to notifications");
+      const axiosError = error as { response?: { data?: { error?: string; message?: string } } };
+      const errorMessage = axiosError.response?.data?.error || axiosError.response?.data?.message || "Failed to subscribe to notifications";
+      alert(errorMessage);
     } finally {
       setIsNotifying(false);
     }
