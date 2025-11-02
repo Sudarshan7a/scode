@@ -85,7 +85,7 @@ const RoomCard = ({
       });
 
       alert(data.message || data.error);
-    } catch (error) {
+    } catch {
       alert("Failed to subscribe to notifications");
     } finally {
       setIsNotifying(false);

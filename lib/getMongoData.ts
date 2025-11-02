@@ -33,7 +33,7 @@ export async function getUpcomingRooms(
   console.log("Fetching rooms for userId:", userId, "limit:", limit);
   const userObjectId = new ObjectId(userId);
 
-  const query: any = {
+  const query = {
     $or: [{ ownerId: userObjectId }, { "collaborators.userId": userObjectId }],
     status: "scheduled",
     scheduledAt: { $ne: null },
@@ -62,7 +62,7 @@ export async function getUpcomingRooms(
     startedAt: room.startedAt ? { $date: room.startedAt.toISOString() } : null,
     participants: room.collaborators?.length || 0,
     collaborators:
-      room.collaborators?.map((collab: any) => ({
+      room.collaborators?.map((collab: { userId: ObjectId; role: string; joinedAt: Date }) => ({
         ...collab,
         userId: { $oid: collab.userId.toString() },
         joinedAt: { $date: collab.joinedAt.toISOString() },
@@ -90,7 +90,7 @@ export async function getOldRooms() {
     startedAt: room.startedAt ? { $date: room.startedAt.toISOString() } : null,
     participants: room.collaborators?.length || 0,
     collaborators:
-      room.collaborators?.map((collab: any) => ({
+      room.collaborators?.map((collab: { userId: ObjectId; role: string; joinedAt: Date }) => ({
         ...collab,
         userId: { $oid: collab.userId.toString() },
         joinedAt: { $date: collab.joinedAt.toISOString() },
@@ -116,7 +116,7 @@ export async function getAllRooms() {
     startedAt: room.startedAt ? { $date: room.startedAt.toISOString() } : null,
     participants: room.collaborators?.length || 0,
     collaborators:
-      room.collaborators?.map((collab: any) => ({
+      room.collaborators?.map((collab: { userId: ObjectId; role: string; joinedAt: Date }) => ({
         ...collab,
         userId: { $oid: collab.userId.toString() },
         joinedAt: { $date: collab.joinedAt.toISOString() },

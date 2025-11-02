@@ -110,7 +110,7 @@ export default function UpcomingRoomsPage() {
         })}
       </div>
     );
-  }, [upcomingRooms, isLoading, error]);
+  }, [upcomingRooms, isLoading, error, userId]);
 
   return (
     <div className="flex flex-col items-center justify-center my-8">

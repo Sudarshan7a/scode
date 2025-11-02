@@ -51,15 +51,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await roomsCollection.updateOne({ _id: new ObjectId(roomId) }, {
-      $push: {
-        collaborators: {
-          userId: new ObjectId(userId),
-          role: "participant",
-          joinedAt: new Date(),
+    await roomsCollection.updateOne(
+      { _id: new ObjectId(roomId) },
+      {
+        $push: {
+          collaborators: {
+            userId: new ObjectId(userId),
+            role: "participant",
+            joinedAt: new Date(),
+          },
         },
-      },
-    } as any);
+      } as Record<string, unknown>
+    );
 
     return NextResponse.json(
       { message: "Successfully subscribed to room notifications" },
