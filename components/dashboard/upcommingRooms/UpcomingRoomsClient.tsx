@@ -18,7 +18,8 @@ export default function UpcomingRoomsClient() {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await fetch("/api/rooms/upcoming");
+
+      const response = await fetch("/api/rooms/upcoming?limit=3");
       if (!response.ok) {
         throw new Error("Failed to fetch upcoming rooms");
       }
@@ -89,7 +90,7 @@ export default function UpcomingRoomsClient() {
     }
 
     return (
-      <div className="space-y-4">
+      <div className="flex flex-wrap gap-4">
         {upcomingRooms.map((room) => (
           <RoomCard key={`room-${room.title}-${room._id}`} room={room} />
         ))}
@@ -99,7 +100,11 @@ export default function UpcomingRoomsClient() {
 
   return (
     <div className="mb-40">
-      <TitleBackgroundCard title="Upcoming Rooms" noShadow={true}>
+      <TitleBackgroundCard
+        title="Upcoming Rooms"
+        noShadow={true}
+        viewAllLink="/dashboard/upcoming-rooms"
+      >
         {renderContent()}
       </TitleBackgroundCard>
     </div>
