@@ -4,7 +4,7 @@ import { z } from "zod";
 import { ObjectId } from "mongodb";
 import { connectToMongo } from "@/lib/mongodb";
 
-export const POST = withAuth(async (request: NextRequest) => {
+export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
     const body = await request.json();
 
@@ -27,30 +27,14 @@ export const POST = withAuth(async (request: NextRequest) => {
     }
 
     const payload = parsed.data;
-    //get userID from request cookies (prefer middleware userId, fallback to cookie)
-    const userCookieId = request.cookies.get("userId");
-    // if no userId then return error
-    if (!userCookieId?.value) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const title = payload.title;
     const duration = payload.duration ?? 30;
 
-    const doc: {
-      title: string;
-      ownerId: ObjectId;
-      isPrivate: boolean;
-      createdAt: Date;
-      duration: number;
-      scheduledAt: Date | null;
-      description: string | null;
-      language: string | null;
-      status: string;
-    } = {
+    const doc = {
       title,
-      ownerId: new ObjectId(userCookieId.value),
-      isPrivate: Boolean(body.isPrivate),
+      ownerId: new ObjectId(userId),
+      collaborators: [],
+      isPrivate: payload.isPrivate ?? false,
       createdAt: new Date(),
       duration,
       scheduledAt: payload.scheduledAt ? new Date(payload.scheduledAt) : null,

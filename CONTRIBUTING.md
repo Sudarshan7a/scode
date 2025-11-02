@@ -37,7 +37,7 @@ This repository follows a structured development workflow to maintain code quali
 - `master` (protected): Production-ready code, only updated via Pull Requests
 - Feature branches: Use descriptive names with prefixes:
   - `feat/user-authentication` - New features
-  - `fix/login-validation` - Bug fixes  
+  - `fix/login-validation` - Bug fixes
   - `docs/setup-guide` - Documentation updates
   - `refactor/auth-handlers` - Code refactoring
   - `chore/dependency-updates` - Maintenance tasks
@@ -59,7 +59,7 @@ We use [Conventional Commits](https://conventionalcommits.org/) for clear, consi
 
 ```bash
 feat(auth): add OAuth integration with GitHub
-fix(editor): resolve syntax highlighting issue  
+fix(editor): resolve syntax highlighting issue
 docs(readme): update installation instructions
 refactor(api): extract validation helpers
 chore(deps): update MongoDB driver to v6.18.0
@@ -121,7 +121,7 @@ Critical env vars (must exist before deploying):
 MONGODB_URI=mongodb+srv://...
 MONGODB_DB=scode
 
-# Authentication  
+# Authentication
 JWT_SECRET=your-secure-secret
 
 # Redis
@@ -155,18 +155,23 @@ MY_DOMAIN=https://your-domain.com
 
 ```markdown
 ## What Changed
+
 Brief description of the changes made.
 
 ## Why
+
 Explanation of the motivation or problem being solved.
 
 ## How to Test
+
 Steps for reviewers to test the changes.
 
 ## Screenshots (if applicable)
+
 Visual changes should include before/after screenshots.
 
 ## Checklist
+
 - [ ] Code follows project conventions
 - [ ] Tests added/updated (if applicable)
 - [ ] Documentation updated (if needed)
@@ -176,6 +181,7 @@ Visual changes should include before/after screenshots.
 ### Key Features to Test
 
 **Notes System**
+
 - Create up to 10 pages per room (numbered 0-9)
 - Edit page titles and content (5000 char limit)
 - Auto-save every 5 minutes
@@ -183,12 +189,13 @@ Visual changes should include before/after screenshots.
 - Smart numbering fills gaps automatically
 
 **Collaborative Editor**
+
 - Real-time text synchronization via Y.js
 - Multi-language support (JS, TS, Python, Go, Java, C, C++)
 - Code execution with output display
 - No cursor tracking (optimized for performance)
 
-Last updated: January 2025
+Last updated: November 2025
 
 ## 🤝 Community Guidelines
 
@@ -233,7 +240,7 @@ npm run help:git        # Show Git learning resources
 ### Learning Resources
 
 - **[Git Best Practices](docs/git-best-practices.md)** - Complete workflow guide
-- **[Development Setup](docs/development-setup.md)** - Configuration guide  
+- **[Development Setup](docs/development-setup.md)** - Configuration guide
 - **[Repository Scorecard](docs/repository-scorecard.md)** - Self-assessment tool
 - **[Learning Checklist](docs/learning-checklist.md)** - Progressive skill development
 

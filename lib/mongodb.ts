@@ -1,4 +1,4 @@
-import { MongoClient, Db, Collection } from "mongodb";
+import { MongoClient, Db, Collection, ObjectId } from "mongodb";
 
 const uri = process.env.MONGODB_URI!;
 const dbNameFromEnv = process.env.MONGODB_DB; // optional override
@@ -48,4 +48,21 @@ export async function connectToMongo(): Promise<{
       .db()
       .collection("usersActivities"),
   };
+}
+
+export async function getUserUpcomingRooms(userId: string | ObjectId) {
+  const { roomsCollection } = await connectToMongo();
+  let userObjectId: ObjectId;
+  try {
+    userObjectId = typeof userId === "string" ? new ObjectId(userId) : userId;
+  } catch {
+    throw new Error(`Invalid userId format: ${userId}`);
+  }
+  return await roomsCollection
+    .find({
+      "collaborators.userId": userObjectId,
+      scheduledFor: { $gte: new Date() },
+    })
+    .sort({ scheduledFor: 1 })
+    .toArray();
 }

@@ -1,15 +1,18 @@
 import React from "react";
+import Link from "next/link";
 
 function TitleBackgroundCard({
   noShadow = false,
   title,
   children,
   hidebutton = false,
+  viewAllLink,
 }: {
   noShadow?: boolean;
   title?: string;
   children: React.ReactNode;
   hidebutton?: boolean;
+  viewAllLink?: string;
 }) {
   return (
     <div className="min-w-[80%] mx-20">
@@ -23,10 +26,10 @@ function TitleBackgroundCard({
         className="flex shadow-md flex-col items-center w-full p-2 rounded-2xl"
       >
         <div className="flex flex-col items-end  w-full gap-4  mx-auto ">
-          {!hidebutton && (
-            <button className=" pr-4 text-mysecondary hover:text-mysecondary-hover">
+          {!hidebutton && viewAllLink && (
+            <Link href={viewAllLink} className=" pr-4 text-mysecondary hover:text-mysecondary-hover">
               View All
-            </button>
+            </Link>
           )}
           <div className="flex items-center justify-center gap-4 flex-wrap mx-auto">
             {children}
