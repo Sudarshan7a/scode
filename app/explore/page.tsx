@@ -56,12 +56,11 @@ export default function Home() {
     }
 
     return (
-      <div className="space-y-4">
+      <div className="flex flex-wrap gap-4 justify-start">
         {rooms.map((room) => (
-          <RoomCard
-            key={room.id || room.title}
-            room={room as unknown as mockRooms}
-          />
+          <div key={room.id || room.title} className="flex-none">
+            <RoomCard room={room as unknown as mockRooms} />
+          </div>
         ))}
       </div>
     );
