@@ -34,7 +34,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       title,
       ownerId: new ObjectId(userId),
       collaborators: [],
-      isPrivate: Boolean(body.isPrivate),
+      isPrivate: payload.isPrivate ?? false,
       createdAt: new Date(),
       duration,
       scheduledAt: payload.scheduledAt ? new Date(payload.scheduledAt) : null,

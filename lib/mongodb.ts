@@ -52,12 +52,16 @@ export async function connectToMongo(): Promise<{
 
 export async function getUserUpcomingRooms(userId: string | ObjectId) {
   const { roomsCollection } = await connectToMongo();
-  const userObjectId = typeof userId === "string" ? new ObjectId(userId) : userId;
-  
+  let userObjectId: ObjectId;
+  try {
+    userObjectId = typeof userId === "string" ? new ObjectId(userId) : userId;
+  } catch {
+    throw new Error(`Invalid userId format: ${userId}`);
+  }
   return await roomsCollection
     .find({
       "collaborators.userId": userObjectId,
-      scheduledFor: { $gte: new Date() }
+      scheduledFor: { $gte: new Date() },
     })
     .sort({ scheduledFor: 1 })
     .toArray();

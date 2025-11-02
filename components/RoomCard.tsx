@@ -24,10 +24,6 @@ const RoomCard = ({
 }: RoomCardProps) => {
   const [isNotifying, setIsNotifying] = useState(false);
 
-  // Debug logging
-  console.log("RoomCard received room data:", room);
-  console.log("Room _id:", room?._id);
-
   const {
     title,
     description,
@@ -85,7 +81,8 @@ const RoomCard = ({
       });
 
       alert(data.message || data.error);
-    } catch {
+    } catch (error) {
+      console.error("Notification subscription failed:", error);
       alert("Failed to subscribe to notifications");
     } finally {
       setIsNotifying(false);
