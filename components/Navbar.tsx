@@ -13,7 +13,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "./../components/ui/popover";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
 
 const buttonUnderlineTailwind =
@@ -37,6 +37,8 @@ export default function Navbar() {
     }
   }
   const showLayout = useLayoutVisibility(); // Use the hook
+  const pathname = usePathname();
+  const isDashboard = pathname === "/dashboard";
 
   return (
     showLayout && (
@@ -68,14 +70,18 @@ export default function Navbar() {
               formType="schedule"
               buttonUnderlineStyle={buttonUnderlineTailwind}
             />
-            <RegistrationForm
-              formType="host"
-              buttonUnderlineStyle={buttonUnderlineTailwind}
-            />
-            <RegistrationForm
-              formType="join"
-              buttonUnderlineStyle={buttonUnderlineTailwind}
-            />
+            {!isDashboard && (
+              <>
+                <RegistrationForm
+                  formType="host"
+                  buttonUnderlineStyle={buttonUnderlineTailwind}
+                />
+                <RegistrationForm
+                  formType="join"
+                  buttonUnderlineStyle={buttonUnderlineTailwind}
+                />
+              </>
+            )}
           </div>
           <div className="flex items-center gap-6">
             <MyNotifications />
