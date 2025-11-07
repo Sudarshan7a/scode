@@ -12,7 +12,8 @@ export const usersCollectionValidation = {
         bsonType: "string",
         pattern:
           "^.+@((gmail|outlook|hotmail|yahoo|icloud|aol|mail|protonmail|zoho|gmx)\\.com|sdit\\.ac\\.in)$",
-        description: "Only approved domains (major .com providers or sdit.ac.in)",
+        description:
+          "Only approved domains (major .com providers or sdit.ac.in)",
       },
       passwordHash: { bsonType: "string" },
       role: { enum: ["user", "admin"] },
