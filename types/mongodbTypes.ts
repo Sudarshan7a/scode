@@ -2,6 +2,19 @@ import { ObjectId } from "mongodb";
 
 export type UserRole = "user" | "admin";
 
+export interface OAuthProvider {
+  google?: {
+    id: string;
+    email: string;
+    connectedAt: Date;
+  };
+  github?: {
+    id: string;
+    username: string;
+    connectedAt: Date;
+  };
+}
+
 export interface User {
   _id?: ObjectId;
   name: string; // letters only, no spaces
@@ -10,6 +23,15 @@ export interface User {
   role: "user" | "admin";
   emailVerified: boolean;
   avatarUrl?: string;
+  avatarId?: number;
+  pronouns?: string;
+  dateOfBirth?: string;
+  oauth?: OAuthProvider;
+  pendingEmail?: {
+    newEmail: string;
+    verificationToken: string;
+    tokenExpiry: Date;
+  };
   createdAt?: Date;
 }
 
