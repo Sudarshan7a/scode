@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
         avatarId: user.avatarId ?? 0,
         pronouns: user.pronouns || "",
         dateOfBirth: user.dateOfBirth || "",
+        oauth: user.oauth || {},
       },
     });
   } catch (error) {
