@@ -11,7 +11,6 @@ interface NotesPageProps {
 function NotesPage({ sessionId }: NotesPageProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [pages, setPages] = useState<Awaited<ReturnType<typeof getAllPages>>>([]);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   const initializePages = useCallback(async () => {
     try {
@@ -41,12 +40,12 @@ function NotesPage({ sessionId }: NotesPageProps) {
     initializePages();
   }, [initializePages]);
 
-  const handlePagesLoad = async (loadedPages: Awaited<ReturnType<typeof getAllPages>>) => {
+  const handlePagesLoad = useCallback(async (loadedPages: Awaited<ReturnType<typeof getAllPages>>) => {
     setPages(loadedPages);
     if (loadedPages.length > 0 && !loadedPages.find(p => p.pageNumber === currentPage)) {
       setCurrentPage(loadedPages[0].pageNumber);
     }
-  };
+  }, [currentPage]);
 
   const handleCreatePage = async () => {
     try {
@@ -76,7 +75,6 @@ function NotesPage({ sessionId }: NotesPageProps) {
       const updatedPages = await getAllPages(sessionId);
       setPages(updatedPages);
       setCurrentPage(newPageNumber);
-      setRefreshKey(prev => prev + 1);
     } catch (error) {
       console.error("Failed to create page:", error);
     }
@@ -99,12 +97,13 @@ function NotesPage({ sessionId }: NotesPageProps) {
       const updatedPages = await getAllPages(sessionId);
       setPages(updatedPages);
       
-      // Switch to first available page
+      // Switch to first available page that's not the deleted one
       const nextPage = updatedPages.find(p => p.pageNumber !== pageToDelete);
-      setCurrentPage(nextPage?.pageNumber || updatedPages[0]?.pageNumber || 0);
-      
-      // Force UI refresh
-      setRefreshKey(prev => prev + 1);
+      if (nextPage) {
+        setCurrentPage(nextPage.pageNumber);
+      } else if (updatedPages.length > 0) {
+        setCurrentPage(updatedPages[0].pageNumber);
+      }
     } catch (error) {
       console.error("Failed to delete page:", error);
     }
@@ -113,7 +112,6 @@ function NotesPage({ sessionId }: NotesPageProps) {
   return (
     <div className="flex text-center h-[94vh] ">
       <Pages 
-        key={refreshKey}
         roomId={sessionId}
         currentPage={currentPage}
         onPageSelect={handlePageSelect}
@@ -121,7 +119,7 @@ function NotesPage({ sessionId }: NotesPageProps) {
         onPagesLoad={handlePagesLoad}
       />
       <Note 
-        key={`${sessionId}-page-${currentPage}-${refreshKey}`}
+        key={`${sessionId}-page-${currentPage}`}
         sessionId={sessionId} 
         pageNumber={currentPage}
         onDelete={handleDeletePage}
