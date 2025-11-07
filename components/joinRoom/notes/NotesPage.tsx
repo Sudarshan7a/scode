@@ -121,7 +121,7 @@ function NotesPage({ sessionId }: NotesPageProps) {
         onPagesLoad={handlePagesLoad}
       />
       <Note 
-        key={currentPage}
+        key={`${sessionId}-page-${currentPage}-${refreshKey}`}
         sessionId={sessionId} 
         pageNumber={currentPage}
         onDelete={handleDeletePage}
