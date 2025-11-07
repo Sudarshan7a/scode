@@ -18,9 +18,12 @@ export async function POST(): Promise<NextResponse> {
     const res = NextResponse.json({
       message: "Logged out",
       redirect: "/login",
+      clearCache: true, // Instruction to clear localStorage
     });
     res.cookies.set("refreshToken", "", { maxAge: 0, path: "/" });
+    res.cookies.set("userId", "", { maxAge: 0, path: "/" });
     res.cookies.set("isLoggedIn", "false", { maxAge: 10, path: "/" });
+    res.cookies.set("isAuthenticated", "", { maxAge: 0, path: "/" });
 
     return res;
   }

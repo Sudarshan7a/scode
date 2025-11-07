@@ -8,6 +8,7 @@ import EmailPasswordForm from "./EmailPasswordForm";
 import TermsAndPrivacy from "../common/TermsAndPrivacy";
 import { useRouter } from "next/navigation";
 import { useToast, TOAST_MESSAGES } from "@/hooks/useToast";
+import { UserCache, AvatarCache } from "@/lib/userCache";
 // import { logIn } from "@/auth/nextjs/actions";
 
 export function MyLoginForm() {
@@ -43,6 +44,23 @@ export function MyLoginForm() {
         return;
       } else {
         success(result.message || TOAST_MESSAGES.AUTH.LOGIN_SUCCESS);
+        
+        // Cache user data from login response
+        if (result.user) {
+          UserCache.set({
+            name: result.user.name,
+            email: result.user.email,
+            avatarId: result.user.avatarId,
+            pronouns: result.user.pronouns,
+            role: result.user.role,
+            dateOfBirth: result.user.dateOfBirth,
+          });
+          
+          // Cache avatar separately
+          if (result.user.avatarId !== undefined) {
+            AvatarCache.set(result.user.avatarId);
+          }
+        }
       }
 
       // Always redirect after successful login. Use a full navigation to ensure

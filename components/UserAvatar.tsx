@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import AvatarIcon from "./icons/AvatarIcon";
+import { AvatarCache } from "@/lib/userCache";
 
 interface UserAvatarProps {
   className?: string;
@@ -19,21 +20,23 @@ export default function UserAvatar({
 
   const loadUserAvatar = async () => {
     try {
-      const userId = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("userId="))
-        ?.split("=")[1];
+      // Check localStorage cache first
+      const cachedAvatarId = AvatarCache.get();
 
-      if (!userId) {
+      if (cachedAvatarId !== null) {
+        setAvatarId(cachedAvatarId);
         setLoading(false);
         return;
       }
 
-      const response = await fetch(`/api/user/profile?userId=${userId}`);
+      // Cache miss or expired - fetch from API
+      const response = await fetch("/api/user/me");
       const data = await response.json();
 
       if (data.success && data.user.avatarId !== undefined) {
         setAvatarId(data.user.avatarId);
+        // Cache the avatarId for future use (24 hours)
+        AvatarCache.set(data.user.avatarId);
       }
     } catch (err) {
       console.error("Failed to load avatar:", err);

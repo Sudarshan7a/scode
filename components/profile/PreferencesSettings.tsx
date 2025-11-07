@@ -17,8 +17,18 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import { useTheme } from "next-themes";
 
+const NOTIFICATIONS_KEY = "notificationsEnabled";
+
 export function PreferencesSettings() {
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  // Load from localStorage on mount
+  const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(NOTIFICATIONS_KEY);
+      return saved ? JSON.parse(saved) : false;
+    }
+    return false;
+  });
+  
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -26,6 +36,12 @@ export function PreferencesSettings() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Persist notifications preference to localStorage
+  const handleNotificationChange = (enabled: boolean) => {
+    setNotificationsEnabled(enabled);
+    localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(enabled));
+  };
 
   if (!mounted) {
     return null;
@@ -45,7 +61,7 @@ export function PreferencesSettings() {
         <h3>Notifications</h3>
         <Switch
           checked={notificationsEnabled}
-          onCheckedChange={setNotificationsEnabled}
+          onCheckedChange={handleNotificationChange}
         />
       </div>
 

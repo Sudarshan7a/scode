@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/useToast";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
+import { UserCache, AvatarCache } from "@/lib/userCache";
 
 interface UserProfile {
   id: string;
@@ -33,12 +34,45 @@ export function GeneralSettings() {
     try {
       setLoading(true);
 
-      // Use /api/user/me endpoint which reads httpOnly cookies server-side
+      // Check cache first
+      const cachedData = UserCache.get();
+      if (cachedData) {
+        setIsAuthenticated(true);
+        setProfile({
+          id: '', // ID not needed from cache
+          email: cachedData.email,
+          name: cachedData.name,
+          role: cachedData.role || '',
+          avatarId: cachedData.avatarId,
+          pronouns: cachedData.pronouns || '',
+          dateOfBirth: cachedData.dateOfBirth || '',
+        });
+        setLoading(false);
+        
+        // Optionally refresh from API in background if cache is old
+        const cacheAge = UserCache.getAge();
+        if (cacheAge && cacheAge > 30 * 60 * 1000) { // Refresh if older than 30 minutes
+          refreshProfileInBackground();
+        }
+        return;
+      }
+
+      // Cache miss - fetch from API
       const response = await axiosInstance.get("/api/user/me");
 
       if (response.data.success && response.data.authenticated) {
         setIsAuthenticated(true);
         setProfile(response.data.user);
+        
+        // Cache the user data
+        UserCache.set({
+          name: response.data.user.name,
+          email: response.data.user.email,
+          avatarId: response.data.user.avatarId,
+          pronouns: response.data.user.pronouns,
+          role: response.data.user.role,
+          dateOfBirth: response.data.user.dateOfBirth,
+        });
       } else {
         setIsAuthenticated(false);
       }
@@ -53,6 +87,26 @@ export function GeneralSettings() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const refreshProfileInBackground = async () => {
+    try {
+      const response = await axiosInstance.get("/api/user/me");
+      if (response.data.success && response.data.authenticated) {
+        setProfile(response.data.user);
+        UserCache.set({
+          name: response.data.user.name,
+          email: response.data.user.email,
+          avatarId: response.data.user.avatarId,
+          pronouns: response.data.user.pronouns,
+          role: response.data.user.role,
+          dateOfBirth: response.data.user.dateOfBirth,
+        });
+      }
+    } catch (err) {
+      // Silent fail for background refresh
+      console.error("Background profile refresh failed:", err);
     }
   };
 
@@ -73,6 +127,19 @@ export function GeneralSettings() {
 
       if (response.data.success) {
         setProfile(response.data.user);
+        
+        // Update cache with new data
+        UserCache.set({
+          name: response.data.user.name,
+          email: response.data.user.email,
+          avatarId: response.data.user.avatarId,
+          pronouns: response.data.user.pronouns,
+          role: response.data.user.role,
+          dateOfBirth: response.data.user.dateOfBirth,
+        });
+        
+        // Update avatar cache separately
+        AvatarCache.set(response.data.user.avatarId);
       }
     } catch (err) {
       console.error("Failed to update profile:", err);
