@@ -1,9 +1,17 @@
-// import Image from "next/image";
+import HeroSection from "@/components/landing/HeroSection";
+import FeaturesSection from "@/components/landing/FeaturesSection";
+import HowItWorksSection from "@/components/landing/HowItWorksSection";
+import TestimonialsSection from "@/components/landing/TestimonialsSection";
+import CTASection from "@/components/landing/CTASection";
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center p-24">
-      main page
-    </div>
+    <main className="min-h-screen">
+      <HeroSection />
+      <FeaturesSection />
+      <HowItWorksSection />
+      <TestimonialsSection />
+      <CTASection />
+    </main>
   );
 }
