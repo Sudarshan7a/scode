@@ -4,6 +4,8 @@ import { Input } from "../ui/input";
 import { AvatarSelector } from "./AvatarSelector";
 import { useToast } from "@/hooks/useToast";
 import { axiosInstance } from "@/lib/axiosInstance";
+import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
 
 interface UserProfile {
   id: string;
@@ -19,7 +21,9 @@ export function GeneralSettings() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { error: showError, success, promise } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     loadProfile();
@@ -35,9 +39,12 @@ export function GeneralSettings() {
         ?.split("=")[1];
 
       if (!userId) {
-        showError("User not authenticated");
+        setIsAuthenticated(false);
+        setLoading(false);
         return;
       }
+
+      setIsAuthenticated(true);
 
       const response = await axiosInstance.get(
         `/api/user/profile?userId=${userId}`
@@ -84,6 +91,28 @@ export function GeneralSettings() {
       setProfile({ ...profile, avatarId });
     }
   };
+
+  // Not authenticated state
+  if (!isAuthenticated && !loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 gap-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-foreground mb-2">
+            User not authenticated
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Please log in to access your profile.
+          </p>
+        </div>
+        <Button
+          onClick={() => router.push("/login")}
+          className="bg-mysecondary hover:bg-mysecondary-hover text-white px-8 py-2"
+        >
+          Login
+        </Button>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -173,18 +202,6 @@ function ProfileForm({
             onChange={(e) => handleChange("dateOfBirth", e.target.value)}
           />
         </div>
-      </div>
-      <div className="flex gap-20">
-        <div className="mb-4 flex-1">
-          <label className="block mb-1">Email</label>
-          <Input
-            value={profile.email}
-            disabled
-            className="bg-gray-100 dark:bg-gray-800"
-          />
-          <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
-        </div>
-        <div className="mb-4 flex-1"></div>
       </div>
       <button
         type="submit"
