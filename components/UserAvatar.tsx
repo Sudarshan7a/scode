@@ -22,7 +22,7 @@ export default function UserAvatar({
     try {
       // Check localStorage cache first
       const cachedAvatarId = AvatarCache.get();
-      
+
       if (cachedAvatarId !== null) {
         setAvatarId(cachedAvatarId);
         setLoading(false);
@@ -30,7 +30,7 @@ export default function UserAvatar({
       }
 
       // Cache miss or expired - fetch from API
-      const response = await fetch('/api/user/me');
+      const response = await fetch("/api/user/me");
       const data = await response.json();
 
       if (data.success && data.user.avatarId !== undefined) {

@@ -1,9 +1,9 @@
 /**
  * User Cache Utility
- * 
+ *
  * Manages client-side caching of non-sensitive user data in localStorage.
  * Implements cache expiration and provides type-safe access to user data.
- * 
+ *
  * Security: Only stores non-sensitive data. Never cache passwords, tokens, or session IDs.
  */
 
@@ -26,7 +26,7 @@ export interface UserDataInput {
   dateOfBirth?: string;
 }
 
-const CACHE_KEY = 'userData';
+const CACHE_KEY = "userData";
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
 export const UserCache = {
@@ -41,7 +41,7 @@ export const UserCache = {
       };
       localStorage.setItem(CACHE_KEY, JSON.stringify(cached));
     } catch (error) {
-      console.error('Failed to set user cache:', error);
+      console.error("Failed to set user cache:", error);
       // Handle quota exceeded or other localStorage errors
     }
   },
@@ -66,7 +66,7 @@ export const UserCache = {
 
       return data;
     } catch (error) {
-      console.error('Failed to get user cache:', error);
+      console.error("Failed to get user cache:", error);
       UserCache.clear(); // Clear corrupted cache
       return null;
     }
@@ -79,7 +79,7 @@ export const UserCache = {
     try {
       localStorage.removeItem(CACHE_KEY);
     } catch (error) {
-      console.error('Failed to clear user cache:', error);
+      console.error("Failed to clear user cache:", error);
     }
   },
 
@@ -96,7 +96,7 @@ export const UserCache = {
         localStorage.setItem(CACHE_KEY, JSON.stringify(cached));
       }
     } catch (error) {
-      console.error('Failed to update user cache:', error);
+      console.error("Failed to update user cache:", error);
     }
   },
 
@@ -134,7 +134,7 @@ export const UserCache = {
         localStorage.setItem(CACHE_KEY, JSON.stringify(cached));
       }
     } catch (error) {
-      console.error('Failed to refresh user cache:', error);
+      console.error("Failed to refresh user cache:", error);
     }
   },
 };
@@ -142,8 +142,8 @@ export const UserCache = {
 /**
  * Avatar Cache - Separate cache for avatar with longer expiration
  */
-const AVATAR_CACHE_KEY = 'userAvatarId';
-const AVATAR_CACHE_TIME_KEY = 'userAvatarCacheTime';
+const AVATAR_CACHE_KEY = "userAvatarId";
+const AVATAR_CACHE_TIME_KEY = "userAvatarCacheTime";
 const AVATAR_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 export const AvatarCache = {
@@ -152,7 +152,7 @@ export const AvatarCache = {
       localStorage.setItem(AVATAR_CACHE_KEY, avatarId.toString());
       localStorage.setItem(AVATAR_CACHE_TIME_KEY, Date.now().toString());
     } catch (error) {
-      console.error('Failed to set avatar cache:', error);
+      console.error("Failed to set avatar cache:", error);
     }
   },
 
@@ -171,7 +171,7 @@ export const AvatarCache = {
 
       return parseInt(cachedAvatar);
     } catch (error) {
-      console.error('Failed to get avatar cache:', error);
+      console.error("Failed to get avatar cache:", error);
       AvatarCache.clear();
       return null;
     }
@@ -182,7 +182,7 @@ export const AvatarCache = {
       localStorage.removeItem(AVATAR_CACHE_KEY);
       localStorage.removeItem(AVATAR_CACHE_TIME_KEY);
     } catch (error) {
-      console.error('Failed to clear avatar cache:', error);
+      console.error("Failed to clear avatar cache:", error);
     }
   },
 

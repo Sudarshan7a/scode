@@ -123,7 +123,7 @@ async function handleLoginRequest(email: string, password: string) {
   });
 
   setAuthCookies(res, refreshToken, userId);
-  
+
   // Set non-httpOnly cookie for client-side auth check
   res.cookies.set("isAuthenticated", "true", {
     httpOnly: false,
@@ -132,6 +132,6 @@ async function handleLoginRequest(email: string, password: string) {
     maxAge: 60 * 60 * 24 * 7, // 7 days
     path: "/",
   });
-  
+
   return res;
 }

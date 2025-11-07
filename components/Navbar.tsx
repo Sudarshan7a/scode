@@ -32,12 +32,12 @@ export default function Navbar() {
       body: JSON.stringify({}),
     });
     const result = await res.json();
-    
+
     // Clear all user caches from localStorage
     if (result.clearCache) {
       clearAllUserCaches();
     }
-    
+
     if (result) {
       toast.success(result.message);
       router.push(result.redirect);
