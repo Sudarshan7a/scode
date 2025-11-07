@@ -5,14 +5,15 @@ export const usersCollectionValidation = {
     properties: {
       name: {
         bsonType: "string",
-        pattern: "^[A-Za-z]+$",
-        description: "Letters only, no spaces",
+        pattern: "^[A-Za-z]+(\\s[A-Za-z]+)*$",
+        description: "Letters and spaces allowed (e.g., John Doe)",
       },
       email: {
         bsonType: "string",
         pattern:
           "^.+@((gmail|outlook|hotmail|yahoo|icloud|aol|mail|protonmail|zoho|gmx)\\.com|sdit\\.ac\\.in)$",
-        description: "Only approved domains (major .com providers or sdit.ac.in)",
+        description:
+          "Only approved domains (major .com providers or sdit.ac.in)",
       },
       passwordHash: { bsonType: "string" },
       role: { enum: ["user", "admin"] },

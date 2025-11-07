@@ -3,7 +3,7 @@ import React from "react";
 import Logo from "./Logo";
 import { navlinks } from "../constants/NavLinks";
 import Link from "next/link";
-import AvatarIcon from "./icons/AvatarIcon";
+import UserAvatar from "./UserAvatar";
 import { useLayoutVisibility } from "../hooks/useLayoutVisibility";
 import RegistrationForm from "./custom/schedule/RegistrationForm"; // Import the hook
 import MyNotifications from "./custom/MyNotification";
@@ -87,7 +87,7 @@ export default function Navbar() {
             <MyNotifications />
             <Popover>
               <PopoverTrigger>
-                <AvatarIcon className="scale-140 hover:bg-mysecondary/20 p-[3px] rounded-sm" />
+                <UserAvatar className="w-9 h-9 hover:ring-2 hover:ring-mysecondary/50 rounded-full transition-all" />
               </PopoverTrigger>
               <PopoverContent className="flex flex-col gap-1 px-4 py-1  border-mysecondary w-fit mr-2 mt-2 rounded-md shadow-lg">
                 <Link href="/profile">

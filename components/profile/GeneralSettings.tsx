@@ -1,51 +1,209 @@
-import React from "react";
-import AvatarIcon from "../icons/AvatarIcon";
+"use client";
+import React, { useState, useEffect } from "react";
 import { Input } from "../ui/input";
+import { AvatarSelector } from "./AvatarSelector";
+import { useToast } from "@/hooks/useToast";
+import { axiosInstance } from "@/lib/axiosInstance";
+import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
+
+interface UserProfile {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  avatarId: number;
+  pronouns: string;
+  dateOfBirth: string;
+}
 
 export function GeneralSettings() {
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { error: showError, success, promise } = useToast();
+  const router = useRouter();
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      setLoading(true);
+
+      // Use /api/user/me endpoint which reads httpOnly cookies server-side
+      const response = await axiosInstance.get("/api/user/me");
+
+      if (response.data.success && response.data.authenticated) {
+        setIsAuthenticated(true);
+        setProfile(response.data.user);
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch (err: any) {
+      console.error("Failed to load profile:", err);
+
+      // If 401 (not authenticated), don't show error toast
+      if (err.response?.status === 401) {
+        setIsAuthenticated(false);
+      } else {
+        showError("Failed to load profile");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!profile) return;
+
+    try {
+      setSaving(true);
+      const response = await promise(
+        axiosInstance.put("/api/user/update-profile", profile),
+        {
+          loading: "Saving changes...",
+          success: "Profile updated successfully!",
+          error: "Failed to update profile",
+        }
+      );
+
+      if (response.data.success) {
+        setProfile(response.data.user);
+      }
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAvatarSelect = (avatarId: number) => {
+    if (profile) {
+      setProfile({ ...profile, avatarId });
+    }
+  };
+
+  // Not authenticated state
+  if (!isAuthenticated && !loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 gap-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-foreground mb-2">
+            User not authenticated
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            Please log in to access your profile.
+          </p>
+        </div>
+        <Button
+          onClick={() => router.push("/login")}
+          className="bg-mysecondary hover:bg-mysecondary-hover text-white px-8 py-2"
+        >
+          Login
+        </Button>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg text-gray-500">Loading profile...</div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg text-red-500">Failed to load profile</div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center px-40">
-      <AvatarIcon className="w-40 h-40" />
-      <ProfileForm />
+      <AvatarSelector
+        currentAvatarId={profile.avatarId}
+        onSelect={handleAvatarSelect}
+      />
+      <ProfileForm
+        profile={profile}
+        setProfile={setProfile}
+        onSubmit={handleSubmit}
+        saving={saving}
+      />
     </div>
   );
 }
 
-function ProfileForm() {
+interface ProfileFormProps {
+  profile: UserProfile;
+  setProfile: (profile: UserProfile) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  saving: boolean;
+}
+
+function ProfileForm({
+  profile,
+  setProfile,
+  onSubmit,
+  saving,
+}: ProfileFormProps) {
+  const handleChange = (field: keyof UserProfile, value: string) => {
+    setProfile({ ...profile, [field]: value });
+  };
+
   return (
-    <form className="w-full text-sm font-medium font-sans mt-4">
+    <form
+      className="w-full text-sm font-medium font-sans mt-8"
+      onSubmit={onSubmit}
+    >
       <div className="flex gap-20">
         <div className="mb-4 flex-1">
           <label className="block mb-1">Name</label>
-          <Input />
+          <Input
+            value={profile.name}
+            onChange={(e) => handleChange("name", e.target.value)}
+            required
+          />
         </div>
         <div className="mb-4 flex-1">
           <label className="block mb-1">Pronouns</label>
-          <Input placeholder=" He/Him, She/Her" />
+          <Input
+            placeholder="He/Him, She/Her, They/Them"
+            value={profile.pronouns}
+            onChange={(e) => handleChange("pronouns", e.target.value)}
+          />
         </div>
       </div>
       <div className="flex gap-20">
         <div className="mb-4 flex-1">
           <label className="block mb-1">Current role</label>
-          <Input />
+          <Input
+            value={profile.role}
+            onChange={(e) => handleChange("role", e.target.value)}
+          />
         </div>
         <div className="mb-4 flex-1">
           <label className="block mb-1">Date of birth</label>
-          <Input placeholder="MM/DD/YYYY" />
+          <Input
+            type="date"
+            value={profile.dateOfBirth}
+            onChange={(e) => handleChange("dateOfBirth", e.target.value)}
+          />
         </div>
-      </div>
-      <div className="flex gap-20">
-        <div className="mb-4 flex-1">
-          <label className="block mb-1">Email</label>
-          <Input />
-        </div>
-        <div className="mb-4 flex-1"></div>
       </div>
       <button
         type="submit"
-        className="w-full bg-mysecondary text-white py-2 px-4 rounded-md hover:bg-mysecondary-hover hover:cursor-pointer"
+        disabled={saving}
+        className="w-full bg-mysecondary text-white py-2 px-4 rounded-md hover:bg-mysecondary-hover hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        Save Changes
+        {saving ? "Saving..." : "Save Changes"}
       </button>
     </form>
   );
