@@ -40,7 +40,7 @@ function Pages({ roomId, currentPage, onPageSelect, onCreatePage, onPagesLoad }:
       <div className="flex flex-col space-y-2 text-md text-foreground">
         {pages.map((page) => (
           <div
-            key={page.pageNumber}
+            key={page.id}
             onClick={() => onPageSelect(page.pageNumber)}
             className={`bg-mysecondary-hover w-full cursor-pointer hover:opacity-80 transition-opacity ${
               currentPage === page.pageNumber ? "border-b-mysecondary border-b-4" : ""
