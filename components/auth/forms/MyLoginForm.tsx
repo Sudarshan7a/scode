@@ -77,7 +77,7 @@ export function MyLoginForm() {
 
   return (
     <div
-      className="min-w-md mx-auto rounded-xl p-6 border backdrop-blur-md relative overflow-hidden
+      className="min-w-md mx-auto rounded-xl p-4 md:p-5 border backdrop-blur-md relative overflow-hidden
       border-[var(--color-mysecondary)]/25 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.15)]
       bg-background"
     >
@@ -101,7 +101,7 @@ export function MyLoginForm() {
         />
 
         {/* Terms & Privacy */}
-        <div className="mt-6 text-xs text-muted-foreground">
+        <div className="mt-4 text-xs text-muted-foreground">
           <TermsAndPrivacy text="By logging in, you agree to our" />
         </div>
       </div>

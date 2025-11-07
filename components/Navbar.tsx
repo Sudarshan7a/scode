@@ -39,6 +39,7 @@ export default function Navbar() {
   const showLayout = useLayoutVisibility(); // Use the hook
   const pathname = usePathname();
   const isDashboard = pathname === "/dashboard";
+  const isHomePage = pathname === "/";
 
   return (
     showLayout && (
@@ -48,20 +49,22 @@ export default function Navbar() {
             <Logo />
           </Link>
           <div className="font-navbar flex items-center gap-6">
-            {navlinks.map((link) => (
-              <Link
-                key={link.id}
-                href={link.path}
-                className=" transition-colors duration-200"
-              >
-                <Button
-                  variant="link"
-                  className={`text-foreground ${buttonUnderlineTailwind}`}
+            {navlinks
+              .filter((link) => !(isHomePage && link.path === "/dashboard"))
+              .map((link) => (
+                <Link
+                  key={link.id}
+                  href={link.path}
+                  className=" transition-colors duration-200"
                 >
-                  {link.name}
-                </Button>
-              </Link>
-            ))}
+                  <Button
+                    variant="link"
+                    className={`text-foreground ${buttonUnderlineTailwind}`}
+                  >
+                    {link.name}
+                  </Button>
+                </Link>
+              ))}
           </div>
         </div>
         <div className="flex items-center gap-6">
