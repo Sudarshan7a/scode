@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/useToast";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { UserCache } from "@/lib/userCache";
 
 interface UserProfile {
   id: string;
@@ -32,12 +33,39 @@ export function SecuritySettings() {
     try {
       setLoading(true);
 
-      // Use /api/user/me endpoint which reads httpOnly cookies server-side
+      // Check cache first for email
+      const cachedData = UserCache.get();
+      if (cachedData) {
+        setIsAuthenticated(true);
+        // Set email from cache immediately for faster display
+        setProfile({
+          id: '',
+          email: cachedData.email,
+          oauth: undefined, // OAuth data not cached for security
+        });
+        
+        // Still fetch OAuth data from API (security-sensitive)
+        fetchOAuthDataInBackground();
+        setLoading(false);
+        return;
+      }
+
+      // Cache miss - full fetch from API
       const response = await axiosInstance.get("/api/user/me");
 
       if (response.data.success && response.data.authenticated) {
         setIsAuthenticated(true);
         setProfile(response.data.user);
+        
+        // Cache non-sensitive data
+        UserCache.set({
+          name: response.data.user.name,
+          email: response.data.user.email,
+          avatarId: response.data.user.avatarId,
+          pronouns: response.data.user.pronouns,
+          role: response.data.user.role,
+          dateOfBirth: response.data.user.dateOfBirth,
+        });
       } else {
         setIsAuthenticated(false);
       }
@@ -52,6 +80,21 @@ export function SecuritySettings() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchOAuthDataInBackground = async () => {
+    try {
+      const response = await axiosInstance.get("/api/user/me");
+      if (response.data.success && response.data.authenticated) {
+        setProfile(prev => ({
+          ...prev!,
+          id: response.data.user.id,
+          oauth: response.data.user.oauth,
+        }));
+      }
+    } catch (err) {
+      console.error("Failed to fetch OAuth data:", err);
     }
   };
 
