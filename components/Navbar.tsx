@@ -15,6 +15,7 @@ import {
 } from "./../components/ui/popover";
 import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
+import { clearAllUserCaches } from "@/lib/userCache";
 
 const buttonUnderlineTailwind =
   "hover:no-underline  relative after:content-[''] after:absolute after:w-full after:h-[1px] after:bottom-1 after:left-0 after:bg-current after:origin-left after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:ease-out after:duration-200";
@@ -31,6 +32,12 @@ export default function Navbar() {
       body: JSON.stringify({}),
     });
     const result = await res.json();
+    
+    // Clear all user caches from localStorage
+    if (result.clearCache) {
+      clearAllUserCaches();
+    }
+    
     if (result) {
       toast.success(result.message);
       router.push(result.redirect);
