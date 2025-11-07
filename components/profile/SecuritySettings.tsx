@@ -30,29 +30,25 @@ export function SecuritySettings() {
   const loadProfile = async () => {
     try {
       setLoading(true);
-      const userId = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("userId="))
-        ?.split("=")[1];
+      
+      // Use /api/user/me endpoint which reads httpOnly cookies server-side
+      const response = await axiosInstance.get("/api/user/me");
 
-      if (!userId) {
-        setIsAuthenticated(false);
-        setLoading(false);
-        return;
-      }
-
-      setIsAuthenticated(true);
-
-      const response = await axiosInstance.get(
-        `/api/user/profile?userId=${userId}`
-      );
-
-      if (response.data.success) {
+      if (response.data.success && response.data.authenticated) {
+        setIsAuthenticated(true);
         setProfile(response.data.user);
+      } else {
+        setIsAuthenticated(false);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to load profile:", err);
-      showError("Failed to load profile");
+      
+      // If 401 (not authenticated), don't show error toast
+      if (err.response?.status === 401) {
+        setIsAuthenticated(false);
+      } else {
+        showError("Failed to load profile");
+      }
     } finally {
       setLoading(false);
     }
@@ -82,7 +78,9 @@ export function SecuritySettings() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-lg text-gray-500">Loading security settings...</div>
+        <div className="text-lg text-gray-500">
+          Loading security settings...
+        </div>
       </div>
     );
   }
@@ -90,14 +88,16 @@ export function SecuritySettings() {
   if (!profile) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-lg text-red-500">Failed to load security settings</div>
+        <div className="text-lg text-red-500">
+          Failed to load security settings
+        </div>
       </div>
     );
   }
 
   return (
     <div className="mx-40">
-      <EmailSection email={profile.email} userId={profile.id} />
+      <EmailSection email={profile.email} />
       <SecurityForm />
       <OAuthLink oauth={profile.oauth} />
     </div>
@@ -106,10 +106,9 @@ export function SecuritySettings() {
 
 interface EmailSectionProps {
   email: string;
-  userId: string;
 }
 
-function EmailSection({ email, userId }: EmailSectionProps) {
+function EmailSection({ email }: EmailSectionProps) {
   const [showChangeEmail, setShowChangeEmail] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [sending, setSending] = useState(false);
@@ -117,7 +116,7 @@ function EmailSection({ email, userId }: EmailSectionProps) {
 
   const handleChangeEmail = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!newEmail || newEmail === email) {
       showError("Please enter a different email address");
       return;
@@ -126,7 +125,7 @@ function EmailSection({ email, userId }: EmailSectionProps) {
     try {
       setSending(true);
       const response = await promise(
-        axiosInstance.post("/api/user/change-email", { userId, newEmail }),
+        axiosInstance.post("/api/user/change-email", { newEmail }),
         {
           loading: "Sending verification link...",
           success: "Verification link sent to your new email address",
@@ -164,7 +163,10 @@ function EmailSection({ email, userId }: EmailSectionProps) {
       </div>
 
       {showChangeEmail && (
-        <form onSubmit={handleChangeEmail} className="mt-4 p-4 border border-mysecondary rounded-lg bg-mysecondary/5">
+        <form
+          onSubmit={handleChangeEmail}
+          className="mt-4 p-4 border border-mysecondary rounded-lg bg-mysecondary/5"
+        >
           <h3 className="font-medium mb-3">Change Email Address</h3>
           <div className="mb-4">
             <label className="block mb-1 text-sm">New Email Address</label>
@@ -177,7 +179,8 @@ function EmailSection({ email, userId }: EmailSectionProps) {
             />
           </div>
           <p className="text-xs text-gray-600 dark:text-gray-400 mb-4">
-            A verification link will be sent to your new email. Please verify to complete the update.
+            A verification link will be sent to your new email. Please verify to
+            complete the update.
           </p>
           <Button
             type="submit"
@@ -240,7 +243,9 @@ function OAuthLink({ oauth }: { oauth?: UserProfile["oauth"] }) {
             <div>
               <p className="font-medium">Google Account</p>
               {isGoogleConnected && oauth?.google?.email && (
-                <p className="text-xs text-gray-600 dark:text-gray-400">{oauth.google.email}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  {oauth.google.email}
+                </p>
               )}
             </div>
           </div>
@@ -248,12 +253,16 @@ function OAuthLink({ oauth }: { oauth?: UserProfile["oauth"] }) {
             {isGoogleConnected ? (
               <>
                 <CircleCheck className="w-5 h-5 text-green-500" />
-                <span className="text-sm text-green-600 dark:text-green-400">Connected</span>
+                <span className="text-sm text-green-600 dark:text-green-400">
+                  Connected
+                </span>
               </>
             ) : (
               <>
                 <CircleX className="w-5 h-5 text-red-500" />
-                <span className="text-sm text-red-600 dark:text-red-400">Not connected</span>
+                <span className="text-sm text-red-600 dark:text-red-400">
+                  Not connected
+                </span>
               </>
             )}
           </div>
@@ -268,7 +277,9 @@ function OAuthLink({ oauth }: { oauth?: UserProfile["oauth"] }) {
             <div>
               <p className="font-medium">GitHub Account</p>
               {isGithubConnected && oauth?.github?.username && (
-                <p className="text-xs text-gray-600 dark:text-gray-400">@{oauth.github.username}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  @{oauth.github.username}
+                </p>
               )}
             </div>
           </div>
@@ -276,12 +287,16 @@ function OAuthLink({ oauth }: { oauth?: UserProfile["oauth"] }) {
             {isGithubConnected ? (
               <>
                 <CircleCheck className="w-5 h-5 text-green-500" />
-                <span className="text-sm text-green-600 dark:text-green-400">Connected</span>
+                <span className="text-sm text-green-600 dark:text-green-400">
+                  Connected
+                </span>
               </>
             ) : (
               <>
                 <CircleX className="w-5 h-5 text-red-500" />
-                <span className="text-sm text-red-600 dark:text-red-400">Not connected</span>
+                <span className="text-sm text-red-600 dark:text-red-400">
+                  Not connected
+                </span>
               </>
             )}
           </div>

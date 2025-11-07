@@ -5,12 +5,15 @@ import { ObjectId } from "mongodb";
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, name, pronouns, role, dateOfBirth, avatarId } = body;
+    const { name, pronouns, role, dateOfBirth, avatarId } = body;
+
+    // Get userId from httpOnly cookie
+    const userId = request.cookies.get("userId")?.value;
 
     if (!userId) {
       return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 }
+        { error: "Not authenticated" },
+        { status: 401 }
       );
     }
 

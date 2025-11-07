@@ -8,7 +8,9 @@ import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 export default function VerifyEmailChangePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [status, setStatus] = useState<"verifying" | "success" | "error">("verifying");
+  const [status, setStatus] = useState<"verifying" | "success" | "error">(
+    "verifying"
+  );
   const [message, setMessage] = useState("");
   const [newEmail, setNewEmail] = useState("");
 
@@ -24,15 +26,18 @@ export default function VerifyEmailChangePage() {
 
   const verifyEmailChange = async (token: string) => {
     try {
-      const response = await axiosInstance.post("/api/user/verify-email-change", {
-        token,
-      });
+      const response = await axiosInstance.post(
+        "/api/user/verify-email-change",
+        {
+          token,
+        }
+      );
 
       if (response.data.success) {
         setStatus("success");
         setMessage(response.data.message);
         setNewEmail(response.data.newEmail);
-        
+
         // Redirect to profile after 3 seconds
         setTimeout(() => {
           router.push("/profile");
@@ -40,7 +45,8 @@ export default function VerifyEmailChangePage() {
       }
     } catch (error: any) {
       setStatus("error");
-      const errorMessage = error.response?.data?.error || "Failed to verify email change";
+      const errorMessage =
+        error.response?.data?.error || "Failed to verify email change";
       setMessage(errorMessage);
     }
   };
@@ -52,7 +58,9 @@ export default function VerifyEmailChangePage() {
           {status === "verifying" && (
             <>
               <Loader2 className="w-16 h-16 text-mysecondary animate-spin mb-4" />
-              <h1 className="text-2xl font-bold mb-2">Verifying Email Change</h1>
+              <h1 className="text-2xl font-bold mb-2">
+                Verifying Email Change
+              </h1>
               <p className="text-gray-600 dark:text-gray-400">
                 Please wait while we verify your email change...
               </p>
@@ -65,9 +73,7 @@ export default function VerifyEmailChangePage() {
               <h1 className="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">
                 Email Successfully Updated!
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                {message}
-              </p>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">{message}</p>
               {newEmail && (
                 <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
                   Your new email: <strong>{newEmail}</strong>
@@ -85,9 +91,7 @@ export default function VerifyEmailChangePage() {
               <h1 className="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">
                 Verification Failed
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                {message}
-              </p>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">{message}</p>
               <Button
                 onClick={() => router.push("/profile")}
                 className="bg-mysecondary hover:bg-mysecondary-hover text-white"

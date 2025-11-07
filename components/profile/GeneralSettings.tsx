@@ -32,30 +32,25 @@ export function GeneralSettings() {
   const loadProfile = async () => {
     try {
       setLoading(true);
-      // Get userId from cookie
-      const userId = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("userId="))
-        ?.split("=")[1];
+      
+      // Use /api/user/me endpoint which reads httpOnly cookies server-side
+      const response = await axiosInstance.get("/api/user/me");
 
-      if (!userId) {
-        setIsAuthenticated(false);
-        setLoading(false);
-        return;
-      }
-
-      setIsAuthenticated(true);
-
-      const response = await axiosInstance.get(
-        `/api/user/profile?userId=${userId}`
-      );
-
-      if (response.data.success) {
+      if (response.data.success && response.data.authenticated) {
+        setIsAuthenticated(true);
         setProfile(response.data.user);
+      } else {
+        setIsAuthenticated(false);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to load profile:", err);
-      showError("Failed to load profile");
+      
+      // If 401 (not authenticated), don't show error toast
+      if (err.response?.status === 401) {
+        setIsAuthenticated(false);
+      } else {
+        showError("Failed to load profile");
+      }
     } finally {
       setLoading(false);
     }
