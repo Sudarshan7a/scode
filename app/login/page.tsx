@@ -56,10 +56,10 @@ function Page() {
           background:
             "linear-gradient(135deg, rgba(60,141,227,0.18), rgba(255,152,25,0.16))",
         }}
-        className="flex-1 bg-[var(--color-mybackground)] flex justify-center items-center p-8"
+        className="flex-1 bg-[var(--color-mybackground)] flex justify-center items-center p-4 md:p-6"
       >
         <div className="w-full max-w-md">
-          <div className="mb-8 text-center">
+          <div className="mb-6 text-center">
             <h2 className="text-2xl font-bold text-[var(--color-myforeground)]">
               Welcome Back
             </h2>
@@ -72,7 +72,7 @@ function Page() {
           <MyLoginForm />
 
           {/* Sign up link */}
-          <div className="mt-8 text-center">
+          <div className="mt-6 text-center">
             <p className="text-sm text-[var(--color-myforeground)]/70">
               Don&#39;t have an account?{" "}
               <Link
