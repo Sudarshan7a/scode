@@ -30,7 +30,7 @@ export function SecuritySettings() {
   const loadProfile = async () => {
     try {
       setLoading(true);
-      
+
       // Use /api/user/me endpoint which reads httpOnly cookies server-side
       const response = await axiosInstance.get("/api/user/me");
 
@@ -42,7 +42,7 @@ export function SecuritySettings() {
       }
     } catch (err: any) {
       console.error("Failed to load profile:", err);
-      
+
       // If 401 (not authenticated), don't show error toast
       if (err.response?.status === 401) {
         setIsAuthenticated(false);
@@ -198,12 +198,6 @@ function EmailSection({ email }: EmailSectionProps) {
 function SecurityForm() {
   return (
     <form className="w-full text-sm font-medium font-sans mt-4">
-      <div className="flex gap-20">
-        <div className="mb-4 w-3/4 select-none">
-          <label className="block mb-1">Email</label>
-          <Input disabled className=" border-2" />
-        </div>
-      </div>
       <div className="mb-4">
         <label className="block mb-1">Current Password</label>
         <Input type="password" placeholder="Current Password" />

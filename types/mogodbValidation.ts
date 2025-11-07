@@ -5,8 +5,8 @@ export const usersCollectionValidation = {
     properties: {
       name: {
         bsonType: "string",
-        pattern: "^[A-Za-z]+$",
-        description: "Letters only, no spaces",
+        pattern: "^[A-Za-z]+(\\s[A-Za-z]+)*$",
+        description: "Letters and spaces allowed (e.g., John Doe)",
       },
       email: {
         bsonType: "string",

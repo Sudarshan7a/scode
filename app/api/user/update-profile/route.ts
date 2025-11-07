@@ -11,10 +11,7 @@ export async function PUT(request: NextRequest) {
     const userId = request.cookies.get("userId")?.value;
 
     if (!userId) {
-      return NextResponse.json(
-        { error: "Not authenticated" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
     // Validate avatarId if provided

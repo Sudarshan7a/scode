@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Switch } from "../ui/switch";
 import {
   Select,
@@ -15,9 +15,21 @@ import {
 } from "@/components/ui/tooltip";
 import Image from "next/image";
 import { Button } from "../ui/button";
+import { useTheme } from "next-themes";
 
 export function PreferencesSettings() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col mx-20 my-8">
@@ -40,7 +52,7 @@ export function PreferencesSettings() {
       {/* Theme */}
       <div className="mb-8 font-sans text-foreground text-xl mx-40 flex justify-between items-center gap-2">
         <h3>Theme</h3>
-        <Select>
+        <Select value={theme} onValueChange={setTheme}>
           <SelectTrigger className="w-[180px]">
             <SelectValue
               placeholder="Select theme"
@@ -51,6 +63,7 @@ export function PreferencesSettings() {
             <SelectGroup>
               <SelectItem value="light">Light</SelectItem>
               <SelectItem value="dark">Dark</SelectItem>
+              <SelectItem value="system">System</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>

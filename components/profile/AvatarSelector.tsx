@@ -48,7 +48,7 @@ export function AvatarSelector({
 
       {/* Avatar Selection Grid */}
       {isOpen && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-white dark:bg-gray-900 border-2 border-mysecondary rounded-lg shadow-xl p-4 z-50">
+        <div className="absolute w-xl top-full left-1/2 -translate-x-1/2 mt-4 bg-white dark:bg-gray-900 border-2 border-mysecondary rounded-lg shadow-xl p-4 z-50">
           <h3 className="text-lg font-semibold mb-3 text-center">
             Choose your avatar
           </h3>

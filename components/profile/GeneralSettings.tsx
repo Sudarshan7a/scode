@@ -32,7 +32,7 @@ export function GeneralSettings() {
   const loadProfile = async () => {
     try {
       setLoading(true);
-      
+
       // Use /api/user/me endpoint which reads httpOnly cookies server-side
       const response = await axiosInstance.get("/api/user/me");
 
@@ -44,7 +44,7 @@ export function GeneralSettings() {
       }
     } catch (err: any) {
       console.error("Failed to load profile:", err);
-      
+
       // If 401 (not authenticated), don't show error toast
       if (err.response?.status === 401) {
         setIsAuthenticated(false);

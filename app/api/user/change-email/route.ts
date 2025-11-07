@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
     // Send verification email to new email address
     const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email-change?token=${verificationToken}`;
-    
+
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
@@ -91,7 +91,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Verification link sent to your new email address. Please check your inbox.",
+      message:
+        "Verification link sent to your new email address. Please check your inbox.",
     });
   } catch (error) {
     console.error("Error initiating email change:", error);
@@ -105,7 +106,10 @@ export async function POST(request: NextRequest) {
 /**
  * Generate HTML template for email change verification
  */
-function generateEmailChangeTemplate(verificationUrl: string, newEmail: string): string {
+function generateEmailChangeTemplate(
+  verificationUrl: string,
+  newEmail: string
+): string {
   return `
     <!DOCTYPE html>
     <html>
