@@ -110,10 +110,28 @@ async function handleLoginRequest(email: string, password: string) {
   const res = NextResponse.json({
     ok: true,
     message: "Login successful",
-    user: { id: userId, name: authResult.user.name },
+    user: {
+      id: userId,
+      name: authResult.user.name,
+      email: authResult.user.email,
+      avatarId: authResult.user.avatarId,
+      pronouns: authResult.user.pronouns,
+      role: authResult.user.role,
+      dateOfBirth: authResult.user.dateOfBirth,
+    },
     redirect: "/dashboard",
   });
 
   setAuthCookies(res, refreshToken, userId);
+  
+  // Set non-httpOnly cookie for client-side auth check
+  res.cookies.set("isAuthenticated", "true", {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+    path: "/",
+  });
+  
   return res;
 }
