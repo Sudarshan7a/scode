@@ -124,13 +124,21 @@ interface ProfileFormProps {
   saving: boolean;
 }
 
-function ProfileForm({ profile, setProfile, onSubmit, saving }: ProfileFormProps) {
+function ProfileForm({
+  profile,
+  setProfile,
+  onSubmit,
+  saving,
+}: ProfileFormProps) {
   const handleChange = (field: keyof UserProfile, value: string) => {
     setProfile({ ...profile, [field]: value });
   };
 
   return (
-    <form className="w-full text-sm font-medium font-sans mt-8" onSubmit={onSubmit}>
+    <form
+      className="w-full text-sm font-medium font-sans mt-8"
+      onSubmit={onSubmit}
+    >
       <div className="flex gap-20">
         <div className="mb-4 flex-1">
           <label className="block mb-1">Name</label>
@@ -169,7 +177,11 @@ function ProfileForm({ profile, setProfile, onSubmit, saving }: ProfileFormProps
       <div className="flex gap-20">
         <div className="mb-4 flex-1">
           <label className="block mb-1">Email</label>
-          <Input value={profile.email} disabled className="bg-gray-100 dark:bg-gray-800" />
+          <Input
+            value={profile.email}
+            disabled
+            className="bg-gray-100 dark:bg-gray-800"
+          />
           <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
         </div>
         <div className="mb-4 flex-1"></div>
@@ -184,4 +196,3 @@ function ProfileForm({ profile, setProfile, onSubmit, saving }: ProfileFormProps
     </form>
   );
 }
-

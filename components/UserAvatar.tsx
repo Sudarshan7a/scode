@@ -7,7 +7,9 @@ interface UserAvatarProps {
   className?: string;
 }
 
-export default function UserAvatar({ className = "w-10 h-10" }: UserAvatarProps) {
+export default function UserAvatar({
+  className = "w-10 h-10",
+}: UserAvatarProps) {
   const [avatarId, setAvatarId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 

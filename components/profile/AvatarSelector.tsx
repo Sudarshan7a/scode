@@ -8,7 +8,10 @@ interface AvatarSelectorProps {
   onSelect: (avatarId: number) => void;
 }
 
-export function AvatarSelector({ currentAvatarId, onSelect }: AvatarSelectorProps) {
+export function AvatarSelector({
+  currentAvatarId,
+  onSelect,
+}: AvatarSelectorProps) {
   const [selectedAvatar, setSelectedAvatar] = useState(currentAvatarId);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -46,7 +49,9 @@ export function AvatarSelector({ currentAvatarId, onSelect }: AvatarSelectorProp
       {/* Avatar Selection Grid */}
       {isOpen && (
         <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 bg-white dark:bg-gray-900 border-2 border-mysecondary rounded-lg shadow-xl p-4 z-50">
-          <h3 className="text-lg font-semibold mb-3 text-center">Choose your avatar</h3>
+          <h3 className="text-lg font-semibold mb-3 text-center">
+            Choose your avatar
+          </h3>
           <div className="grid grid-cols-4 gap-3">
             {avatars.map((avatarId) => (
               <div
