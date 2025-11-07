@@ -87,11 +87,15 @@ export const UserCache = {
    * Update a specific field in the cached user data
    * If cache doesn't exist or is expired, this will fail silently
    */
-  update: (field: keyof UserDataInput, value: any): void => {
+  update: <K extends keyof UserDataInput>(
+    field: K,
+    value: UserDataInput[K]
+  ): void => {
     try {
       const cached = UserCache.get();
       if (cached) {
-        cached[field] = value;
+        // Use a type assertion for indexed assignment while keeping value typed
+        (cached as any)[field] = value;
         cached.cacheTime = Date.now(); // Refresh cache time
         localStorage.setItem(CACHE_KEY, JSON.stringify(cached));
       }
