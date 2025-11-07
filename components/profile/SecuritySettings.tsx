@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { useToast } from "@/hooks/useToast";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface UserProfile {
   id: string;
@@ -124,21 +125,23 @@ function EmailSection({ email }: EmailSectionProps) {
 
     try {
       setSending(true);
-      const response = await promise(
-        axiosInstance.post("/api/user/change-email", { newEmail }),
-        {
-          loading: "Sending verification link...",
-          success: "Verification link sent to your new email address",
-          error: "Failed to send verification link",
-        }
-      );
+      const response = await axiosInstance.post("/api/user/change-email", {
+        newEmail,
+      });
 
       if (response.data.success) {
+        success(
+          response.data.message ||
+            "Verification link sent to your new email address"
+        );
         setShowChangeEmail(false);
         setNewEmail("");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to change email:", err);
+      const errorMessage =
+        err.response?.data?.error || "Failed to send verification link";
+      showError(errorMessage);
     } finally {
       setSending(false);
     }
@@ -231,8 +234,13 @@ function OAuthLink({ oauth }: { oauth?: UserProfile["oauth"] }) {
         {/* Google Account */}
         <div className="flex items-center justify-between p-4 border border-gray-300 dark:border-gray-700 rounded-lg">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-              <span className="text-2xl">G</span>
+            <div className="w-10 h-10 flex items-center justify-center">
+              <Image
+                src="/svg/google.svg"
+                alt="Google"
+                width={40}
+                height={40}
+              />
             </div>
             <div>
               <p className="font-medium">Google Account</p>
@@ -265,8 +273,14 @@ function OAuthLink({ oauth }: { oauth?: UserProfile["oauth"] }) {
         {/* GitHub Account */}
         <div className="flex items-center justify-between p-4 border border-gray-300 dark:border-gray-700 rounded-lg">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center">
-              <span className="text-2xl text-white dark:text-gray-900">GH</span>
+            <div className="w-10 h-10 flex items-center justify-center">
+              <Image
+                src="/svg/github.svg"
+                alt="GitHub"
+                width={40}
+                height={40}
+                className="dark:invert"
+              />
             </div>
             <div>
               <p className="font-medium">GitHub Account</p>
