@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Input } from "../ui/input";
 import { CircleCheck, CircleX } from "lucide-react";
 import { Button } from "../ui/button";
@@ -22,14 +22,25 @@ export function SecuritySettings() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const { error: showError, success } = useToast();
+  const { error: showError } = useToast();
   const router = useRouter();
 
-  useEffect(() => {
-    loadProfile();
+  const fetchOAuthDataInBackground = useCallback(async () => {
+    try {
+      const response = await axiosInstance.get("/api/user/me");
+      if (response.data.success && response.data.authenticated) {
+        setProfile(prev => ({
+          ...prev!,
+          id: response.data.user.id,
+          oauth: response.data.user.oauth,
+        }));
+      }
+    } catch (err) {
+      console.error("Failed to fetch OAuth data:", err);
+    }
   }, []);
 
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -69,11 +80,11 @@ export function SecuritySettings() {
       } else {
         setIsAuthenticated(false);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to load profile:", err);
 
       // If 401 (not authenticated), don't show error toast
-      if (err.response?.status === 401) {
+      if ((err as { response?: { status?: number } }).response?.status === 401) {
         setIsAuthenticated(false);
       } else {
         showError("Failed to load profile");
@@ -81,22 +92,11 @@ export function SecuritySettings() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showError, fetchOAuthDataInBackground]);
 
-  const fetchOAuthDataInBackground = async () => {
-    try {
-      const response = await axiosInstance.get("/api/user/me");
-      if (response.data.success && response.data.authenticated) {
-        setProfile(prev => ({
-          ...prev!,
-          id: response.data.user.id,
-          oauth: response.data.user.oauth,
-        }));
-      }
-    } catch (err) {
-      console.error("Failed to fetch OAuth data:", err);
-    }
-  };
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
 
   if (!isAuthenticated && !loading) {
     return (
@@ -156,7 +156,7 @@ function EmailSection({ email }: EmailSectionProps) {
   const [showChangeEmail, setShowChangeEmail] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [sending, setSending] = useState(false);
-  const { error: showError, success, promise } = useToast();
+  const { error: showError, success } = useToast();
 
   const handleChangeEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -180,10 +180,10 @@ function EmailSection({ email }: EmailSectionProps) {
         setShowChangeEmail(false);
         setNewEmail("");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to change email:", err);
       const errorMessage =
-        err.response?.data?.error || "Failed to send verification link";
+        (err as { response?: { data?: { error?: string } } }).response?.data?.error || "Failed to send verification link";
       showError(errorMessage);
     } finally {
       setSending(false);

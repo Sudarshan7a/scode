@@ -64,7 +64,7 @@ export default function TestimonialsSection() {
             <span className="text-mysecondary"> worldwide</span>
           </h2>
           <p className="text-lg text-foreground/70 max-w-2xl mx-auto">
-            Don't just take our word for it. Here's what developers are saying
+            Don&apos;t just take our word for it. Here&apos;s what developers are saying
             about S-Code.
           </p>
         </div>
@@ -93,7 +93,7 @@ export default function TestimonialsSection() {
 
               {/* Content */}
               <p className="text-foreground/80 leading-relaxed mb-6 relative z-10">
-                "{testimonial.content}"
+                &quot;{testimonial.content}&quot;
               </p>
 
               {/* Author */}

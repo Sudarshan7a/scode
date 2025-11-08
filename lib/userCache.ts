@@ -94,8 +94,8 @@ export const UserCache = {
     try {
       const cached = UserCache.get();
       if (cached) {
-        // Use a type assertion for indexed assignment while keeping value typed
-        (cached as any)[field] = value;
+        // Update the field using proper type handling
+        cached[field] = value as CachedUserData[K];
         cached.cacheTime = Date.now(); // Refresh cache time
         localStorage.setItem(CACHE_KEY, JSON.stringify(cached));
       }
@@ -121,7 +121,7 @@ export const UserCache = {
 
       const data: CachedUserData = JSON.parse(cached);
       return Date.now() - data.cacheTime;
-    } catch (error) {
+    } catch {
       return null;
     }
   },

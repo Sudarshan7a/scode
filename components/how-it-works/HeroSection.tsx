@@ -16,7 +16,7 @@ export default function HeroSection() {
           Pair faster. Learn smarter.
         </h1>
         <p className="text-xl md:text-2xl text-foreground/70 mb-8">
-          Here's how S-Code gets you coding together in minutes.
+          Here&apos;s how S-Code gets you coding together in minutes.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4">

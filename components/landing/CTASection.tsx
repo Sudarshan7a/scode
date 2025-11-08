@@ -33,7 +33,7 @@ export default function CTASection() {
             {/* Subheadline */}
             <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
               Stop coding alone. Start building better software together with
-              S-Code's powerful collaboration platform.
+              S-Code&apos;s powerful collaboration platform.
             </p>
 
             {/* CTA Buttons */}

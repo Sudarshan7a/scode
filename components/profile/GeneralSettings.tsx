@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Input } from "../ui/input";
 import { AvatarSelector } from "./AvatarSelector";
 import { useToast } from "@/hooks/useToast";
@@ -23,14 +23,30 @@ export function GeneralSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const { error: showError, success, promise } = useToast();
+  const { error: showError, promise } = useToast();
   const router = useRouter();
 
-  useEffect(() => {
-    loadProfile();
+  const refreshProfileInBackground = useCallback(async () => {
+    try {
+      const response = await axiosInstance.get("/api/user/me");
+      if (response.data.success && response.data.authenticated) {
+        setProfile(response.data.user);
+        UserCache.set({
+          name: response.data.user.name,
+          email: response.data.user.email,
+          avatarId: response.data.user.avatarId,
+          pronouns: response.data.user.pronouns,
+          role: response.data.user.role,
+          dateOfBirth: response.data.user.dateOfBirth,
+        });
+      }
+    } catch (err) {
+      // Silent fail for background refresh
+      console.error("Background profile refresh failed:", err);
+    }
   }, []);
 
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -76,11 +92,11 @@ export function GeneralSettings() {
       } else {
         setIsAuthenticated(false);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to load profile:", err);
 
       // If 401 (not authenticated), don't show error toast
-      if (err.response?.status === 401) {
+      if ((err as { response?: { status?: number } }).response?.status === 401) {
         setIsAuthenticated(false);
       } else {
         showError("Failed to load profile");
@@ -88,27 +104,11 @@ export function GeneralSettings() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showError, refreshProfileInBackground]);
 
-  const refreshProfileInBackground = async () => {
-    try {
-      const response = await axiosInstance.get("/api/user/me");
-      if (response.data.success && response.data.authenticated) {
-        setProfile(response.data.user);
-        UserCache.set({
-          name: response.data.user.name,
-          email: response.data.user.email,
-          avatarId: response.data.user.avatarId,
-          pronouns: response.data.user.pronouns,
-          role: response.data.user.role,
-          dateOfBirth: response.data.user.dateOfBirth,
-        });
-      }
-    } catch (err) {
-      // Silent fail for background refresh
-      console.error("Background profile refresh failed:", err);
-    }
-  };
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

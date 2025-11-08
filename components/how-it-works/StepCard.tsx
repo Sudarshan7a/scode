@@ -88,7 +88,7 @@ export default function StepCard({
                   <Icon className={`w-10 h-10 ${accentColor}`} />
                 </div>
                 <p className="text-sm text-foreground/60 font-mono">
-                  // Illustration: {title}
+                  {/* Illustration: {title} */}
                 </p>
               </div>
             </div>
