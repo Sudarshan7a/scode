@@ -150,9 +150,11 @@ export function useRooms() {
         if (!filters.statuses.includes(room.status)) return false;
       }
 
-      // Privacy filter
-      if (filters.privacy === "public" && room.isPrivate) return false;
-      if (filters.privacy === "private" && !room.isPrivate) return false;
+      // Privacy filter (array-based)
+      if (filters.privacy.length > 0) {
+        const roomPrivacy = room.isPrivate ? "Private" : "Public";
+        if (!filters.privacy.includes(roomPrivacy)) return false;
+      }
 
       // Room type filter
       if (filters.roomTypes.length > 0 && room.roomType) {
