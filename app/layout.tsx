@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "../styles/globals.css";
 import Navbar from "./../components/Navbar";
-import ConditionalFooter from "./../components/ConditionalFooter";
+import Footer from "./../components/Footer";
 import { Toaster } from "./../components/ui/sonner";
 import { RootAuthGuard } from "./../components/auth/RootAuthGuard";
 import ErrorBoundary from "./../components/ErrorBoundary";
@@ -34,7 +34,7 @@ export default function RootLayout({
               <Navbar />
               {children}
               <Toaster position="top-center" className=" rounded-sm" />
-              <ConditionalFooter />
+              <Footer />
             </RootAuthGuard>
           </ErrorBoundary>
         </ThemeProvider>

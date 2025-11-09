@@ -18,11 +18,21 @@ import {
 } from "./../constants/FooterLInks";
 
 export default function Footer() {
-  const showLayout = useLayoutVisibility(); // Use the hook
+  const showLayout = useLayoutVisibility([
+    "/login",
+    "/signup",
+    "/room",
+    "/verify-email",
+    "/check-email",
+    "/forgot-password",
+    "/reset-password",
+    "/profile",
+  ]);
+
+  if (!showLayout) return null;
 
   return (
-    showLayout && (
-      <footer className="bg-mybackground text-myforeground  pt-6 pb-4 px-8 md:px-10 lg:px-12 xlg:px-20 border-t border-mysecondary relative">
+    <footer className="bg-mybackground text-myforeground  pt-6 pb-4 px-8 md:px-10 lg:px-12 xlg:px-20 border-t border-mysecondary relative">
         <div className="pb-4 ml-6 scale-150 w-fit">
           <Link href="/">
             <Logo />
@@ -47,6 +57,5 @@ export default function Footer() {
         {/* Bottom Section */}
         <FooterBottomSection />
       </footer>
-    )
   );
 }
