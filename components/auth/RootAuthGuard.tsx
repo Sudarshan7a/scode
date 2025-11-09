@@ -13,9 +13,11 @@ export function RootAuthGuard({ children }: { children: React.ReactNode }) {
     "/",
     "/login",
     "/signup",
+    "/explore", // Allow guest access to explore rooms
     "/how-it-works",
     "/forgot-password",
     "/verify-email",
+    "/verify-email-change", // Email change verification
     "/check-email",
     "/reset-password", // base (fallback) – actual page is /reset-password/[token]
   ];
