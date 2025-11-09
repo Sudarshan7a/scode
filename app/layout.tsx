@@ -6,6 +6,7 @@ import { Toaster } from "./../components/ui/sonner";
 import { RootAuthGuard } from "./../components/auth/RootAuthGuard";
 import ErrorBoundary from "./../components/ErrorBoundary";
 import { ThemeProvider } from "./../components/ThemeProvider";
+import DesktopOnlyNotice from "./../components/DesktopOnlyNotice";
 
 export const metadata: Metadata = {
   title: "S-Code | Real-time Collaborative Coding Platform",
@@ -28,6 +29,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ErrorBoundary>
+            <DesktopOnlyNotice />
             <RootAuthGuard>
               <Navbar />
               {children}
