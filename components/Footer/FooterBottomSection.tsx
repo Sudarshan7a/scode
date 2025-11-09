@@ -1,4 +1,5 @@
 import React from "react";
+import { ArrowUp } from "lucide-react";
 
 export default function FooterBottomSection() {
   const handleScrollTop = React.useCallback(() => {
@@ -10,11 +11,10 @@ export default function FooterBottomSection() {
       <p>© 2025 Scode. All rights reserved.</p>
       <button
         onClick={handleScrollTop}
-        className="bg-mysecondary hover:bg-mysecondary-hover text-white p-2 rounded-full shadow-md transition cursor-pointer"
+        className="bg-mysecondary hover:bg-mysecondary-hover text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 cursor-pointer"
         aria-label="Scroll to top"
       >
-        {/* Add your ArrowUp icon component here */}
-        {/* Example: <ArrowUp size={20} /> */}^
+        <ArrowUp size={20} />
       </button>
     </div>
   );
