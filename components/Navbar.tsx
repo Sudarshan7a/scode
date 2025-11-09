@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Logo from "./Logo";
 import { navlinks } from "../constants/NavLinks";
 import Link from "next/link";
@@ -15,13 +15,28 @@ import {
 } from "./../components/ui/popover";
 import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
-import { clearAllUserCaches } from "@/lib/userCache";
+import { clearAllUserCaches, UserCache } from "@/lib/userCache";
 
 const buttonUnderlineTailwind =
   "hover:no-underline  relative after:content-[''] after:absolute after:w-full after:h-[1px] after:bottom-1 after:left-0 after:bg-current after:origin-left after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:ease-out after:duration-200";
 
 export default function Navbar() {
   const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    checkAuth();
+  }, [pathname]);
+
+  function checkAuth() {
+    // Check if user data exists in localStorage cache
+    const cachedUser = UserCache.get();
+    setIsAuthenticated(cachedUser !== null);
+    setIsLoading(false);
+  }
+
   async function logout() {
     const res = await fetch("/api/auth/logout", {
       method: "POST",
@@ -40,11 +55,11 @@ export default function Navbar() {
 
     if (result) {
       toast.success(result.message);
+      setIsAuthenticated(false);
       router.push(result.redirect);
     }
   }
-  const showLayout = useLayoutVisibility(); // Use the hook
-  const pathname = usePathname();
+  const showLayout = useLayoutVisibility();
   const isDashboard = pathname === "/dashboard";
   const isHomePage = pathname === "/";
 
@@ -93,33 +108,45 @@ export default function Navbar() {
               </>
             )}
           </div>
-          <div className="flex items-center gap-6">
-            <MyNotifications />
-            <Popover>
-              <PopoverTrigger>
-                <UserAvatar className="w-9 h-9 hover:ring-2 hover:ring-mysecondary/50 rounded-full transition-all" />
-              </PopoverTrigger>
-              <PopoverContent className="flex flex-col gap-1 px-4 py-1  border-mysecondary w-fit mr-2 mt-2 rounded-md shadow-lg">
-                <Link href="/profile">
-                  <Button
-                    variant="link"
-                    className="text-foreground hover:bg-mysecondary/20 "
-                  >
-                    Profile
+          {!isLoading && (
+            <div className="flex items-center gap-6">
+              {isAuthenticated ? (
+                <>
+                  <MyNotifications />
+                  <Popover>
+                    <PopoverTrigger>
+                      <UserAvatar className="w-9 h-9 hover:ring-2 hover:ring-mysecondary/50 rounded-full transition-all" />
+                    </PopoverTrigger>
+                    <PopoverContent className="flex flex-col gap-1 px-4 py-1  border-mysecondary w-fit mr-2 mt-2 rounded-md shadow-lg">
+                      <Link href="/profile">
+                        <Button
+                          variant="link"
+                          className="text-foreground hover:bg-mysecondary/20 "
+                        >
+                          Profile
+                        </Button>
+                      </Link>
+                      <hr className="border-mysecondary" />
+
+                      <Button
+                        variant="link"
+                        className="text-foreground hover:bg-mysecondary/20 "
+                        onClick={logout}
+                      >
+                        Logout
+                      </Button>
+                    </PopoverContent>
+                  </Popover>
+                </>
+              ) : (
+                <Link href="/login">
+                  <Button className="bg-mysecondary hover:bg-mysecondary-hover text-white">
+                    Login
                   </Button>
                 </Link>
-                <hr className="border-mysecondary" />
-
-                <Button
-                  variant="link"
-                  className="text-foreground hover:bg-mysecondary/20 "
-                  onClick={logout}
-                >
-                  Logout
-                </Button>
-              </PopoverContent>
-            </Popover>
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     )
