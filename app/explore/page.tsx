@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import RoomCard from "@/components/RoomCard";
 import SearchBar from "@/components/searchBar/SearchBar";
 import TitleBackgroundCard from "@/components/TitleBackgroundCard";
@@ -80,21 +80,33 @@ function ExploreContent() {
   const pageNumbers = getPageNumbers();
 
   // Remove individual filter handlers
-  const handleRemoveLanguage = (lang: string) => {
-    setLanguages(languages.filter((l) => l !== lang));
-  };
+  const handleRemoveLanguage = useCallback(
+    (lang: string) => {
+      setLanguages(languages.filter((l) => l !== lang));
+    },
+    [languages, setLanguages]
+  );
 
-  const handleRemoveStatus = (status: string) => {
-    setStatuses(statuses.filter((s) => s !== status));
-  };
+  const handleRemoveStatus = useCallback(
+    (status: string) => {
+      setStatuses(statuses.filter((s) => s !== status));
+    },
+    [statuses, setStatuses]
+  );
 
-  const handleRemovePrivacy = (priv: string) => {
-    setPrivacy(privacy.filter((p) => p !== priv));
-  };
+  const handleRemovePrivacy = useCallback(
+    (priv: string) => {
+      setPrivacy(privacy.filter((p) => p !== priv));
+    },
+    [privacy, setPrivacy]
+  );
 
-  const handleRemoveRoomType = (type: string) => {
-    setRoomTypes(roomTypes.filter((rt) => rt !== type));
-  };
+  const handleRemoveRoomType = useCallback(
+    (type: string) => {
+      setRoomTypes(roomTypes.filter((rt) => rt !== type));
+    },
+    [roomTypes, setRoomTypes]
+  );
 
   const renderContent = useMemo(() => {
     if (isLoading) {
@@ -268,7 +280,7 @@ function ExploreContent() {
               variant="secondary"
               className="gap-1 pr-1 bg-mysecondary/20 text-foreground hover:bg-mysecondary/30"
             >
-              Search: "{searchQuery}"
+              Search: &quot;{searchQuery}&quot;
               <button
                 onClick={() => setLanguages([])}
                 className="ml-1 rounded-full hover:bg-mysecondary/40 p-0.5"
@@ -362,6 +374,7 @@ function ExploreContent() {
     handleRemoveStatus,
     handleRemovePrivacy,
     handleRemoveRoomType,
+    setLanguages,
   ]);
 
   return (

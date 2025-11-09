@@ -15,7 +15,6 @@ import {
 import { Label } from "../../components/ui/label";
 import { Checkbox } from "../../components/ui/checkbox";
 import { Badge } from "../../components/ui/badge";
-import { X } from "lucide-react";
 import { useExplore, RoomStatus } from "@/contexts/ExploreContext";
 import { ScrollArea } from "../../components/ui/scroll-area";
 
