@@ -44,7 +44,7 @@ export default function HowItWorksSection() {
             <span className="text-mysecondary"> shipping</span> in minutes
           </h2>
           <p className="text-lg text-foreground/70 max-w-2xl mx-auto">
-            Getting started is effortless. Here's how S-Code works.
+            Getting started is effortless. Here&apos;s how S-Code works.
           </p>
         </div>
 

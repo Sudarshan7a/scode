@@ -25,7 +25,7 @@ export async function PUT(request: NextRequest) {
     const { usersCollection } = await connectToMongo();
 
     // Build update object
-    const updateData: Record<string, any> = {};
+    const updateData: Record<string, string | number | undefined> = {};
     if (name !== undefined) updateData.name = name;
     if (pronouns !== undefined) updateData.pronouns = pronouns;
     if (role !== undefined) updateData.role = role;

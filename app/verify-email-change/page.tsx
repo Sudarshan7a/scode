@@ -1,11 +1,11 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
-export default function VerifyEmailChangePage() {
+function VerifyEmailChangeContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState<"verifying" | "success" | "error">(
@@ -14,17 +14,7 @@ export default function VerifyEmailChangePage() {
   const [message, setMessage] = useState("");
   const [newEmail, setNewEmail] = useState("");
 
-  useEffect(() => {
-    const token = searchParams.get("token");
-    if (token) {
-      verifyEmailChange(token);
-    } else {
-      setStatus("error");
-      setMessage("Invalid verification link");
-    }
-  }, [searchParams]);
-
-  const verifyEmailChange = async (token: string) => {
+  const verifyEmailChange = useCallback(async (token: string) => {
     try {
       const response = await axiosInstance.post(
         "/api/user/verify-email-change",
@@ -43,13 +33,23 @@ export default function VerifyEmailChangePage() {
           router.push("/profile");
         }, 3000);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setStatus("error");
       const errorMessage =
-        error.response?.data?.error || "Failed to verify email change";
+        (error as { response?: { data?: { error?: string } } }).response?.data?.error || "Failed to verify email change";
       setMessage(errorMessage);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    const token = searchParams.get("token");
+    if (token) {
+      verifyEmailChange(token);
+    } else {
+      setStatus("error");
+      setMessage("Invalid verification link");
+    }
+  }, [searchParams, verifyEmailChange]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
@@ -103,5 +103,24 @@ export default function VerifyEmailChangePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerifyEmailChangePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+        <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+          <div className="flex flex-col items-center text-center">
+            <Loader2 className="w-16 h-16 text-mysecondary animate-spin mb-4" />
+            <h1 className="text-2xl font-bold mb-2">
+              Loading...
+            </h1>
+          </div>
+        </div>
+      </div>
+    }>
+      <VerifyEmailChangeContent />
+    </Suspense>
   );
 }
