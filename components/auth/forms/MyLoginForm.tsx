@@ -44,7 +44,7 @@ export function MyLoginForm() {
         return;
       } else {
         success(result.message || TOAST_MESSAGES.AUTH.LOGIN_SUCCESS);
-        
+
         // Cache user data from login response
         if (result.user) {
           UserCache.set({
@@ -55,7 +55,7 @@ export function MyLoginForm() {
             role: result.user.role,
             dateOfBirth: result.user.dateOfBirth,
           });
-          
+
           // Cache avatar separately
           if (result.user.avatarId !== undefined) {
             AvatarCache.set(result.user.avatarId);

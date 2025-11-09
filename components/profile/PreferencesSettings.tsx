@@ -28,7 +28,7 @@ export function PreferencesSettings() {
     }
     return false;
   });
-  
+
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 

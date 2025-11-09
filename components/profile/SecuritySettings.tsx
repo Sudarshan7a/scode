@@ -29,7 +29,7 @@ export function SecuritySettings() {
     try {
       const response = await axiosInstance.get("/api/user/me");
       if (response.data.success && response.data.authenticated) {
-        setProfile(prev => ({
+        setProfile((prev) => ({
           ...prev!,
           id: response.data.user.id,
           oauth: response.data.user.oauth,
@@ -50,11 +50,11 @@ export function SecuritySettings() {
         setIsAuthenticated(true);
         // Set email from cache immediately for faster display
         setProfile({
-          id: '',
+          id: "",
           email: cachedData.email,
           oauth: undefined, // OAuth data not cached for security
         });
-        
+
         // Still fetch OAuth data from API (security-sensitive)
         fetchOAuthDataInBackground();
         setLoading(false);
@@ -67,7 +67,7 @@ export function SecuritySettings() {
       if (response.data.success && response.data.authenticated) {
         setIsAuthenticated(true);
         setProfile(response.data.user);
-        
+
         // Cache non-sensitive data
         UserCache.set({
           name: response.data.user.name,
@@ -84,7 +84,9 @@ export function SecuritySettings() {
       console.error("Failed to load profile:", err);
 
       // If 401 (not authenticated), don't show error toast
-      if ((err as { response?: { status?: number } }).response?.status === 401) {
+      if (
+        (err as { response?: { status?: number } }).response?.status === 401
+      ) {
         setIsAuthenticated(false);
       } else {
         showError("Failed to load profile");
@@ -183,7 +185,8 @@ function EmailSection({ email }: EmailSectionProps) {
     } catch (err: unknown) {
       console.error("Failed to change email:", err);
       const errorMessage =
-        (err as { response?: { data?: { error?: string } } }).response?.data?.error || "Failed to send verification link";
+        (err as { response?: { data?: { error?: string } } }).response?.data
+          ?.error || "Failed to send verification link";
       showError(errorMessage);
     } finally {
       setSending(false);

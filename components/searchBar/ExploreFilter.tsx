@@ -20,14 +20,7 @@ import { useExplore, RoomStatus } from "@/contexts/ExploreContext";
 import { ScrollArea } from "../../components/ui/scroll-area";
 
 // Language options - matching actual supported languages from languageFileNames.ts
-const LANGUAGE_OPTIONS = [
-  "JavaScript",
-  "Python",
-  "Go",
-  "Java",
-  "C",
-  "C++",
-];
+const LANGUAGE_OPTIONS = ["JavaScript", "Python", "Go", "Java", "C", "C++"];
 
 // Status options - matching RoomStatus type
 const STATUS_OPTIONS: { value: RoomStatus; label: string }[] = [
@@ -163,11 +156,16 @@ export default function ExploreFilter() {
               <Label className="text-base font-semibold">Status</Label>
               <div className="flex flex-col space-y-2">
                 {STATUS_OPTIONS.map((statusOption) => (
-                  <div key={statusOption.value} className="flex items-center space-x-2">
+                  <div
+                    key={statusOption.value}
+                    className="flex items-center space-x-2"
+                  >
                     <Checkbox
                       id={`status-${statusOption.value}`}
                       checked={statuses.includes(statusOption.value)}
-                      onCheckedChange={() => handleStatusToggle(statusOption.value)}
+                      onCheckedChange={() =>
+                        handleStatusToggle(statusOption.value)
+                      }
                       className="border-foreground"
                     />
                     <label
@@ -212,11 +210,16 @@ export default function ExploreFilter() {
               <Label className="text-base font-semibold">Room Type</Label>
               <div className="flex flex-col space-y-2">
                 {ROOM_TYPE_OPTIONS.map((roomTypeOption) => (
-                  <div key={roomTypeOption.value} className="flex items-center space-x-2">
+                  <div
+                    key={roomTypeOption.value}
+                    className="flex items-center space-x-2"
+                  >
                     <Checkbox
                       id={`type-${roomTypeOption.value}`}
                       checked={roomTypes.includes(roomTypeOption.value)}
-                      onCheckedChange={() => handleRoomTypeToggle(roomTypeOption.value)}
+                      onCheckedChange={() =>
+                        handleRoomTypeToggle(roomTypeOption.value)
+                      }
                       className="border-foreground"
                     />
                     <label

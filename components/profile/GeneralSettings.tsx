@@ -55,19 +55,20 @@ export function GeneralSettings() {
       if (cachedData) {
         setIsAuthenticated(true);
         setProfile({
-          id: '', // ID not needed from cache
+          id: "", // ID not needed from cache
           email: cachedData.email,
           name: cachedData.name,
-          role: cachedData.role || '',
+          role: cachedData.role || "",
           avatarId: cachedData.avatarId,
-          pronouns: cachedData.pronouns || '',
-          dateOfBirth: cachedData.dateOfBirth || '',
+          pronouns: cachedData.pronouns || "",
+          dateOfBirth: cachedData.dateOfBirth || "",
         });
         setLoading(false);
-        
+
         // Optionally refresh from API in background if cache is old
         const cacheAge = UserCache.getAge();
-        if (cacheAge && cacheAge > 30 * 60 * 1000) { // Refresh if older than 30 minutes
+        if (cacheAge && cacheAge > 30 * 60 * 1000) {
+          // Refresh if older than 30 minutes
           refreshProfileInBackground();
         }
         return;
@@ -79,7 +80,7 @@ export function GeneralSettings() {
       if (response.data.success && response.data.authenticated) {
         setIsAuthenticated(true);
         setProfile(response.data.user);
-        
+
         // Cache the user data
         UserCache.set({
           name: response.data.user.name,
@@ -96,7 +97,9 @@ export function GeneralSettings() {
       console.error("Failed to load profile:", err);
 
       // If 401 (not authenticated), don't show error toast
-      if ((err as { response?: { status?: number } }).response?.status === 401) {
+      if (
+        (err as { response?: { status?: number } }).response?.status === 401
+      ) {
         setIsAuthenticated(false);
       } else {
         showError("Failed to load profile");
@@ -127,7 +130,7 @@ export function GeneralSettings() {
 
       if (response.data.success) {
         setProfile(response.data.user);
-        
+
         // Update cache with new data
         UserCache.set({
           name: response.data.user.name,
@@ -137,7 +140,7 @@ export function GeneralSettings() {
           role: response.data.user.role,
           dateOfBirth: response.data.user.dateOfBirth,
         });
-        
+
         // Update avatar cache separately
         AvatarCache.set(response.data.user.avatarId);
       }
