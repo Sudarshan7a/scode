@@ -32,8 +32,8 @@ function SearchBar() {
           aria-label="Search rooms"
           aria-describedby="search-description"
         />
-        <SearchIcon 
-          className="size-4 shrink-0 opacity-50 absolute right-4 scale-125 hover:text-foreground pointer-events-none" 
+        <SearchIcon
+          className="size-4 shrink-0 opacity-50 absolute right-4 scale-125 hover:text-foreground pointer-events-none"
           aria-hidden="true"
         />
         <span id="search-description" className="sr-only">

@@ -39,21 +39,16 @@ interface RoomsAPIResponse {
 
 /**
  * Enhanced useRooms Hook
- * 
+ *
  * Integrates with ExploreContext for state management
  * Handles client-side filtering, sorting, and search
  * Supports pagination from backend
- * 
+ *
  * @returns Filtered and sorted rooms based on current context state
  */
 export function useRooms() {
-  const {
-    filters,
-    sort,
-    pagination,
-    setTotalPages,
-    setTotalRooms,
-  } = useExplore();
+  const { filters, sort, pagination, setTotalPages, setTotalRooms } =
+    useExplore();
 
   const [allRooms, setAllRooms] = useState<Room[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -65,51 +60,57 @@ export function useRooms() {
   /**
    * Fetch rooms from API with pagination
    */
-  const fetchRooms = useCallback(async (page: number = 1, pageSize: number = 20) => {
-    if (fetchingRef.current) return;
+  const fetchRooms = useCallback(
+    async (page: number = 1, pageSize: number = 20) => {
+      if (fetchingRef.current) return;
 
-    // Check cache first
-    if (cacheRef.current && Date.now() - cacheRef.current.timestamp < CACHE_DURATION) {
-      setAllRooms(cacheRef.current.data);
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      fetchingRef.current = true;
-      setIsLoading(true);
-      setError(null);
-
-      const url = `/api/rooms?page=${page}&pageSize=${pageSize}`;
-      const res = await fetch(url, {
-        cache: "no-store",
-      });
-
-      if (!res.ok) {
-        throw new Error(`Failed to fetch rooms: ${res.statusText}`);
+      // Check cache first
+      if (
+        cacheRef.current &&
+        Date.now() - cacheRef.current.timestamp < CACHE_DURATION
+      ) {
+        setAllRooms(cacheRef.current.data);
+        setIsLoading(false);
+        return;
       }
 
-      const data: RoomsAPIResponse = await res.json();
-      
-      setAllRooms(data.rooms || []);
-      setTotalPages(data.totalPages || 1);
-      setTotalRooms(data.totalRooms || 0);
+      try {
+        fetchingRef.current = true;
+        setIsLoading(true);
+        setError(null);
 
-      // Update cache
-      cacheRef.current = {
-        data: data.rooms || [],
-        timestamp: Date.now(),
-      };
-    } catch (e) {
-      const errorMessage =
-        e instanceof Error ? e.message : "Failed to load rooms";
-      setError(errorMessage);
-      setAllRooms([]);
-    } finally {
-      setIsLoading(false);
-      fetchingRef.current = false;
-    }
-  }, [setTotalPages, setTotalRooms]);
+        const url = `/api/rooms?page=${page}&pageSize=${pageSize}`;
+        const res = await fetch(url, {
+          cache: "no-store",
+        });
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch rooms: ${res.statusText}`);
+        }
+
+        const data: RoomsAPIResponse = await res.json();
+
+        setAllRooms(data.rooms || []);
+        setTotalPages(data.totalPages || 1);
+        setTotalRooms(data.totalRooms || 0);
+
+        // Update cache
+        cacheRef.current = {
+          data: data.rooms || [],
+          timestamp: Date.now(),
+        };
+      } catch (e) {
+        const errorMessage =
+          e instanceof Error ? e.message : "Failed to load rooms";
+        setError(errorMessage);
+        setAllRooms([]);
+      } finally {
+        setIsLoading(false);
+        fetchingRef.current = false;
+      }
+    },
+    [setTotalPages, setTotalRooms]
+  );
 
   // Fetch rooms on mount and when pagination changes
   useEffect(() => {
@@ -133,7 +134,9 @@ export function useRooms() {
       if (filters.searchQuery) {
         const query = filters.searchQuery.toLowerCase();
         const matchesTitle = room.title.toLowerCase().includes(query);
-        const matchesDescription = room.description?.toLowerCase().includes(query);
+        const matchesDescription = room.description
+          ?.toLowerCase()
+          .includes(query);
         if (!matchesTitle && !matchesDescription) return false;
       }
 
@@ -172,8 +175,14 @@ export function useRooms() {
         sorted.sort((a, b) => {
           const aDate = a.scheduledAt || a.createdAt;
           const bDate = b.scheduledAt || b.createdAt;
-          const aTime = typeof aDate === "string" ? new Date(aDate).getTime() : new Date(aDate.$date).getTime();
-          const bTime = typeof bDate === "string" ? new Date(bDate).getTime() : new Date(bDate.$date).getTime();
+          const aTime =
+            typeof aDate === "string"
+              ? new Date(aDate).getTime()
+              : new Date(aDate.$date).getTime();
+          const bTime =
+            typeof bDate === "string"
+              ? new Date(bDate).getTime()
+              : new Date(bDate.$date).getTime();
           return aTime - bTime;
         });
         break;
@@ -181,8 +190,14 @@ export function useRooms() {
       case "recent":
         // Sort by created date (newest first)
         sorted.sort((a, b) => {
-          const aTime = typeof a.createdAt === "string" ? new Date(a.createdAt).getTime() : new Date(a.createdAt.$date).getTime();
-          const bTime = typeof b.createdAt === "string" ? new Date(b.createdAt).getTime() : new Date(b.createdAt.$date).getTime();
+          const aTime =
+            typeof a.createdAt === "string"
+              ? new Date(a.createdAt).getTime()
+              : new Date(a.createdAt.$date).getTime();
+          const bTime =
+            typeof b.createdAt === "string"
+              ? new Date(b.createdAt).getTime()
+              : new Date(b.createdAt.$date).getTime();
           return bTime - aTime;
         });
         break;
@@ -216,8 +231,14 @@ export function useRooms() {
         sorted.sort((a, b) => {
           const aDate = a.scheduledAt || a.createdAt;
           const bDate = b.scheduledAt || b.createdAt;
-          const aTime = typeof aDate === "string" ? new Date(aDate).getTime() : new Date(aDate.$date).getTime();
-          const bTime = typeof bDate === "string" ? new Date(bDate).getTime() : new Date(bDate.$date).getTime();
+          const aTime =
+            typeof aDate === "string"
+              ? new Date(aDate).getTime()
+              : new Date(aDate.$date).getTime();
+          const bTime =
+            typeof bDate === "string"
+              ? new Date(bDate).getTime()
+              : new Date(bDate.$date).getTime();
           return aTime - bTime;
         });
     }

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../components/ui/button";
 import {
   Sheet,
   SheetClose,
@@ -11,47 +11,39 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
+} from "../../components/ui/sheet";
+import { Label } from "../../components/ui/label";
+import { Checkbox } from "../../components/ui/checkbox";
+import { Badge } from "../../components/ui/badge";
 import { X } from "lucide-react";
-import { useExplore } from "@/contexts/ExploreContext";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useExplore, RoomStatus } from "@/contexts/ExploreContext";
+import { ScrollArea } from "../../components/ui/scroll-area";
 
-// Language options matching backend
+// Language options - matching actual supported languages from languageFileNames.ts
 const LANGUAGE_OPTIONS = [
-  "Python",
   "JavaScript",
-  "TypeScript",
-  "Java",
-  "C++",
-  "C#",
+  "Python",
   "Go",
-  "Rust",
-  "Ruby",
-  "PHP",
-  "Swift",
-  "Kotlin",
-  "HTML/CSS",
-  "SQL",
-  "Other",
+  "Java",
+  "C",
+  "C++",
 ];
 
-// Status options
-const STATUS_OPTIONS = ["Live", "Scheduled", "Ended"];
+// Status options - matching RoomStatus type
+const STATUS_OPTIONS: { value: RoomStatus; label: string }[] = [
+  { value: "live", label: "Live" },
+  { value: "scheduled", label: "Scheduled" },
+  { value: "ended", label: "Ended" },
+];
 
 // Privacy options
 const PRIVACY_OPTIONS = ["Public", "Private"];
 
-// Room type options
-const ROOM_TYPE_OPTIONS = [
-  "Interview",
-  "Pair Programming",
-  "Coding Challenge",
-  "Learning Session",
-  "Code Review",
-  "Other",
+// Room type options - matching actual room types from schema (interview, mock, pairing)
+const ROOM_TYPE_OPTIONS: { value: string; label: string }[] = [
+  { value: "interview", label: "Interview" },
+  { value: "mock", label: "Mock" },
+  { value: "pairing", label: "Pair Programming" },
 ];
 
 export default function ExploreFilter() {
@@ -77,7 +69,7 @@ export default function ExploreFilter() {
     setLanguages(newLanguages);
   };
 
-  const handleStatusToggle = (status: string) => {
+  const handleStatusToggle = (status: RoomStatus) => {
     const newStatuses = statuses.includes(status)
       ? statuses.filter((s) => s !== status)
       : [...statuses, status];
@@ -104,7 +96,9 @@ export default function ExploreFilter() {
         <Button
           variant="outline"
           className="shadow-mysecondary border-mysecondary relative"
-          aria-label={`Filter rooms${activeFilterCount > 0 ? `, ${activeFilterCount} filters active` : ""}`}
+          aria-label={`Filter rooms${
+            activeFilterCount > 0 ? `, ${activeFilterCount} filters active` : ""
+          }`}
         >
           Filter
           {activeFilterCount > 0 && (
@@ -146,10 +140,7 @@ export default function ExploreFilter() {
               </Label>
               <div className="grid grid-cols-2 gap-3">
                 {LANGUAGE_OPTIONS.map((language) => (
-                  <div
-                    key={language}
-                    className="flex items-center space-x-2"
-                  >
+                  <div key={language} className="flex items-center space-x-2">
                     <Checkbox
                       id={`lang-${language}`}
                       checked={languages.includes(language)}
@@ -171,19 +162,19 @@ export default function ExploreFilter() {
             <div className="space-y-3">
               <Label className="text-base font-semibold">Status</Label>
               <div className="flex flex-col space-y-2">
-                {STATUS_OPTIONS.map((status) => (
-                  <div key={status} className="flex items-center space-x-2">
+                {STATUS_OPTIONS.map((statusOption) => (
+                  <div key={statusOption.value} className="flex items-center space-x-2">
                     <Checkbox
-                      id={`status-${status}`}
-                      checked={statuses.includes(status)}
-                      onCheckedChange={() => handleStatusToggle(status)}
+                      id={`status-${statusOption.value}`}
+                      checked={statuses.includes(statusOption.value)}
+                      onCheckedChange={() => handleStatusToggle(statusOption.value)}
                       className="border-foreground"
                     />
                     <label
-                      htmlFor={`status-${status}`}
+                      htmlFor={`status-${statusOption.value}`}
                       className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
-                      {status}
+                      {statusOption.label}
                     </label>
                   </div>
                 ))}
@@ -202,9 +193,7 @@ export default function ExploreFilter() {
                     <Checkbox
                       id={`privacy-${privacyOption}`}
                       checked={privacy.includes(privacyOption)}
-                      onCheckedChange={() =>
-                        handlePrivacyToggle(privacyOption)
-                      }
+                      onCheckedChange={() => handlePrivacyToggle(privacyOption)}
                       className="border-foreground"
                     />
                     <label
@@ -222,19 +211,19 @@ export default function ExploreFilter() {
             <div className="space-y-3">
               <Label className="text-base font-semibold">Room Type</Label>
               <div className="flex flex-col space-y-2">
-                {ROOM_TYPE_OPTIONS.map((roomType) => (
-                  <div key={roomType} className="flex items-center space-x-2">
+                {ROOM_TYPE_OPTIONS.map((roomTypeOption) => (
+                  <div key={roomTypeOption.value} className="flex items-center space-x-2">
                     <Checkbox
-                      id={`type-${roomType}`}
-                      checked={roomTypes.includes(roomType)}
-                      onCheckedChange={() => handleRoomTypeToggle(roomType)}
+                      id={`type-${roomTypeOption.value}`}
+                      checked={roomTypes.includes(roomTypeOption.value)}
+                      onCheckedChange={() => handleRoomTypeToggle(roomTypeOption.value)}
                       className="border-foreground"
                     />
                     <label
-                      htmlFor={`type-${roomType}`}
+                      htmlFor={`type-${roomTypeOption.value}`}
                       className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
-                      {roomType}
+                      {roomTypeOption.label}
                     </label>
                   </div>
                 ))}
