@@ -259,16 +259,16 @@ function ExploreContent() {
     if (!hasFilters && !searchQuery) return null;
 
     return (
-      <div className="mb-6 space-y-3">
+      <div className="mb-8 space-y-3 p-4 rounded-lg border border-mysecondary/20 bg-mysecondary/5">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-foreground/80">
-            Active Filters ({totalRooms} results)
+          <h3 className="text-sm font-semibold text-foreground">
+            Active Filters ({totalRooms} {totalRooms === 1 ? 'result' : 'results'})
           </h3>
           <Button
             variant="ghost"
             size="sm"
             onClick={resetFilters}
-            className="h-8 text-xs"
+            className="h-8 text-xs hover:bg-mysecondary/20"
           >
             Clear All
           </Button>
