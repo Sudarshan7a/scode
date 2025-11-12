@@ -73,20 +73,31 @@ export default function Navbar() {
           <div className="font-navbar flex items-center gap-6">
             {navlinks
               .filter((link) => !(isHomePage && link.path === "/dashboard"))
-              .map((link) => (
-                <Link
-                  key={link.id}
-                  href={link.path}
-                  className=" transition-colors duration-200"
-                >
-                  <Button
-                    variant="link"
-                    className={`text-foreground ${buttonUnderlineTailwind}`}
+              .map((link) => {
+                const isActive = pathname === link.path;
+                return (
+                  <Link
+                    key={link.id}
+                    href={link.path}
+                    className="transition-colors duration-200"
+                    onClick={(e) => {
+                      // Prevent navigation if already on the current route
+                      if (isActive) {
+                        e.preventDefault();
+                      }
+                    }}
                   >
-                    {link.name}
-                  </Button>
-                </Link>
-              ))}
+                    <Button
+                      variant="link"
+                      className={`text-foreground ${buttonUnderlineTailwind} ${
+                        isActive ? "after:scale-x-100" : ""
+                      }`}
+                    >
+                      {link.name}
+                    </Button>
+                  </Link>
+                );
+              })}
           </div>
         </div>
         <div className="flex items-center gap-6">
