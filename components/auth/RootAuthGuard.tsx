@@ -13,6 +13,7 @@ export function RootAuthGuard({ children }: { children: React.ReactNode }) {
     "/",
     "/login",
     "/signup",
+    "/explore", // Allow guest access to explore rooms
     "/how-it-works",
     "/forgot-password",
     "/verify-email",
