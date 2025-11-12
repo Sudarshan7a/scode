@@ -40,6 +40,18 @@ export function SkeletonList({ count = 3 }: { count?: number }) {
   );
 }
 
+export function SkeletonGrid({ count = 6 }: { count?: number }) {
+  return (
+    <div className="flex flex-wrap gap-4 justify-start">
+      {Array.from({ length: count }, (_, i) => (
+        <div key={i} className="flex-none">
+          <SkeletonCard />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function SkeletonUserInfo() {
   return (
     <div className="flex items-center space-x-3">

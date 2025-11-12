@@ -103,16 +103,16 @@ export default function ExploreFilter() {
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent className="flex flex-col justify-start w-[400px] sm:w-[540px]">
+      <SheetContent className="flex p-4 flex-col justify-start w-[400px] sm:w-[540px]">
         <SheetHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex  items-center justify-between">
             <SheetTitle className="text-foreground">Filter Rooms</SheetTitle>
             {hasActiveFilters() && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={resetFilters}
-                className="text-sm"
+                className="text-sm border-mysecondary border-1"
               >
                 Clear all
               </Button>

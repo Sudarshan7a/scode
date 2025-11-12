@@ -6,7 +6,7 @@ import SearchBar from "@/components/searchBar/SearchBar";
 import TitleBackgroundCard from "@/components/TitleBackgroundCard";
 import { useRooms } from "@/hooks/useRooms";
 import { mockRooms } from "@/types/roomsTypes";
-import { SkeletonList } from "@/components/ui/Skeleton";
+import { SkeletonGrid } from "@/components/ui/Skeleton";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -115,7 +115,7 @@ function ExploreContent() {
           <div className="flex items-center justify-center py-8">
             <LoadingSpinner size="large" text="Loading rooms..." showText />
           </div>
-          <SkeletonList count={6} />
+          <SkeletonGrid count={6} />
         </div>
       );
     }
