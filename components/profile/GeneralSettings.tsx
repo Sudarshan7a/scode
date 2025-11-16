@@ -237,7 +237,7 @@ function ProfileForm({
         <div className="mb-4 flex-1">
           <label className="block mb-1">Name</label>
           <Input
-            value={profile.name}
+            value={profile.name || ""}
             onChange={(e) => handleChange("name", e.target.value)}
             required
           />
@@ -246,7 +246,7 @@ function ProfileForm({
           <label className="block mb-1">Pronouns</label>
           <Input
             placeholder="He/Him, She/Her, They/Them"
-            value={profile.pronouns}
+            value={profile.pronouns || ""}
             onChange={(e) => handleChange("pronouns", e.target.value)}
           />
         </div>
@@ -255,7 +255,7 @@ function ProfileForm({
         <div className="mb-4 flex-1">
           <label className="block mb-1">Current role</label>
           <Input
-            value={profile.role}
+            value={profile.role || ""}
             onChange={(e) => handleChange("role", e.target.value)}
           />
         </div>
@@ -263,7 +263,7 @@ function ProfileForm({
           <label className="block mb-1">Date of birth</label>
           <Input
             type="date"
-            value={profile.dateOfBirth}
+            value={profile.dateOfBirth || ""}
             onChange={(e) => handleChange("dateOfBirth", e.target.value)}
           />
         </div>
