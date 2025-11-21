@@ -168,7 +168,7 @@ function ExploreContent() {
             const roomId =
               typeof room._id === "string" ? room._id : room._id.$oid;
             return (
-              <div key={roomId} className="flex-none">
+              <div key={roomId} className="flex-1/4 ">
                 <RoomCard room={room as unknown as mockRooms} />
               </div>
             );
