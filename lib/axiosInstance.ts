@@ -13,6 +13,7 @@ export const axiosInstance = axios.create({
 // Track if we're currently refreshing the token to prevent multiple simultaneous requests
 let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
+let tokenRefreshPromise: Promise<string | null> | null = null;
 
 function subscribeTokenRefresh(cb: (token: string) => void) {
   refreshSubscribers.push(cb);
@@ -43,6 +44,34 @@ function isAllowedDomain(url: string): boolean {
     return false;
   }
 }
+// for Centralizing token refresh to prevent duplicates
+async function refreshAccessToken(): Promise<string | null> {
+  if (tokenRefreshPromise) {
+    return tokenRefreshPromise;
+  }
+  // if new request to get access token create a new promise for this refresh
+  tokenRefreshPromise = (async () => {
+    try {
+      const res = await axios.post(
+        "/api/auth/get-access-token",
+        {},
+        { withCredentials: true }
+      );
+      const token = res.data?.accessToken;
+      if (token) {
+        setAccessToken(token);
+        return token;
+      }
+      return null;
+    } catch (error) {
+      void error;
+      clearAccessToken();
+    } finally {
+      tokenRefreshPromise = null;
+    }
+  })();
+  return tokenRefreshPromise;
+}
 
 // === REQUEST INTERCEPTOR ===
 axiosInstance.interceptors.request.use(async (config) => {
@@ -66,21 +95,13 @@ axiosInstance.interceptors.request.use(async (config) => {
     isRefreshing = true;
 
     try {
-      // Request a fresh access token using the refresh cookie
-      const res = await axios.post(
-        "/api/auth/get-access-token",
-        {},
-        { withCredentials: true }
-      );
-      token = res.data?.accessToken;
+      token = await refreshAccessToken();
       if (token) {
-        setAccessToken(token);
         onTokenRefreshed(token);
       }
     } catch (error) {
       void error;
-      clearAccessToken();
-      // Only redirect if we're not on a public page
+      return Promise.reject("Token refresh failed");
       if (
         typeof window !== "undefined" &&
         !window.location.pathname.match(
