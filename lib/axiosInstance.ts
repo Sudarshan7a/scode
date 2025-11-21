@@ -10,6 +10,19 @@ export const axiosInstance = axios.create({
   withCredentials: true, // Sends cookies like refresh token
 });
 
+// Track if we're currently refreshing the token to prevent multiple simultaneous requests
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+function subscribeTokenRefresh(cb: (token: string) => void) {
+  refreshSubscribers.push(cb);
+}
+
+function onTokenRefreshed(token: string) {
+  refreshSubscribers.forEach((cb) => cb(token));
+  refreshSubscribers = [];
+}
+
 function isAllowedDomain(url: string): boolean {
   try {
     const parsed = new URL(url, window.location.origin);
@@ -40,6 +53,18 @@ axiosInstance.interceptors.request.use(async (config) => {
   let token = await getAccessToken();
 
   if (!token) {
+    // If already refreshing, wait for the token
+    if (isRefreshing) {
+      return new Promise((resolve) => {
+        subscribeTokenRefresh((newToken: string) => {
+          config.headers.Authorization = `Bearer ${newToken}`;
+          resolve(config);
+        });
+      });
+    }
+
+    isRefreshing = true;
+
     try {
       // Request a fresh access token using the refresh cookie
       const res = await axios.post(
@@ -50,12 +75,23 @@ axiosInstance.interceptors.request.use(async (config) => {
       token = res.data?.accessToken;
       if (token) {
         setAccessToken(token);
+        onTokenRefreshed(token);
       }
     } catch (error) {
       void error;
       clearAccessToken();
-      window.location.href = "/login";
-      return Promise.reject("Redirected to login after failed refresh");
+      // Only redirect if we're not on a public page
+      if (
+        typeof window !== "undefined" &&
+        !window.location.pathname.match(
+          /^\/(login|signup|explore|how-it-works|forgot-password|verify-email|check-email|reset-password)$/
+        )
+      ) {
+        window.location.href = "/login";
+      }
+      return Promise.reject("Token refresh failed");
+    } finally {
+      isRefreshing = false;
     }
   }
 

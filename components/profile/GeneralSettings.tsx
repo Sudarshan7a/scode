@@ -107,11 +107,13 @@ export function GeneralSettings() {
     } finally {
       setLoading(false);
     }
-  }, [showError, refreshProfileInBackground]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showError]); // refreshProfileInBackground intentionally omitted to prevent infinite loop
 
   useEffect(() => {
     loadProfile();
-  }, [loadProfile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
