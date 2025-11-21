@@ -60,6 +60,9 @@ export function MyLoginForm() {
           if (result.user.avatarId !== undefined) {
             AvatarCache.set(result.user.avatarId);
           }
+
+          // Notify other components about auth state change
+          window.dispatchEvent(new Event('auth-change'));
         }
       }
 

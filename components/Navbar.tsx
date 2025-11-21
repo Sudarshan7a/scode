@@ -33,6 +33,7 @@ export default function Navbar() {
   function checkAuth() {
     // Check if user data exists in localStorage cache
     const cachedUser = UserCache.get();
+    console.log("Cached User:", cachedUser);
     setIsAuthenticated(cachedUser !== null);
     setIsLoading(false);
   }
