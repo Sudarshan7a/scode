@@ -127,7 +127,7 @@ export default function ExploreFilter() {
           <div className="space-y-6 py-4">
             {/* Language Filter */}
             <div className="space-y-3">
-              <Label className="text-base font-semibold">
+              <Label className="text-base font-semibold text-foreground">
                 Programming Language
               </Label>
               <div className="grid grid-cols-2 gap-3">
@@ -137,7 +137,7 @@ export default function ExploreFilter() {
                       id={`lang-${language}`}
                       checked={languages.includes(language)}
                       onCheckedChange={() => handleLanguageToggle(language)}
-                      className="border-foreground"
+                      className="border-mysecondary"
                     />
                     <label
                       htmlFor={`lang-${language}`}
@@ -152,7 +152,7 @@ export default function ExploreFilter() {
 
             {/* Status Filter */}
             <div className="space-y-3">
-              <Label className="text-base font-semibold">Status</Label>
+              <Label className="text-base font-semibold text-foreground">Status</Label>
               <div className="flex flex-col space-y-2">
                 {STATUS_OPTIONS.map((statusOption) => (
                   <div
@@ -165,7 +165,7 @@ export default function ExploreFilter() {
                       onCheckedChange={() =>
                         handleStatusToggle(statusOption.value)
                       }
-                      className="border-foreground"
+                      className="border-mysecondary"
                     />
                     <label
                       htmlFor={`status-${statusOption.value}`}
@@ -180,7 +180,7 @@ export default function ExploreFilter() {
 
             {/* Privacy Filter */}
             <div className="space-y-3">
-              <Label className="text-base font-semibold">Privacy</Label>
+              <Label className="text-base font-semibold text-foreground">Privacy</Label>
               <div className="flex flex-col space-y-2">
                 {PRIVACY_OPTIONS.map((privacyOption) => (
                   <div
@@ -191,7 +191,7 @@ export default function ExploreFilter() {
                       id={`privacy-${privacyOption}`}
                       checked={privacy.includes(privacyOption)}
                       onCheckedChange={() => handlePrivacyToggle(privacyOption)}
-                      className="border-foreground"
+                      className="border-mysecondary"
                     />
                     <label
                       htmlFor={`privacy-${privacyOption}`}
@@ -206,7 +206,7 @@ export default function ExploreFilter() {
 
             {/* Room Type Filter */}
             <div className="space-y-3">
-              <Label className="text-base font-semibold">Room Type</Label>
+              <Label className="text-base font-semibold text-foreground">Room Type</Label>
               <div className="flex flex-col space-y-2">
                 {ROOM_TYPE_OPTIONS.map((roomTypeOption) => (
                   <div
@@ -219,7 +219,7 @@ export default function ExploreFilter() {
                       onCheckedChange={() =>
                         handleRoomTypeToggle(roomTypeOption.value)
                       }
-                      className="border-foreground"
+                      className="border-mysecondary"
                     />
                     <label
                       htmlFor={`type-${roomTypeOption.value}`}
@@ -234,14 +234,14 @@ export default function ExploreFilter() {
           </div>
         </ScrollArea>
 
-        <SheetFooter className="flex flex-row items-center justify-between gap-2">
-          <div className="flex-1 text-sm text-muted-foreground">
+        <SheetFooter className="flex flex-row items-center justify-between gap-2 pt-4 border-t">
+          <div className="flex-1 text-sm text-foreground/80">
             {activeFilterCount > 0 && (
-              <span>{activeFilterCount} filter(s) applied</span>
+              <span><span className="font-medium text-foreground">{activeFilterCount}</span> filter(s) applied</span>
             )}
           </div>
           <SheetClose asChild>
-            <Button type="button">Apply Filters</Button>
+            <Button type="button" className="bg-mysecondary hover:bg-mysecondary/90">Apply Filters</Button>
           </SheetClose>
         </SheetFooter>
       </SheetContent>

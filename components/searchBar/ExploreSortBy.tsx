@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowUpDown, Check } from "lucide-react";
 import { useExplore } from "@/contexts/ExploreContext";
 
@@ -86,7 +87,7 @@ export default function ExploreSortBy() {
           Sort By
         </Button>
       </SheetTrigger>
-      <SheetContent className="flex flex-col justify-start w-[400px] sm:w-[540px]">
+      <SheetContent className="flex flex-col w-[400px] sm:w-[540px]">
         <SheetHeader>
           <SheetTitle className="text-foreground">Sort Rooms</SheetTitle>
           <SheetDescription className="text-foreground">
@@ -94,16 +95,16 @@ export default function ExploreSortBy() {
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 py-6">
+        <ScrollArea className="flex-1 pr-4">
           <RadioGroup
             value={currentSort}
             onValueChange={(value) => setSortBy(value as typeof currentSort)}
-            className="space-y-4"
+            className="space-y-3 py-4"
           >
             {SORT_OPTIONS.map((option) => (
               <div
                 key={option.value}
-                className="flex items-start space-x-3 rounded-lg border border-border p-4 hover:bg-accent/50 transition-colors cursor-pointer"
+                className="flex items-start space-x-3 rounded-lg border border-mysecondary/30 p-3 hover:bg-mysecondary/10 transition-colors cursor-pointer"
                 onClick={() => setSortBy(option.value as typeof currentSort)}
               >
                 <RadioGroupItem
@@ -122,7 +123,7 @@ export default function ExploreSortBy() {
                     )}
                   </Label>
                   {option.description && (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-foreground/70">
                       {option.description}
                     </p>
                   )}
@@ -130,14 +131,22 @@ export default function ExploreSortBy() {
               </div>
             ))}
           </RadioGroup>
-        </div>
+        </ScrollArea>
 
-        <SheetFooter className="flex flex-row items-center justify-between gap-2">
-          <div className="flex-1 text-sm text-muted-foreground">
-            Currently: <span className="font-medium">{currentSortLabel}</span>
+        <SheetFooter className="flex flex-row items-center justify-between gap-2 pt-4 border-t">
+          <div className="flex-1 text-sm text-foreground/80">
+            Currently:{" "}
+            <span className="font-medium text-foreground">
+              {currentSortLabel}
+            </span>
           </div>
           <SheetClose asChild>
-            <Button type="button">Apply Sort</Button>
+            <Button
+              type="button"
+              className="bg-mysecondary hover:bg-mysecondary/90"
+            >
+              Apply Sort
+            </Button>
           </SheetClose>
         </SheetFooter>
       </SheetContent>
