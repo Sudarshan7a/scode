@@ -94,7 +94,8 @@ export function SecuritySettings() {
     } finally {
       setLoading(false);
     }
-  }, [showError, fetchOAuthDataInBackground]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showError]);
 
   useEffect(() => {
     loadProfile();
