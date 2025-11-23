@@ -37,7 +37,9 @@ export async function POST(req: NextRequest) {
 
     if (message.length > MAX_MESSAGE_LENGTH) {
       return NextResponse.json(
-        { error: `Message too long. Maximum ${MAX_MESSAGE_LENGTH} characters.` },
+        {
+          error: `Message too long. Maximum ${MAX_MESSAGE_LENGTH} characters.`,
+        },
         { status: 400 }
       );
     }
@@ -67,30 +69,37 @@ export async function POST(req: NextRequest) {
     }
 
     const ai = new GoogleGenAI({ apiKey });
+    const model = ai.models.get("gemini-2.0-flash-exp");
 
     let prompt = `${SYSTEM_PROMPT}\n\nUser question: ${message}`;
-    
+
     if (editorCode && editorCode.trim()) {
-      prompt += `\n\nCurrent code in editor (${language || "unknown"}):\n\`\`\`${language || ""}\n${editorCode}\n\`\`\``;
+      prompt += `\n\nCurrent code in editor (${
+        language || "unknown"
+      })::\n\`\`\`${language || ""}\n${editorCode}\n\`\`\``;
     }
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-exp",
-      contents: prompt,
-    });
+    const response = await model.generateContent(prompt);
+    const result = await response.response;
+    const text = result.text();
 
-    if (!response || !response.text) {
+    if (!text) {
       throw new Error("Invalid response from AI service");
     }
 
     return NextResponse.json({
-      message: response.text,
+      message: text,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    const errorStack = error instanceof Error ? error.stack : undefined;
     console.error("[SERVER] AI chat error:", errorMessage);
-    
+    if (errorStack) {
+      console.error("[SERVER] Error stack:", errorStack);
+    }
+
     return NextResponse.json(
       { error: "Failed to generate response. Please try again." },
       { status: 500 }
