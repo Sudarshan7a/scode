@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToMongo } from "@/lib/mongodb";
 import { issueRefreshSession, setAuthCookies } from "@/lib/refreshSession";
-import { redis } from "@/lib/rateLimiter";
+import { redis, verifyTokenLimiter } from "@/lib/rateLimiter";
 import { ObjectId } from "mongodb";
+import { getIP } from "@/lib/getIp";
 
 function validateEnv() {
   if (!process.env.MONGODB_URI) {
@@ -64,6 +65,23 @@ async function updateUserVerified(userId: string) {
 
 export async function GET(req: NextRequest) {
   try {
+    // Rate limiting by IP address
+    const ip = getIP(req);
+    const { success } = await verifyTokenLimiter.limit(ip);
+
+    if (!success) {
+      console.warn(
+        `[RateLimit] Email verification blocked: ${ip} (too many attempts)`
+      );
+      return NextResponse.json(
+        {
+          message:
+            "Too many verification attempts. Please try again in 10 minutes.",
+        },
+        { status: 429 }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
     if (!token) {

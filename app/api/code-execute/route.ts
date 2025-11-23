@@ -1,6 +1,10 @@
 // app/api/code/execute/route.ts
 import { NextRequest, NextResponse } from "next/server";
-
+import {
+  codeExecuteLimiter,
+  codeExecuteHourlyLimiter,
+  getUserIdOrIP,
+} from "@/lib/rateLimiter";
 import { getLanguageFileName } from "@/constants/languageFileNames";
 
 const EXECUTION_API_KEY = process.env.CODE_EXECUTION_API_KEY!;
@@ -8,6 +12,42 @@ const EXECUTION_API_URL = process.env.CODE_EXECUTION_API_URL!;
 const EXECUTION_API_HOST = process.env.CODE_EXECUTION_API_HOST!;
 
 export async function POST(req: NextRequest) {
+  // Rate limiting - dual tier protection
+  const identifier = getUserIdOrIP(req);
+
+  // Check per-minute limit
+  const { success: minuteOk } = await codeExecuteLimiter.limit(identifier);
+  if (!minuteOk) {
+    console.warn(
+      `[RateLimit] Code execution blocked: ${identifier} (minute limit exceeded)`
+    );
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          "Rate limit exceeded. Maximum 20 code executions per minute. Please slow down.",
+      },
+      { status: 429 }
+    );
+  }
+
+  // Check per-hour limit
+  const { success: hourlyOk } =
+    await codeExecuteHourlyLimiter.limit(identifier);
+  if (!hourlyOk) {
+    console.warn(
+      `[RateLimit] Code execution blocked: ${identifier} (hourly limit exceeded)`
+    );
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          "Hourly rate limit exceeded. Maximum 100 code executions per hour. Please try again later.",
+      },
+      { status: 429 }
+    );
+  }
+
   // 3. Parse and validate request
   const body = await req.json();
   //TODO: add stdin in future updates

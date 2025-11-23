@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
+import {
+  aiChatLimiter,
+  aiChatHourlyLimiter,
+  getUserIdOrIP,
+} from "@/lib/rateLimiter";
 
 const SYSTEM_PROMPT = `You are a helpful AI coding assistant. You MUST ONLY respond to questions about:
 - Programming and software development
@@ -24,6 +29,39 @@ const MAX_CODE_LENGTH = 10000;
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limiting - dual tier protection
+    const identifier = getUserIdOrIP(req);
+
+    // Check per-minute limit
+    const { success: minuteOk } = await aiChatLimiter.limit(identifier);
+    if (!minuteOk) {
+      console.warn(
+        `[RateLimit] AI chat blocked: ${identifier} (minute limit exceeded)`
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Rate limit exceeded. Maximum 10 AI requests per minute. Please slow down.",
+        },
+        { status: 429 }
+      );
+    }
+
+    // Check per-hour limit
+    const { success: hourlyOk } = await aiChatHourlyLimiter.limit(identifier);
+    if (!hourlyOk) {
+      console.warn(
+        `[RateLimit] AI chat blocked: ${identifier} (hourly limit exceeded)`
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Hourly rate limit exceeded. Maximum 50 AI requests per hour. Please try again later.",
+        },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const { message, editorCode, language } = body;
 

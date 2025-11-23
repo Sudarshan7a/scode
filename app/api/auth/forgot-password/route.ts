@@ -1,12 +1,32 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { connectToMongo } from "@/lib/mongodb";
 import { sendActionToken } from "@/lib/sendActionToken";
+import { forgotPasswordLimiter } from "@/lib/rateLimiter";
+import { getIP } from "@/lib/getIp";
 
 const schema = z.object({ email: z.string().trim().email() });
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
+    // Rate limiting by IP address
+    const ip = getIP(req);
+    const { success } = await forgotPasswordLimiter.limit(ip);
+
+    if (!success) {
+      console.warn(
+        `[RateLimit] Forgot password blocked: ${ip} (too many attempts)`
+      );
+      return NextResponse.json(
+        {
+          ok: false,
+          message:
+            "Too many password reset attempts. Please try again in 15 minutes.",
+        },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const parse = schema.safeParse(body);
     if (!parse.success) {

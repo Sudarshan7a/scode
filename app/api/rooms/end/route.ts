@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "@/lib/authMiddleware";
 import { connectToMongo } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { roomEndLimiter } from "@/lib/rateLimiter";
 
 // Function to notify WebSocket server about room ending
 async function notifyWebSocketServer(roomId: string) {
@@ -53,6 +54,22 @@ async function notifyWebSocketServer(roomId: string) {
 
 export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
+    // Rate limiting by userId
+    const { success } = await roomEndLimiter.limit(userId);
+
+    if (!success) {
+      console.warn(
+        `[RateLimit] Room end blocked: user ${userId} (too many end requests)`
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Too many room end requests. Maximum 20 per 10 minutes. Please slow down.",
+        },
+        { status: 429 }
+      );
+    }
+
     const { roomId } = await request.json();
 
     if (!roomId) {

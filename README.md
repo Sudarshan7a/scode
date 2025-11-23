@@ -73,6 +73,12 @@ S‑code makes coding practice feel like multiplayer gaming — secure, fast, an
 - [Resend](https://resend.com/) for transactional emails
 - Email verification system with Redis-backed tokens
 
+**AI Integration**
+
+- [Google Gemini](https://ai.google.dev/) for AI-powered coding assistance
+- Context-aware code analysis and suggestions
+- Smart retry logic with error handling
+
 **Development Tools**
 
 - [ESLint](https://eslint.org/) for code linting
@@ -137,6 +143,15 @@ Privacy-first auth and token hygiene:
 - **Page Management**: Create, delete, and switch between pages
 - **Smart Numbering**: Automatically fills gaps when pages are deleted
 
+### 🤖 AI Coding Assistant
+
+- **Gemini Integration**: Powered by Google's Gemini 2.0 Flash
+- **Context-Aware**: Analyzes your current code and language
+- **Smart Retry Logic**: Automatic retry with exponential backoff
+- **Code-Focused**: Only responds to programming-related questions
+- **Formatted Responses**: Clean, readable output with code examples
+- **Rate Limited**: Prevents abuse with message length limits
+
 ### ⚙️ Developer Features
 
 - **Type Safety**: Full TypeScript implementation
@@ -144,6 +159,7 @@ Privacy-first auth and token hygiene:
 - **Error Handling**: Comprehensive error management
 - **API Design**: RESTful API with predictable responses
 - **Responsive Design**: Mobile-friendly interface
+- **Client-Side Caching**: UserCache for optimized data fetching
 
 ## Roadmap
 
@@ -161,6 +177,10 @@ Privacy-first auth and token hygiene:
 - Error boundary implementation for improved reliability
 - Performance optimization: Removed awareness/cursor tracking
 - Comprehensive development documentation and Git workflow guides
+- **AI Chat Integration**: Gemini-powered coding assistant with retry logic
+- **Authentication Improvements**: Real-time navbar updates, token refresh optimization
+- **Profile System**: Infinite loop fixes, cache management, avatar handling
+- **UI/UX Enhancements**: Responsive dashboard cards, improved skeleton loading
 
 ### 🚧 In Progress
 
@@ -246,6 +266,9 @@ UPSTASH_REDIS_REST_TOKEN=your-upstash-redis-rest-token-here
 # Email Service
 RESEND_API_KEY=your-resend-api-key-here
 MY_DOMAIN=http://localhost:3000
+
+# AI Assistant (Optional)
+GEMINI_API_KEY=your-gemini-api-key-here
 ```
 
 4. **Start the WebSocket server** (for real-time collaboration)

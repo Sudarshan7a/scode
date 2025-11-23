@@ -1,9 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToMongo } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { readMediumLimiter, getUserIdOrIP } from "@/lib/rateLimiter";
 
 export async function GET(request: NextRequest) {
   try {
+    // Rate limiting by userId or IP (public endpoint)
+    const identifier = getUserIdOrIP(request);
+    const { success } = await readMediumLimiter.limit(identifier);
+
+    if (!success) {
+      console.warn(
+        `[RateLimit] User profile blocked: ${identifier} (too many requests)`
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Too many requests. Maximum 30 profile requests per minute. Please slow down.",
+        },
+        { status: 429 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
 

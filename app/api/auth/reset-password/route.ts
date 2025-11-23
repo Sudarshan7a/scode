@@ -1,10 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { connectToMongo } from "@/lib/mongodb";
 import { hashPassword } from "@/auth/core/passwordHasher";
-import { redis } from "@/lib/rateLimiter";
+import { redis, resetPasswordLimiter } from "@/lib/rateLimiter";
 import { strongPassword } from "@/types/authTypes";
 import { ObjectId } from "mongodb";
+import { getIP } from "@/lib/getIp";
 
 // Schema: token, password, confirmPassword
 const resetSchema = z
@@ -18,8 +19,26 @@ const resetSchema = z
     message: "Passwords do not match",
   });
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
+    // Rate limiting by IP address
+    const ip = getIP(req);
+    const { success } = await resetPasswordLimiter.limit(ip);
+
+    if (!success) {
+      console.warn(
+        `[RateLimit] Reset password blocked: ${ip} (too many attempts)`
+      );
+      return NextResponse.json(
+        {
+          ok: false,
+          message:
+            "Too many password reset attempts. Please try again in 30 minutes.",
+        },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const parsed = resetSchema.safeParse(body);
     if (!parsed.success) {

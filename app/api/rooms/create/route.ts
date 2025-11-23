@@ -3,9 +3,26 @@ import { withAuth } from "@/lib/authMiddleware";
 import { z } from "zod";
 import { ObjectId } from "mongodb";
 import { connectToMongo } from "@/lib/mongodb";
+import { roomCreateLimiter } from "@/lib/rateLimiter";
 
 export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
+    // Rate limiting by userId
+    const { success } = await roomCreateLimiter.limit(userId);
+
+    if (!success) {
+      console.warn(
+        `[RateLimit] Room creation blocked: user ${userId} (too many rooms)`
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Too many room creations. Maximum 10 rooms per 10 minutes. Please slow down.",
+        },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
 
     const createSchema = z.object({

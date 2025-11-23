@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToMongo } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { readHeavyLimiter } from "@/lib/rateLimiter";
 
 /**
  * GET endpoint to fetch current user's profile using httpOnly cookies
@@ -15,6 +16,23 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: "Not authenticated", authenticated: false },
         { status: 401 }
+      );
+    }
+
+    // Rate limiting by userId (frequent client calls)
+    const { success } = await readHeavyLimiter.limit(userId);
+
+    if (!success) {
+      console.warn(
+        `[RateLimit] User me blocked: user ${userId} (too many requests)`
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Too many requests. Maximum 60 per minute. Please slow down.",
+          authenticated: false,
+        },
+        { status: 429 }
       );
     }
 
