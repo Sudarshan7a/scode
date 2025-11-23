@@ -1,8 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAllRooms } from "@/lib/getMongoData";
+import { readMediumLimiter, getUserIdOrIP } from "@/lib/rateLimiter";
 
 export const GET = async (request: NextRequest) => {
   try {
+    // Rate limiting by userId or IP (hybrid for authenticated/anonymous users)
+    const identifier = getUserIdOrIP(request);
+    const { success } = await readMediumLimiter.limit(identifier);
+
+    if (!success) {
+      console.warn(
+        `[RateLimit] Rooms list blocked: ${identifier} (too many requests)`
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Too many requests. Maximum 30 room list requests per minute. Please slow down.",
+        },
+        { status: 429 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const pageParam = searchParams.get("page");
     const pageSizeParam = searchParams.get("pageSize");
