@@ -63,14 +63,16 @@ export function GeneralSettings() {
           pronouns: cachedData.pronouns || "",
           dateOfBirth: cachedData.dateOfBirth || "",
         });
+
         setLoading(false);
 
         // Optionally refresh from API in background if cache is old
         const cacheAge = UserCache.getAge();
-        if (cacheAge && cacheAge > 30 * 60 * 1000) {
-          // Refresh if older than 30 minutes
+        if (cacheAge && cacheAge > 10 * 60 * 1000) {
+          // Refresh if older than 10 minutes
           refreshProfileInBackground();
         }
+
         return;
       }
 
