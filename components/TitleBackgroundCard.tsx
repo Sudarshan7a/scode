@@ -27,11 +27,14 @@ function TitleBackgroundCard({
       >
         <div className="flex flex-col items-end  w-full gap-4  mx-auto ">
           {!hidebutton && viewAllLink && (
-            <Link href={viewAllLink} className=" pr-4 text-mysecondary hover:text-mysecondary-hover">
+            <Link
+              href={viewAllLink}
+              className=" pr-4 text-mysecondary hover:text-mysecondary-hover"
+            >
               View All
             </Link>
           )}
-          <div className="flex items-center justify-center gap-4 flex-wrap mx-auto">
+          <div className="flex items-center justify-center gap-4 flex-wrap w-full mx-auto ">
             {children}
           </div>
         </div>

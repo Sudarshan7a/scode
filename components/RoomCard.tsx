@@ -143,7 +143,7 @@ const RoomCard = ({
           className ?? ""
         }`}
       >
-        <div className="space-y-2 min-h-[140px]">
+        <div className="space-y-2 min-h-[160px]">
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-semibold text-myforeground font-navbar line-clamp-2">
               {title}
@@ -187,7 +187,7 @@ const RoomCard = ({
               <MyButton
                 variant={button.variant || "default"}
                 label={button.label}
-                className="w-full bg-[#ff9819] hover:bg-mysecondary text-[#f8f8f8] rounded-full px-4 py-2"
+                className="w-full bg-[#ff9819] hover:bg-mysecondary-hover text-[#f8f8f8] rounded-full px-4 py-2"
               />
             </div>
             {recreate && (

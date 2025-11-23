@@ -44,7 +44,7 @@ export function SkeletonGrid({ count = 6 }: { count?: number }) {
   return (
     <div className="flex flex-wrap gap-4 justify-start">
       {Array.from({ length: count }, (_, i) => (
-        <div key={i} className="flex-none">
+        <div key={i} className="flex-1 min-w-[360px] ">
           <SkeletonCard />
         </div>
       ))}
