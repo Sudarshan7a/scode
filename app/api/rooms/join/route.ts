@@ -3,6 +3,7 @@ import { withAuth } from "@/lib/authMiddleware";
 import { z } from "zod";
 import { connectToMongo } from "@/lib/mongodb";
 import { ObjectId, UpdateFilter, Document, Collection } from "mongodb";
+import { roomJoinLimiter } from "@/lib/rateLimiter";
 
 type RoomLike = Document & {
   status?: string;
@@ -171,6 +172,22 @@ export const POST = withAuth(async (request: NextRequest) => {
     const payload = validateJoinPayload(body);
     const roomIdStr = getRoomIdFromPayload(payload);
     const userCookieId = getUserCookieId(request);
+
+    // Rate limiting by userId
+    const { success } = await roomJoinLimiter.limit(userCookieId);
+
+    if (!success) {
+      console.warn(
+        `[RateLimit] Room join blocked: user ${userCookieId} (too many joins)`
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Too many room joins. Maximum 30 joins per 10 minutes. Please slow down.",
+        },
+        { status: 429 }
+      );
+    }
 
     const { roomsCollection } = await connectToMongo();
     const room = await findRoomOrThrow(roomsCollection, roomIdStr);

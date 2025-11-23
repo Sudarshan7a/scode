@@ -3,6 +3,7 @@ import { withAuth } from "@/lib/authMiddleware";
 import { z } from "zod";
 import { ObjectId } from "mongodb";
 import { connectToMongo } from "@/lib/mongodb";
+import { roomStartLimiter } from "@/lib/rateLimiter";
 
 class HttpError extends Error {
   status: number;
@@ -65,6 +66,22 @@ function buildRoomDoc(payload: StartPayload, userId: string) {
 
 export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
+    // Rate limiting by userId
+    const { success } = await roomStartLimiter.limit(userId);
+
+    if (!success) {
+      console.warn(
+        `[RateLimit] Room start blocked: user ${userId} (too many starts)`
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Too many room starts. Maximum 20 starts per 10 minutes. Please slow down.",
+        },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const payload = validateStart(body);
     const { roomsCollection } = await connectToMongo();
