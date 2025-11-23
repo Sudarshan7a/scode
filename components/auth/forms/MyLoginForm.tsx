@@ -47,19 +47,18 @@ export function MyLoginForm() {
 
         // Cache user data from login response
         if (result.user) {
+          const avatarId = result.user.avatarId ?? 0; // Default to 0 if undefined
           UserCache.set({
             name: result.user.name,
             email: result.user.email,
-            avatarId: result.user.avatarId,
+            avatarId: avatarId,
             pronouns: result.user.pronouns,
             role: result.user.role,
             dateOfBirth: result.user.dateOfBirth,
           });
 
           // Cache avatar separately
-          if (result.user.avatarId !== undefined) {
-            AvatarCache.set(result.user.avatarId);
-          }
+          AvatarCache.set(avatarId);
 
           // Notify other components about auth state change
           window.dispatchEvent(new Event('auth-change'));
