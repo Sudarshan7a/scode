@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import RoomCard from "../../RoomCard";
 import TitleBackgroundCard from "../../TitleBackgroundCard";
-import { SkeletonList } from "@/components/ui/Skeleton";
+import { SkeletonGrid } from "@/components/ui/Skeleton";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, AlertCircle } from "lucide-react";
@@ -42,7 +42,7 @@ export default function UpcomingRoomsClient() {
   const renderContent = () => {
     if (isLoading) {
       return (
-        <div className="space-y-4">
+        <div className="space-y-4 w-full">
           <div className="flex items-center justify-center py-6">
             <LoadingSpinner
               size="medium"
@@ -50,7 +50,7 @@ export default function UpcomingRoomsClient() {
               showText
             />
           </div>
-          <SkeletonList count={3} />
+          <SkeletonGrid count={3} />
         </div>
       );
     }
