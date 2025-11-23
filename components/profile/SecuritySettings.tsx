@@ -46,9 +46,8 @@ export function SecuritySettings() {
 
       // Check cache first for email
       const cachedData = UserCache.get();
-      if (cachedData) {
+      if (cachedData && cachedData.email) {
         setIsAuthenticated(true);
-        // Set email from cache immediately for faster display
         setProfile({
           id: "",
           email: cachedData.email,
@@ -95,11 +94,12 @@ export function SecuritySettings() {
       setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showError]);
+  }, [showError]); // fetchOAuthDataInBackground intentionally omitted to prevent infinite loop
 
   useEffect(() => {
     loadProfile();
-  }, [loadProfile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount
 
   if (!isAuthenticated && !loading) {
     return (

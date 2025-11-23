@@ -33,10 +33,11 @@ export default function UserAvatar({
       const response = await fetch("/api/user/me");
       const data = await response.json();
 
-      if (data.success && data.user.avatarId !== undefined) {
-        setAvatarId(data.user.avatarId);
+      if (data.success) {
+        const userAvatarId = data.user.avatarId ?? 0; // Default to 0 if undefined
+        setAvatarId(userAvatarId);
         // Cache the avatarId for future use (24 hours)
-        AvatarCache.set(data.user.avatarId);
+        AvatarCache.set(userAvatarId);
       }
     } catch (err) {
       console.error("Failed to load avatar:", err);
@@ -49,14 +50,13 @@ export default function UserAvatar({
     return <AvatarIcon className={className} />;
   }
 
-  if (avatarId === null || avatarId === undefined) {
-    return <AvatarIcon className={className} />;
-  }
+  // Use avatarId or default to 0
+  const displayAvatarId = avatarId ?? 0;
 
   return (
     <div className={`${className} relative rounded-full overflow-hidden`}>
       <Image
-        src={`/avatars/avatar${avatarId}.jpg`}
+        src={`/avatars/avatar${displayAvatarId}.jpg`}
         alt="User Avatar"
         fill
         className="object-cover"
