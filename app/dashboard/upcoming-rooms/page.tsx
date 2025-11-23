@@ -97,11 +97,21 @@ export default function UpcomingRoomsPage() {
     return (
       <div className="flex flex-wrap gap-4 justify-start">
         {upcomingRooms.map((room) => {
-          const roomOwnerId = typeof room.ownerId === 'string' 
-            ? room.ownerId 
-            : room.ownerId?.$oid || room.ownerId?.toString();
+          const roomOwnerId =
+            typeof room.ownerId === "string"
+              ? room.ownerId
+              : room.ownerId?.$oid || room.ownerId?.toString();
           const isOwner = roomOwnerId === userId;
-          console.log("Room:", room.title, "roomOwnerId:", roomOwnerId, "userId:", userId, "isOwner:", isOwner);
+          console.log(
+            "Room:",
+            room.title,
+            "roomOwnerId:",
+            roomOwnerId,
+            "userId:",
+            userId,
+            "isOwner:",
+            isOwner
+          );
           return (
             <div key={`room-${room.title}-${room._id}`} className="flex-none">
               <RoomCard room={room} isOwner={isOwner} />
