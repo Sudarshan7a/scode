@@ -3,18 +3,35 @@ import { connectToMongo } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import crypto from "crypto";
 import { Resend } from "resend";
+import { emailChangeLimiter } from "@/lib/rateLimiter";
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { newEmail } = body;
-
     // Get userId from httpOnly cookie
     const userId = request.cookies.get("userId")?.value;
 
     if (!userId) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
+
+    // Rate limiting by userId
+    const { success } = await emailChangeLimiter.limit(userId);
+
+    if (!success) {
+      console.warn(
+        `[RateLimit] Email change blocked: user ${userId} (too many change requests)`
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Too many email change requests. Maximum 3 per hour. Please try again later.",
+        },
+        { status: 429 }
+      );
+    }
+
+    const body = await request.json();
+    const { newEmail } = body;
 
     if (!newEmail) {
       return NextResponse.json(

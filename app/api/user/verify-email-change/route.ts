@@ -1,8 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToMongo } from "@/lib/mongodb";
+import { emailVerifyChangeLimiter } from "@/lib/rateLimiter";
+import { getIP } from "@/lib/getIp";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting by IP address
+    const ip = getIP(request);
+    const { success } = await emailVerifyChangeLimiter.limit(ip);
+
+    if (!success) {
+      console.warn(
+        `[RateLimit] Email verify change blocked: ${ip} (too many attempts)`
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Too many verification attempts. Maximum 5 per 10 minutes. Please slow down.",
+        },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { token } = body;
 

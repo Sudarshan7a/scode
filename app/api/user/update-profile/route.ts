@@ -1,18 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToMongo } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { profileUpdateLimiter } from "@/lib/rateLimiter";
 
 export async function PUT(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { name, pronouns, role, dateOfBirth, avatarId } = body;
-
     // Get userId from httpOnly cookie
     const userId = request.cookies.get("userId")?.value;
 
     if (!userId) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
+
+    // Rate limiting by userId
+    const { success } = await profileUpdateLimiter.limit(userId);
+
+    if (!success) {
+      console.warn(
+        `[RateLimit] Profile update blocked: user ${userId} (too many updates)`
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Too many profile updates. Maximum 5 updates per 10 minutes. Please slow down.",
+        },
+        { status: 429 }
+      );
+    }
+
+    const body = await request.json();
+    const { name, pronouns, role, dateOfBirth, avatarId } = body;
 
     // Validate avatarId if provided
     if (avatarId !== undefined && (avatarId < 0 || avatarId > 6)) {
