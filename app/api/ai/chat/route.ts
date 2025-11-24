@@ -107,7 +107,6 @@ export async function POST(req: NextRequest) {
     }
 
     const ai = new GoogleGenAI({ apiKey });
-    const model = ai.models.get("gemini-2.0-flash-exp");
 
     let prompt = `${SYSTEM_PROMPT}\n\nUser question: ${message}`;
 
@@ -117,9 +116,12 @@ export async function POST(req: NextRequest) {
       })::\n\`\`\`${language || ""}\n${editorCode}\n\`\`\``;
     }
 
-    const response = await model.generateContent(prompt);
-    const result = await response.response;
-    const text = result.text();
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash-exp",
+      contents: prompt,
+    });
+
+    const text = response.text;
 
     if (!text) {
       throw new Error("Invalid response from AI service");

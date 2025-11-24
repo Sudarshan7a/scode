@@ -9,7 +9,7 @@ function respond(status: number, body: Record<string, unknown>) {
   return NextResponse.json(body, { status });
 }
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   const store = await cookies();
   const userId = store.get("userId")?.value;
   if (!userId)
