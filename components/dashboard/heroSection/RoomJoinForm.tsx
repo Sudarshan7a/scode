@@ -156,15 +156,15 @@ function RoomJoinForm() {
           onChange={(e) => setRoomInput(e.target.value)}
           onKeyPress={handleKeyPress}
           disabled={isJoining}
-          className="w-full py-2 px-2 pl-3 pr-20 border-1 border-myforeground rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-2 px-2 pl-3 pr-20 border border-input bg-background rounded-full focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
         />
-        <button
+        <Button
           onClick={handleJoinClick}
           disabled={isJoining}
-          className="absolute right-1 top-1/2 -translate-y-1/2 bg-mysecondary-hover hover:bg-mysecondary-hover/80 text-white py-1.5 px-4 rounded-full text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="absolute right-1 top-1/2 -translate-y-1/2 bg-mysecondary-hover hover:bg-mysecondary-hover/80 text-white h-8 px-4 rounded-full text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isJoining ? "Joining..." : "Join"}
-        </button>
+        </Button>
       </div>
     </div>
   );
