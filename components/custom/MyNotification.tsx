@@ -12,8 +12,10 @@ import NotificationIcon from "../icons/NotificationIcon";
 import MyAlert from "./MyAlert";
 import { NOTIFICATION_DATA } from "@/constants/NotificationData";
 import { ScrollArea } from "../ui/scroll-area";
+import { useToast } from "@/hooks/useToast";
 
 export function MyNotifications() {
+  const { info } = useToast();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="">
@@ -28,7 +30,11 @@ export function MyNotifications() {
               <DropdownMenuLabel>{group.label}</DropdownMenuLabel>
               <DropdownMenuGroup className="mb-1">
                 {group.items.map((item) => (
-                  <DropdownMenuItem key={item.key} className="m-0 p-0">
+                  <DropdownMenuItem
+                    key={item.key}
+                    className="m-0 p-0"
+                    onClick={() => info("Notification details coming soon!")}
+                  >
                     <MyAlert
                       title={item.title}
                       description={item.description}
