@@ -1,5 +1,7 @@
 "use client";
 import React from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type Props = {
   label: string;
@@ -19,14 +21,15 @@ export default function PrimaryAction({
   const isDisabled = disabled || loading;
 
   return (
-    <button
+    <Button
       onClick={onClick}
       disabled={isDisabled}
-      className={`w-full cursor-pointer py-3 px-4 rounded-xl font-medium text-white shadow-lg hover:shadow-xl transition-all duration-500 transform hover:scale-[1.02] focus:ring-1 focus:ring-mysecondary focus:ring-offset-2 relative overflow-hidden group ${
-        isDisabled ? "opacity-50 cursor-not-allowed" : ""
-      } bg-gradient-to-r from-mysecondary to-mysecondary-hover ${
-        className ?? ""
-      }`}
+      className={cn(
+        "w-full cursor-pointer py-3 px-4 rounded-xl font-medium text-white shadow-lg hover:shadow-xl transition-all duration-500 transform hover:scale-[1.02] focus:ring-1 focus:ring-mysecondary focus:ring-offset-2 relative overflow-hidden group h-auto",
+        isDisabled ? "opacity-50 cursor-not-allowed" : "",
+        "bg-gradient-to-r from-mysecondary to-mysecondary-hover",
+        className
+      )}
     >
       <span className="relative z-10 flex items-center justify-center gap-2">
         {loading && (
@@ -62,6 +65,6 @@ export default function PrimaryAction({
             "linear-gradient(135deg, var(--color-mysecondary), var(--color-mysecondary-hover))",
         }}
       />
-    </button>
+    </Button>
   );
 }
