@@ -15,7 +15,9 @@ export async function validateAuthToken(
   try {
     // Extract token from Authorization header
     const token = getAccessTokenFromHeader(request.headers);
+    console.log("[AUTH] Token present:", !!token, "- URL:", request.url);
     if (!token) {
+      console.log("[AUTH] FAIL: No access token in Authorization header");
       return {
         success: false,
         error: NextResponse.json(
@@ -28,7 +30,9 @@ export async function validateAuthToken(
     // Get userId from cookies
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
+    console.log("[AUTH] userId from cookie:", userId);
     if (!userId) {
+      console.log("[AUTH] FAIL: No userId cookie");
       return {
         success: false,
         error: NextResponse.json(
@@ -41,9 +45,11 @@ export async function validateAuthToken(
     // Verify JWT token
     const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);
     const verifyTokenPayload = await jwtVerify(token, secretKey);
+    console.log("[AUTH] JWT payload userId:", verifyTokenPayload.payload.userId, "vs cookie userId:", userId);
 
     // Validate token payload
     if (!verifyTokenPayload || verifyTokenPayload.payload.userId !== userId) {
+      console.log("[AUTH] FAIL: Token userId mismatch");
       return {
         success: false,
         error: NextResponse.json(
@@ -57,7 +63,8 @@ export async function validateAuthToken(
       success: true,
       userId: userId,
     };
-  } catch {
+  } catch (err) {
+    console.log("[AUTH] FAIL: Exception during token verification:", err);
     return {
       success: false,
       error: NextResponse.json(

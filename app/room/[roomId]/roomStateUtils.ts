@@ -20,7 +20,10 @@ export const isValidObjectId = (id: unknown): boolean =>
 // Centralized error logger for axios/server errors
 export const logRequestError = (context: string, error: unknown) => {
   if (hasAxiosResponse(error)) {
-    console.error(`${context} - server response:`, error.response.data);
+    console.error(
+      `${context} - server response [${error.response.status}]:`,
+      JSON.stringify(error.response.data, null, 2)
+    );
   } else {
     console.error(`${context}:`, error);
   }

@@ -210,6 +210,7 @@ export const POST = withAuth(async (request: NextRequest) => {
       { status: 200 }
     );
   } catch (err: unknown) {
+    console.error("[API] /api/rooms/join error:", err);
     if (err instanceof HttpError) {
       return NextResponse.json(err.body, { status: err.status });
     }
