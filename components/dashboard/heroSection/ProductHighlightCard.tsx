@@ -45,7 +45,7 @@ function ProductHighlightCard() {
   };
 
   return (
-    <div className="w-full max-w-md p-6 overflow-hidden ">
+    <div className="w-full max-w-md p-6 overflow-hidden bg-white dark:bg-card rounded-xl shadow-sm border border-border">
       <div className="relative h-60">
         {productHighlights.map((highlight, index) => (
           <div

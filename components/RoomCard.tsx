@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import MyButton from "./custom/button/MyButton";
+import { Button } from "./ui/button";
 import { mockRooms } from "../types/roomsTypes";
 import { axiosInstance } from "@/lib/axiosInstance";
 import {
@@ -184,18 +184,20 @@ const RoomCard = ({
               onClick={button.onClick}
               className={`${!recreate ? "flex-1" : "w-full"} cursor-pointer`}
             >
-              <MyButton
+              <Button
                 variant={button.variant || "default"}
-                label={button.label}
                 className="w-full bg-[#ff9819] hover:bg-mysecondary-hover text-[#f8f8f8] rounded-full px-4 py-2"
-              />
+              >
+                {button.label}
+              </Button>
             </div>
             {recreate && (
-              <MyButton
+              <Button
                 variant="default"
-                label="Recreate Room"
                 className="flex-1 cursor-pointer bg-[#ff9819] hover:bg-mysecondary text-[#f8f8f8] rounded-full px-4 py-2"
-              />
+              >
+                Recreate Room
+              </Button>
             )}
           </div>
         )}
