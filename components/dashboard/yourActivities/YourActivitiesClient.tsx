@@ -7,6 +7,7 @@ import { mockRooms } from "@/types/roomsTypes";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ActivitySection {
   title: string;
@@ -56,9 +57,12 @@ const ActivitySection: React.FC<ActivitySection> = ({
     <div className="flex flex-col mb-4 w-full gap-4 p-4 mx-auto">
       <div className="flex items-center justify-between w-full mx-auto">
         <h2 className="text-2xl font-secondary font-normal">{title}</h2>
-        <button className="cursor-pointer pr-4 text-mysecondary-hover hover:text-sky-400">
+        <Button
+          variant="link"
+          className="cursor-pointer pr-4 text-mysecondary-hover hover:text-sky-400"
+        >
           View All
-        </button>
+        </Button>
       </div>
       <div className="flex items-center justify-between gap-4 w-full mx-auto">
         {rooms.slice(0, 3).map((room) => (

@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface AvatarSelectorProps {
   currentAvatarId: number;
@@ -38,12 +39,13 @@ export function AvatarSelector({
             className="object-cover"
           />
         </div>
-        <button
+        <Button
+          variant="link"
           onClick={() => setIsOpen(!isOpen)}
           className="text-sm text-mysecondary hover:text-mysecondary-hover font-medium"
         >
           {isOpen ? "Cancel" : "Change Avatar"}
-        </button>
+        </Button>
       </div>
 
       {/* Avatar Selection Grid */}

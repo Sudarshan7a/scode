@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Input } from "../ui/input";
 import { CircleCheck, CircleX } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/useToast";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { useRouter } from "next/navigation";
@@ -260,12 +260,12 @@ function SecurityForm() {
         <label className="block mb-1">Confirm Password</label>
         <Input type="password" placeholder="Confirm New Password" />
       </div>
-      <button
+      <Button
         type="submit"
         className="w-full bg-mysecondary text-lg text-background hover:text-foreground font-medium font-navbar py-2 px-4 rounded-md hover:bg-mysecondary-hover"
       >
         Update Password
-      </button>
+      </Button>
     </form>
   );
 }

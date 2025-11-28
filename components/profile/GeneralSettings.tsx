@@ -5,7 +5,7 @@ import { AvatarSelector } from "./AvatarSelector";
 import { useToast } from "@/hooks/useToast";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { useRouter } from "next/navigation";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { UserCache, AvatarCache } from "@/lib/userCache";
 
 interface UserProfile {
@@ -272,13 +272,13 @@ function ProfileForm({
           />
         </div>
       </div>
-      <button
+      <Button
         type="submit"
         disabled={saving}
         className="w-full bg-mysecondary text-white py-2 px-4 rounded-md hover:bg-mysecondary-hover hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {saving ? "Saving..." : "Save Changes"}
-      </button>
+      </Button>
     </form>
   );
 }
