@@ -18,6 +18,9 @@ import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { clearAllUserCaches, UserCache } from "@/lib/userCache";
 
+const buttonUnderlineTailwind =
+  "hover:no-underline  relative after:content-[''] after:absolute after:w-full after:h-[1px] after:bottom-1 after:left-0 after:bg-current after:origin-left after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:ease-out after:duration-200";
+
 export default function Navbar() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
