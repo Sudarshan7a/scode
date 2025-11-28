@@ -3,11 +3,11 @@
 import React, { useEffect, useState } from "react";
 import TitleBackgroundCard from "../../TitleBackgroundCard";
 import RoomCard from "../../RoomCard";
-import { mockRooms } from "@/types/roomsTypes";
-import { SkeletonList } from "@/components/ui/Skeleton";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { mockRooms } from "../../../types/roomsTypes";
+import { SkeletonList } from "../../../components/ui/Skeleton";
+import { LoadingSpinner } from "../../../components/ui/LoadingSpinner";
 import { AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../../components/ui/button";
 
 interface ActivitySection {
   title: string;
