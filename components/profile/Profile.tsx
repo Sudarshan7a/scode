@@ -11,13 +11,13 @@ function Profile() {
 
   return (
     <>
-      <div className="flex-1 h-full border-r border-mysecondary">
+      <div className="flex-1 h-full border-r border-border">
         {tabs.map((item) => (
           <div
-            className={`w-full px-2 py-4 font-navbar font-normal text-xl cursor-pointer border-b-1 border-accent-foreground transition-colors ${
+            className={`w-full px-4 py-4 font-navbar font-normal text-xl cursor-pointer border-b border-border transition-colors ${
               currentTab === item
-                ? "bg-mysecondary/10 text-mysecondary border-l-4 border-l-mysecondary"
-                : "text-foreground hover:text-mysecondary hover:bg-mysecondary/5"
+                ? "bg-accent text-accent-foreground border-l-4 border-l-primary"
+                : "text-foreground hover:text-primary hover:bg-accent/50"
             }`}
             key={item}
             onClick={() => setCurrentTab(item)}
