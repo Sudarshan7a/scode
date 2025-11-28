@@ -50,20 +50,14 @@ export default function ForgotPasswordPage() {
 
   return (
     <div
-      style={{
-        background:
-          "linear-gradient(135deg, rgba(255,152,25,0.24), rgba(60,141,227,0.20))",
-      }}
-      className="flex flex-col items-center pt-20 px-4 min-h-screen w-full bg-mysecondary/40 dark:bg-background transition-colors"
+      className="flex flex-col items-center pt-20 px-4 min-h-screen w-full bg-mysecondary/40 dark:bg-background transition-colors bg-[linear-gradient(135deg,rgba(255,152,25,0.24),rgba(60,141,227,0.20))]"
     >
       <Logo className="mb-12 scale-150" />
-      <div className="w-full max-w-md rounded-2xl p-8 border border-[var(--color-mysecondary)]/25 bg-white/85 dark:bg-[#1f1f1f]/85 backdrop-blur-xl shadow-[0_4px_28px_-6px_rgba(0,0,0,0.25)] relative overflow-hidden">
+      <div className="w-full max-w-md rounded-2xl p-8 border border-mysecondary/25 bg-white/85 dark:bg-[#1f1f1f]/85 backdrop-blur-xl shadow-[0_4px_28px_-6px_rgba(0,0,0,0.25)] relative overflow-hidden">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 rounded-2xl"
+          className="pointer-events-none absolute inset-0 rounded-2xl bg-[linear-gradient(135deg,rgba(60,141,227,0.16),rgba(255,152,25,0.18))]"
           style={{
-            background:
-              "linear-gradient(135deg, rgba(60,141,227,0.16), rgba(255,152,25,0.18))",
             mask: "linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.85))",
           }}
         />
