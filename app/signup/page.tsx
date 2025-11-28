@@ -11,7 +11,7 @@ function Page() {
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row">
       {/* Left side - Brand section */}
-      <div className="select-none pointer-events-none md:sticky md:top-0 md:h-screen flex-1 bg-gradient-to-br from-[var(--color-mysecondary)] to-[var(--color-mysecondary-hover)] p-8 flex flex-col justify-center items-center text-white">
+      <div className="select-none pointer-events-none md:sticky md:top-0 md:h-screen flex-1 bg-gradient-to-br from-mysecondary to-mysecondary-hover p-8 flex flex-col justify-center items-center text-white">
         <div className="max-w-md mx-auto flex flex-col items-center">
           {/* Logo */}
           <div className="mb-8">
@@ -54,18 +54,14 @@ function Page() {
 
       {/* Right side - Form section */}
       <div
-        style={{
-          background:
-            "linear-gradient(135deg, rgba(60,141,227,0.18), rgba(255,152,25,0.16))",
-        }}
-        className="flex-1 bg-[var(--color-mybackground)] flex justify-center items-center p-4 md:p-6"
+        className="flex-1 bg-mybackground flex justify-center items-center p-4 md:p-6 bg-[linear-gradient(135deg,rgba(60,141,227,0.18),rgba(255,152,25,0.16))]"
       >
         <div className="w-full max-w-md">
           <div className="mb-6 text-center">
-            <h2 className="text-2xl font-bold text-[var(--color-myforeground)]">
+            <h2 className="text-2xl font-bold text-myforeground">
               Create an Account
             </h2>
-            <p className="text-sm text-[var(--color-myforeground)]/70 mt-2">
+            <p className="text-sm text-myforeground/70 mt-2">
               Join SCode today to start collaborating in real-time
             </p>
           </div>
@@ -75,11 +71,11 @@ function Page() {
 
           {/* Sign up link */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-[var(--color-myforeground)]/70">
+            <p className="text-sm text-myforeground/70">
               Already have an account?{" "}
               <Link
                 href="/login"
-                className="text-[var(--color-mysecondary)] hover:underline font-medium"
+                className="text-mysecondary hover:underline font-medium"
               >
                 Log in
               </Link>

@@ -68,7 +68,7 @@ export function MySignupForm() {
   return (
     <div
       className=" bg-background min-w-md mx-auto rounded-xl p-4 md:p-5 border backdrop-blur-md relative overflow-hidden
-      border-[var(--color-mysecondary)]/25 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.15)]
+      border-mysecondary/25 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.15)]
       "
     >
       {/* soft themed gradient overlay */}
