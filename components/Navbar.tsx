@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Logo from "./Logo";
 import { navlinks } from "../constants/NavLinks";
 import Link from "next/link";
+import NavLink from "./NavLink";
 import UserAvatar from "./UserAvatar";
 import { useLayoutVisibility } from "../hooks/useLayoutVisibility";
 import RegistrationForm from "./custom/schedule/RegistrationForm"; // Import the hook
@@ -16,9 +17,6 @@ import {
 import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { clearAllUserCaches, UserCache } from "@/lib/userCache";
-
-const buttonUnderlineTailwind =
-  "hover:no-underline  relative after:content-[''] after:absolute after:w-full after:h-[1px] after:bottom-1 after:left-0 after:bg-current after:origin-left after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:ease-out after:duration-200";
 
 export default function Navbar() {
   const router = useRouter();
@@ -74,31 +72,11 @@ export default function Navbar() {
           <div className="font-navbar flex items-center gap-6">
             {navlinks
               .filter((link) => !(isHomePage && link.path === "/dashboard"))
-              .map((link) => {
-                const isActive = pathname === link.path;
-                return (
-                  <Link
-                    key={link.id}
-                    href={link.path}
-                    className="transition-colors duration-200"
-                    onClick={(e) => {
-                      // Prevent navigation if already on the current route
-                      if (isActive) {
-                        e.preventDefault();
-                      }
-                    }}
-                  >
-                    <Button
-                      variant="link"
-                      className={`text-foreground ${buttonUnderlineTailwind} ${
-                        isActive ? "after:scale-x-100" : ""
-                      }`}
-                    >
-                      {link.name}
-                    </Button>
-                  </Link>
-                );
-              })}
+              .map((link) => (
+                <NavLink key={link.id} href={link.path}>
+                  {link.name}
+                </NavLink>
+              ))}
           </div>
         </div>
         <div className="flex items-center gap-6">
