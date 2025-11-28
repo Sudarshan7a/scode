@@ -10,11 +10,12 @@ import TermsAndPrivacy from "../common/TermsAndPrivacy";
 import { useToast, TOAST_MESSAGES } from "@/hooks/useToast";
 export function MySignupForm() {
   const router = useRouter();
-  const { success, error } = useToast();
+  const { success, error, info } = useToast();
 
   // Handler for OAuth signup
   const handleOAuthSignup = (_providerId: string): void => {
     console.log("OAuth signup with provider:", _providerId);
+    info("OAuth signup is coming soon!");
     // TODO: Implement OAuth signup flow
     // Implement actual OAuth flow here (e.g., signIn(providerId))
   };
