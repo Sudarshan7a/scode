@@ -36,7 +36,7 @@ export function MyNotifications() {
           className="hover:bg-mysecondary/20"
           onClick={handleNotificationClick}
         >
-          <NotificationIcon className="scale-175" />
+          <NotificationIcon className="scale-175 text-myforeground" />
         </Button>
         <ComingSoonDialog
           open={showComingSoon}
@@ -52,7 +52,7 @@ export function MyNotifications() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="">
         <Button variant="link" className="hover:bg-mysecondary/20 ">
-          <NotificationIcon className="scale-175" />
+          <NotificationIcon className="scale-175 text-myforeground" />
         </Button>
       </DropdownMenuTrigger>{" "}
       <DropdownMenuContent className="min-w-[40%] w-120 mt-1 border-mysecondary border-2 mr-4">
