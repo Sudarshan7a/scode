@@ -31,6 +31,7 @@ const RoomCard = ({
   className,
   isOwner = false,
 }: RoomCardProps) => {
+  const router = useRouter();
   const [isNotifying, setIsNotifying] = useState(false);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
 
@@ -68,6 +69,13 @@ const RoomCard = ({
 
   const handleDetails = () => {
     setShowDetailsDialog(true);
+  };
+
+  const handleJoinRoom = () => {
+    const roomId = _id?.$oid || _id?.toString() || _id;
+    if (roomId) {
+      router.push(`/room/${roomId}`);
+    }
   };
 
   const handleNotify = async () => {
