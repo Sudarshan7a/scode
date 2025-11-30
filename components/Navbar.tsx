@@ -102,9 +102,9 @@ export default function Navbar() {
 
   return (
     showLayout && (
-      <div className="h-[52px] flex px-8 items-center justify-between border-b-1 border-b-mysecondary shadow-mysecondary/40 shadow-sm bg-mybackground">
-        <div className="flex items-center gap-6">
-          <Link href="/">
+      <div className="h-14 flex px-8 items-center justify-between border-b border-mysecondary/15 shadow-sm shadow-mysecondary/5 bg-mybackground/95 backdrop-blur-md sticky top-0 z-50">
+        <div className="flex items-center gap-8">
+          <Link href="/" className="transition-transform duration-200 hover:scale-105">
             <Logo />
           </Link>
           <div className="font-navbar flex items-center gap-6">
@@ -125,7 +125,7 @@ export default function Navbar() {
           </div>
         </div>
         <div className="flex items-center gap-6">
-          <div className="h-full flex items-center gap-6">
+          <div className="h-full flex items-center gap-4">
             <RegistrationForm
               formType="schedule"
               buttonUnderlineStyle={buttonUnderlineTailwind}
@@ -144,28 +144,27 @@ export default function Navbar() {
             )}
           </div>
           {!isLoading && (
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4">
               {isAuthenticated ? (
                 <>
                   <MyNotifications />
                   <Popover>
                     <PopoverTrigger>
-                      <UserAvatar className="w-9 h-9 hover:ring-2 hover:ring-mysecondary/50 rounded-full transition-all" />
+                      <UserAvatar className="w-9 h-9 hover:ring-2 hover:ring-mysecondary/40 rounded-full transition-all duration-200 hover:scale-105" />
                     </PopoverTrigger>
-                    <PopoverContent className="flex flex-col gap-1 px-4 py-1  border-mysecondary w-fit mr-2 mt-2 rounded-md shadow-lg">
+                    <PopoverContent className="flex flex-col gap-1 p-2 border-mysecondary/20 w-fit mr-2 mt-3 rounded-xl shadow-lg shadow-mysecondary/10 bg-mybackground">
                       <Link href="/profile">
                         <Button
-                          variant="link"
-                          className="text-foreground hover:bg-mysecondary/20 "
+                          variant="ghost"
+                          className="w-full justify-start text-myforeground hover:bg-mysecondary/10 rounded-lg"
                         >
                           Profile
                         </Button>
                       </Link>
-                      <hr className="border-mysecondary" />
-
+                      <hr className="border-mysecondary/15 my-1" />
                       <Button
-                        variant="link"
-                        className="text-foreground hover:bg-mysecondary/20 "
+                        variant="ghost"
+                        className="w-full justify-start text-myforeground hover:bg-mysecondary/10 rounded-lg"
                         onClick={logout}
                       >
                         Logout
@@ -175,7 +174,7 @@ export default function Navbar() {
                 </>
               ) : (
                 <Link href="/login">
-                  <Button className="bg-mysecondary hover:bg-mysecondary-hover text-white">
+                  <Button className="bg-mysecondary hover:bg-mysecondary-hover text-white shadow-md shadow-mysecondary/25 hover:shadow-lg hover:shadow-mysecondary/30">
                     Login
                   </Button>
                 </Link>
