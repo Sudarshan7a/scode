@@ -45,10 +45,10 @@ function ProductHighlightCard() {
   };
 
   return (
-    <div className="w-full max-w-md p-8 overflow-hidden bg-mybackground rounded-2xl shadow-lg shadow-mysecondary/10 border border-mysecondary/20 relative group hover:shadow-xl hover:shadow-mysecondary/15 transition-all duration-300">
+    <div className="w-full max-w-md p-8 overflow-hidden bg-mybackground rounded-2xl shadow-lg shadow-mysecondary/10 border border-mysecondary/20 relative">
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-mysecondary/5 via-transparent to-mysecondary/3 pointer-events-none rounded-2xl" />
-      
+
       <div className="relative h-64">
         {productHighlights.map((highlight, index) => (
           <div
@@ -79,7 +79,7 @@ function ProductHighlightCard() {
           </div>
         ))}
       </div>
-      
+
       {/* Carousel indicators */}
       <div className="relative flex justify-center gap-2 mt-6">
         {productHighlights.map((_, index) => (
@@ -88,8 +88,8 @@ function ProductHighlightCard() {
             data-index={index}
             onClick={handleSlideClick}
             className={`h-2 rounded-full transition-all duration-300 ease-out hover:bg-mysecondary/70 cursor-pointer ${
-              index === currentSlide 
-                ? "w-8 bg-mysecondary shadow-md shadow-mysecondary/30" 
+              index === currentSlide
+                ? "w-8 bg-mysecondary shadow-md shadow-mysecondary/30"
                 : "w-2 bg-mysecondary/25 hover:bg-mysecondary/40"
             }`}
             aria-label={`Go to slide ${index + 1}`}
@@ -97,7 +97,9 @@ function ProductHighlightCard() {
         ))}
       </div>
       <div className="relative flex justify-center mt-4">
-        <p className="text-xs text-myforeground/40 font-medium">Click dots to navigate</p>
+        <p className="text-xs text-myforeground/40 font-medium">
+          Click dots to navigate
+        </p>
       </div>
     </div>
   );
