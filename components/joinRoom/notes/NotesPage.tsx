@@ -10,7 +10,9 @@ interface NotesPageProps {
 
 function NotesPage({ sessionId }: NotesPageProps) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [pages, setPages] = useState<Awaited<ReturnType<typeof getAllPages>>>([]);
+  const [pages, setPages] = useState<Awaited<ReturnType<typeof getAllPages>>>(
+    []
+  );
 
   const initializePages = useCallback(async () => {
     try {
@@ -40,20 +42,26 @@ function NotesPage({ sessionId }: NotesPageProps) {
     initializePages();
   }, [initializePages]);
 
-  const handlePagesLoad = useCallback(async (loadedPages: Awaited<ReturnType<typeof getAllPages>>) => {
-    setPages(loadedPages);
-    if (loadedPages.length > 0 && !loadedPages.find(p => p.pageNumber === currentPage)) {
-      setCurrentPage(loadedPages[0].pageNumber);
-    }
-  }, [currentPage]);
+  const handlePagesLoad = useCallback(
+    async (loadedPages: Awaited<ReturnType<typeof getAllPages>>) => {
+      setPages(loadedPages);
+      if (
+        loadedPages.length > 0 &&
+        !loadedPages.find((p) => p.pageNumber === currentPage)
+      ) {
+        setCurrentPage(loadedPages[0].pageNumber);
+      }
+    },
+    [currentPage]
+  );
 
   const handleCreatePage = async () => {
     try {
       if (pages.length >= 10) return;
 
       const currentPages = await getAllPages(sessionId);
-      const existingNumbers = currentPages.map(p => p.pageNumber);
-      
+      const existingNumbers = currentPages.map((p) => p.pageNumber);
+
       // Find first available number from 0-9
       let newPageNumber = 0;
       for (let i = 0; i < 10; i++) {
@@ -62,7 +70,7 @@ function NotesPage({ sessionId }: NotesPageProps) {
           break;
         }
       }
-      
+
       await savePage({
         id: `${sessionId}-page-${newPageNumber}`,
         roomId: sessionId,
@@ -71,7 +79,7 @@ function NotesPage({ sessionId }: NotesPageProps) {
         content: "",
         updatedAt: Date.now(),
       });
-      
+
       const updatedPages = await getAllPages(sessionId);
       setPages(updatedPages);
       setCurrentPage(newPageNumber);
@@ -93,12 +101,12 @@ function NotesPage({ sessionId }: NotesPageProps) {
 
       const pageToDelete = currentPage;
       await deletePage(sessionId, pageToDelete);
-      
+
       const updatedPages = await getAllPages(sessionId);
       setPages(updatedPages);
-      
+
       // Switch to first available page that's not the deleted one
-      const nextPage = updatedPages.find(p => p.pageNumber !== pageToDelete);
+      const nextPage = updatedPages.find((p) => p.pageNumber !== pageToDelete);
       if (nextPage) {
         setCurrentPage(nextPage.pageNumber);
       } else if (updatedPages.length > 0) {
@@ -110,17 +118,17 @@ function NotesPage({ sessionId }: NotesPageProps) {
   };
 
   return (
-    <div className="flex text-center h-[94vh] ">
-      <Pages 
+    <div className="flex text-center h-full ">
+      <Pages
         roomId={sessionId}
         currentPage={currentPage}
         onPageSelect={handlePageSelect}
         onCreatePage={handleCreatePage}
         onPagesLoad={handlePagesLoad}
       />
-      <Note 
+      <Note
         key={`${sessionId}-page-${currentPage}`}
-        sessionId={sessionId} 
+        sessionId={sessionId}
         pageNumber={currentPage}
         onDelete={handleDeletePage}
       />
