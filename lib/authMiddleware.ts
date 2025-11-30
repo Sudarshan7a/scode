@@ -45,7 +45,12 @@ export async function validateAuthToken(
     // Verify JWT token
     const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);
     const verifyTokenPayload = await jwtVerify(token, secretKey);
-    console.log("[AUTH] JWT payload userId:", verifyTokenPayload.payload.userId, "vs cookie userId:", userId);
+    console.log(
+      "[AUTH] JWT payload userId:",
+      verifyTokenPayload.payload.userId,
+      "vs cookie userId:",
+      userId
+    );
 
     // Validate token payload
     if (!verifyTokenPayload || verifyTokenPayload.payload.userId !== userId) {
