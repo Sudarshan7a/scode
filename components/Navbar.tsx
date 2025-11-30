@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Logo from "./Logo";
 import { navlinks } from "../constants/NavLinks";
 import Link from "next/link";
@@ -27,17 +27,52 @@ export default function Navbar() {
   const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
 
+  const checkAuth = useCallback(async () => {
+    // First check localStorage cache
+    const cachedUser = UserCache.get();
+    if (cachedUser !== null) {
+      setIsAuthenticated(true);
+      setIsLoading(false);
+      return;
+    }
+
+    // If no cache, verify with server using httpOnly cookies
+    try {
+      const response = await fetch("/api/user/me", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.authenticated && data.user) {
+          // Populate the cache with user data
+          UserCache.set({
+            name: data.user.name,
+            email: data.user.email,
+            avatarId: data.user.avatarId ?? 0,
+            pronouns: data.user.pronouns,
+            role: data.user.role,
+            dateOfBirth: data.user.dateOfBirth,
+          });
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error("Auth check failed:", error);
+      setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     checkAuth();
-  }, [pathname]);
-
-  function checkAuth() {
-    // Check if user data exists in localStorage cache
-    const cachedUser = UserCache.get();
-    console.log("Cached User:", cachedUser);
-    setIsAuthenticated(cachedUser !== null);
-    setIsLoading(false);
-  }
+  }, [pathname, checkAuth]);
 
   async function logout() {
     const res = await fetch("/api/auth/logout", {
