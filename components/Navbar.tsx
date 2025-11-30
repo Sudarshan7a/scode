@@ -109,7 +109,14 @@ export default function Navbar() {
           </Link>
           <div className="font-navbar flex items-center gap-6">
             {navlinks
-              .filter((link) => !(isHomePage && !isAuthenticated && link.path === "/dashboard"))
+              .filter(
+                (link) =>
+                  !(
+                    isHomePage &&
+                    !isAuthenticated &&
+                    link.path === "/dashboard"
+                  )
+              )
               .map((link) => (
                 <NavLink key={link.id} href={link.path}>
                   {link.name}

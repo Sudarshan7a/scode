@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,8 +13,41 @@ import NotificationIcon from "../icons/NotificationIcon";
 import MyAlert from "./MyAlert";
 import { NOTIFICATION_DATA } from "@/constants/NotificationData";
 import { ScrollArea } from "../ui/scroll-area";
+import ComingSoonDialog from "./ComingSoonDialog";
+
+// Set to false to enable notifications dropdown with mock data
+const SHOW_COMING_SOON = true;
 
 export function MyNotifications() {
+  const [showComingSoon, setShowComingSoon] = useState(false);
+
+  const handleNotificationClick = () => {
+    if (SHOW_COMING_SOON) {
+      setShowComingSoon(true);
+    }
+  };
+
+  // When SHOW_COMING_SOON is true, show just the button with dialog
+  if (SHOW_COMING_SOON) {
+    return (
+      <>
+        <Button
+          variant="link"
+          className="hover:bg-mysecondary/20"
+          onClick={handleNotificationClick}
+        >
+          <NotificationIcon className="scale-175" />
+        </Button>
+        <ComingSoonDialog
+          open={showComingSoon}
+          onOpenChange={setShowComingSoon}
+          featureName="Notifications"
+        />
+      </>
+    );
+  }
+
+  // Full notifications dropdown with mock data
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="">
