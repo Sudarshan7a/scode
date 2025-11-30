@@ -122,7 +122,7 @@ const RoomCard = ({
 
   const buttons: Record<"live" | "scheduled" | "ended" | "saved", ButtonProps> =
     {
-      live: { label: "Join Now", variant: "default" },
+      live: { label: "Join Now", variant: "default", onClick: handleJoinRoom },
       scheduled: {
         label: isOwner
           ? "Start Room"
