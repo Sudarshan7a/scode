@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { mockRooms } from "../types/roomsTypes";
 import { axiosInstance } from "@/lib/axiosInstance";
@@ -30,6 +31,7 @@ const RoomCard = ({
   className,
   isOwner = false,
 }: RoomCardProps) => {
+  const router = useRouter();
   const [isNotifying, setIsNotifying] = useState(false);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
 
@@ -67,6 +69,13 @@ const RoomCard = ({
 
   const handleDetails = () => {
     setShowDetailsDialog(true);
+  };
+
+  const handleJoinRoom = () => {
+    const roomId = _id?.$oid || _id?.toString() || _id;
+    if (roomId) {
+      router.push(`/room/${roomId}`);
+    }
   };
 
   const handleNotify = async () => {
@@ -113,7 +122,7 @@ const RoomCard = ({
 
   const buttons: Record<"live" | "scheduled" | "ended" | "saved", ButtonProps> =
     {
-      live: { label: "Join Now", variant: "default" },
+      live: { label: "Join Now", variant: "default", onClick: handleJoinRoom },
       scheduled: {
         label: isOwner
           ? "Start Room"
