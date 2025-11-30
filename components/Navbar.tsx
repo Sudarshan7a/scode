@@ -104,7 +104,10 @@ export default function Navbar() {
     showLayout && (
       <div className="h-14 flex px-8 items-center justify-between border-b border-mysecondary/15 shadow-sm shadow-mysecondary/5 bg-mybackground/95 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center gap-8">
-          <Link href="/" className="transition-transform duration-200 hover:scale-105">
+          <Link
+            href="/"
+            className="transition-transform duration-200 hover:scale-105"
+          >
             <Logo />
           </Link>
           <div className="font-navbar flex items-center gap-6">
