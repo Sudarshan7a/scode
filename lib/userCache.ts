@@ -29,6 +29,22 @@ export interface UserDataInput {
 const CACHE_KEY = "userData";
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
+/**
+ * Validates that cached data has required fields and correct types
+ */
+function isValidCachedData(data: unknown): data is CachedUserData {
+  if (!data || typeof data !== "object") return false;
+  const d = data as Record<string, unknown>;
+  return (
+    typeof d.name === "string" &&
+    d.name.length > 0 &&
+    typeof d.email === "string" &&
+    d.email.length > 0 &&
+    typeof d.avatarId === "number" &&
+    typeof d.cacheTime === "number"
+  );
+}
+
 export const UserCache = {
   /**
    * Store user data in localStorage with timestamp
@@ -55,7 +71,15 @@ export const UserCache = {
       const cached = localStorage.getItem(CACHE_KEY);
       if (!cached) return null;
 
-      const data: CachedUserData = JSON.parse(cached);
+      const data = JSON.parse(cached);
+
+      // Validate data structure
+      if (!isValidCachedData(data)) {
+        console.warn("Invalid user cache data, clearing");
+        UserCache.clear();
+        return null;
+      }
+
       const age = Date.now() - data.cacheTime;
 
       // Check if cache is expired
