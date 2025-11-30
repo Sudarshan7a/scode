@@ -15,16 +15,14 @@ function BottomBar({ activeTab, onTabChange }: BottomBarProps) {
   ];
 
   return (
-    <div className="font-navbar text-xl font-normal h-[6vh] flex border-t-1 border-t-myforeground bg-mybackground">
-      {tabs.map((tab, index) => (
+    <div className="font-navbar text-base font-medium h-14 flex items-center gap-2 px-3 border-t border-mysecondary/20 bg-mybackground">
+      {tabs.map((tab) => (
         <div
           key={tab.id}
-          className={`flex-1 flex items-center justify-center my-auto h-9/12 text-center cursor-pointer transition-colors ${
-            index < tabs.length - 1 ? "border-r-1 border-r-myforeground" : ""
-          } ${
+          className={`flex-1 flex items-center justify-center py-2 rounded-xl cursor-pointer transition-all duration-200 ${
             activeTab === tab.id
-              ? "bg-mysecondary text-white"
-              : "hover:bg-mysecondary-hover text-myforeground"
+              ? "bg-mysecondary text-white shadow-md shadow-mysecondary/25"
+              : "text-myforeground hover:bg-mysecondary/10"
           }`}
           onClick={() => onTabChange(tab.id)}
         >
