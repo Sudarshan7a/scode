@@ -101,15 +101,7 @@ axiosInstance.interceptors.request.use(async (config) => {
       }
     } catch (error) {
       void error;
-      return Promise.reject("Token refresh failed");
-      if (
-        typeof window !== "undefined" &&
-        !window.location.pathname.match(
-          /^\/(login|signup|explore|how-it-works|forgot-password|verify-email|check-email|reset-password)$/
-        )
-      ) {
-        window.location.href = "/login";
-      }
+      // Response interceptor will handle redirect on 401
       return Promise.reject("Token refresh failed");
     } finally {
       isRefreshing = false;
@@ -122,3 +114,56 @@ axiosInstance.interceptors.request.use(async (config) => {
 
   return config;
 });
+
+// === RESPONSE INTERCEPTOR ===
+// Handle 401 errors by refreshing the token and retrying the request
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Only retry once and only for 401 errors
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      // If already refreshing, wait for it
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          subscribeTokenRefresh((newToken: string) => {
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            resolve(axiosInstance(originalRequest));
+          });
+          // Add timeout to prevent hanging
+          setTimeout(() => reject(error), 10000);
+        });
+      }
+
+      isRefreshing = true;
+
+      try {
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+          onTokenRefreshed(newToken);
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return axiosInstance(originalRequest);
+        }
+      } catch (refreshError) {
+        void refreshError;
+        clearAccessToken();
+        // Redirect to login for auth-required pages
+        if (
+          typeof window !== "undefined" &&
+          !window.location.pathname.match(
+            /^\/(login|signup|explore|how-it-works|forgot-password|verify-email|check-email|reset-password)$/
+          )
+        ) {
+          window.location.href = "/login";
+        }
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
