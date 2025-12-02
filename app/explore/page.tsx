@@ -4,7 +4,7 @@ import React, { useMemo, useCallback } from "react";
 import RoomCard from "@/components/RoomCard";
 import SearchBar from "@/components/searchBar/SearchBar";
 import TitleBackgroundCard from "@/components/TitleBackgroundCard";
-import { useRooms } from "@/hooks/useRooms";
+import { useRooms, Room } from "@/hooks/useRooms";
 import { mockRooms } from "@/types/roomsTypes";
 import { SkeletonGrid } from "@/components/ui/Skeleton";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -163,7 +163,7 @@ function ExploreContent() {
     return (
       <div className="space-y-6">
         <div className="flex flex-wrap gap-4 justify-start">
-          {rooms.map((room) => {
+          {rooms.map((room: Room) => {
             // Extract ID regardless of format (_id or _id.$oid)
             const roomId =
               typeof room._id === "string" ? room._id : room._id.$oid;

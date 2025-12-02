@@ -37,6 +37,9 @@ interface RoomsAPIResponse {
   totalRooms: number;
 }
 
+// Cache duration constant (5 minutes in milliseconds)
+const CACHE_DURATION = 5 * 60 * 1000;
+
 /**
  * Enhanced useRooms Hook
  *
@@ -55,7 +58,6 @@ export function useRooms() {
   const [error, setError] = useState<string | null>(null);
   const fetchingRef = useRef(false);
   const cacheRef = useRef<{ data: Room[]; timestamp: number } | null>(null);
-  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
 
   /**
    * Fetch rooms from API with pagination
