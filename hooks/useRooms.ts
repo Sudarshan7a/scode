@@ -55,7 +55,8 @@ export function useRooms() {
   const [error, setError] = useState<string | null>(null);
   const fetchingRef = useRef(false);
   const cacheRef = useRef<{ data: Room[]; timestamp: number } | null>(null);
-  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
+  // Use useMemo to create a stable CACHE_DURATION constant
+  const CACHE_DURATION = useMemo(() => 5 * 60 * 1000, []); // 5 minutes cache
 
   /**
    * Fetch rooms from API with pagination
@@ -109,7 +110,7 @@ export function useRooms() {
         fetchingRef.current = false;
       }
     },
-    [setTotalPages, setTotalRooms]
+    [CACHE_DURATION, setTotalPages, setTotalRooms]
   );
 
   // Fetch rooms on mount and when pagination changes
