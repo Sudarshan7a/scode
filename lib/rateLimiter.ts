@@ -140,6 +140,17 @@ export const roomStartLimiter = new Ratelimit({
 });
 
 // ============================================================================
+// TIER 3B: ROOM STATE OPERATIONS (High Priority)
+// ============================================================================
+
+export const roomUpdateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(30, "5 m"), // 30 state updates per 5 minutes
+  analytics: true,
+  prefix: "ratelimit:room:update-state",
+});
+
+// ============================================================================
 // TIER 4: PROFILE & EMAIL OPERATIONS (Medium Risk)
 // ============================================================================
 
