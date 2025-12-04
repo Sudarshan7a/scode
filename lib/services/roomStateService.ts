@@ -18,6 +18,55 @@ export interface UpdateStateResult {
 }
 
 /**
+ * Notify WebSocket server about room state change
+ */
+async function notifyWebSocketServer(
+  roomId: string,
+  oldStatus: RoomState,
+  newStatus: RoomState,
+  userId: string
+): Promise<void> {
+  try {
+    const wsUrl =
+      process.env.NEXT_PUBLIC_MY_WEBSOCKET_DOMAIN || "ws://localhost:1234";
+
+    // Convert ws:// to http:// for API calls
+    const httpUrl = wsUrl
+      .replace(/^ws:\/\//, "http://")
+      .replace(/^wss:\/\//, "https://")
+      .replace(/\/$/, ""); // Remove trailing slash
+
+    const response = await fetch(`${httpUrl}/api/rooms/${roomId}/state`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        roomId,
+        event: "roomStateChanged",
+        oldStatus,
+        newStatus,
+        changedBy: userId,
+        timestamp: new Date().toISOString(),
+      }),
+    });
+
+    if (!response.ok) {
+      console.warn(
+        `WebSocket server responded with ${response.status} for room state change`
+      );
+      // Don't throw - WebSocket notification is non-critical
+    }
+  } catch (error) {
+    console.warn(
+      "Failed to notify WebSocket server about room state change:",
+      error
+    );
+    // Don't throw - WebSocket notification is non-critical
+  }
+}
+
+/**
  * Service for handling room state transitions
  */
 export class RoomStateService {
@@ -150,6 +199,50 @@ export class RoomStateService {
   }
 
   /**
+   * Update room state with WebSocket notification
+   */
+  static async updateRoomStateWithNotification(
+    roomId: string,
+    newStatus: RoomState,
+    userId: string,
+    metadata?: UpdateStateMetadata
+  ): Promise<UpdateStateResult> {
+    try {
+      // Get current status before update
+      const currentStatus = await this.getRoomStatus(roomId);
+
+      // Perform the update
+      const result = await this.updateRoomState(roomId, newStatus, userId, metadata);
+
+      // Notify WebSocket server if update was successful
+      if (result.success) {
+        // Fire and forget - don't wait for WebSocket notification
+        notifyWebSocketServer(roomId, currentStatus, newStatus, userId).catch(
+          (error) => {
+            console.warn(
+              "WebSocket notification failed but room state was updated:",
+              error
+            );
+          }
+        );
+      }
+
+      return result;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      const currentStatus = await this.getRoomStatus(roomId);
+      return {
+        success: false,
+        roomId,
+        oldStatus: currentStatus as RoomState,
+        newStatus,
+        updatedAt: new Date(),
+        error: errorMessage,
+      };
+    }
+
+  /**
    * Update room state with state history tracking
    */
   static async updateRoomStateWithHistory(
@@ -232,4 +325,52 @@ export class RoomStateService {
       };
     }
   }
-}
+
+  /**
+   * Update room state with history tracking and WebSocket notification
+   */
+  static async updateRoomStateWithHistoryAndNotification(
+    roomId: string,
+    newStatus: RoomState,
+    userId: string,
+    metadata?: UpdateStateMetadata
+  ): Promise<UpdateStateResult> {
+    try {
+      // Get current status before update
+      const currentStatus = await this.getRoomStatus(roomId);
+
+      // Perform the update with history
+      const result = await this.updateRoomStateWithHistory(
+        roomId,
+        newStatus,
+        userId,
+        metadata
+      );
+
+      // Notify WebSocket server if update was successful
+      if (result.success) {
+        // Fire and forget - don't wait for WebSocket notification
+        notifyWebSocketServer(roomId, currentStatus, newStatus, userId).catch(
+          (error) => {
+            console.warn(
+              "WebSocket notification failed but room state was updated:",
+              error
+            );
+          }
+        );
+      }
+
+      return result;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      const currentStatus = await this.getRoomStatus(roomId);
+      return {
+        success: false,
+        roomId,
+        oldStatus: currentStatus as RoomState,
+        newStatus,
+        updatedAt: new Date(),
+        error: errorMessage,
+      };
+    }

@@ -74,7 +74,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
     );
 
     // Call service layer
-    const result = await RoomStateService.updateRoomStateWithHistory(
+    const result = await RoomStateService.updateRoomStateWithHistoryAndNotification(
       roomId,
       newStatus,
       userId,
