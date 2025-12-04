@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/axiosInstance";
 import { useToast, TOAST_MESSAGES } from "@/hooks/useToast";
+import { useRoomStateUpdate } from "@/hooks/useRoomStateUpdate";
+import { useRoomAutoEnd } from "@/hooks/useRoomAutoEnd";
 import {
   isValidObjectId,
   hasAxiosResponse,
@@ -15,6 +17,7 @@ import type { RoomInfo, RoomState } from "@/types/room";
 export function useRoomController(roomId: string) {
   const router = useRouter();
   const { success } = useToast();
+  const { updateState, isLoading: isUpdatingState } = useRoomStateUpdate();
 
   const [roomState, setRoomState] = useState<RoomState>("loading");
   const [isStarting, setIsStarting] = useState(false);
@@ -24,6 +27,14 @@ export function useRoomController(roomId: string) {
   const [isHost, setIsHost] = useState(false);
   const [hasJoinedEditor, setHasJoinedEditor] = useState(false);
   const [roomInfo, setRoomInfo] = useState<RoomInfo>(null);
+
+  // Auto-end room when host closes tab or navigates away
+  useRoomAutoEnd({
+    roomId,
+    isHost,
+    isLive: roomState === "live",
+    enabled: true,
+  });
 
   const handleStartRoom = useCallback(async () => {
     setIsStarting(true);
@@ -63,13 +74,23 @@ export function useRoomController(roomId: string) {
   }, [roomId]);
 
   const handleEndSession = useCallback(async () => {
+    if (!isValidObjectId(roomId)) {
+      console.error("Invalid roomId format, aborting end session:", roomId);
+      return;
+    }
+
     setIsEnding(true);
     try {
-      const resp = await axiosInstance.post("/api/rooms/end", { roomId });
-      if (resp.data && resp.data.status === "success") {
-        setRoomState("ended");
-        setHasJoinedEditor(false);
-      }
+      // Use new room state API to transition to ended
+      await updateState(roomId, "ended", {
+        endReason: "manual",
+        endedBy: "host-button",
+      });
+
+      // Update local state
+      setRoomState("ended");
+      setHasJoinedEditor(false);
+      success(TOAST_MESSAGES.ROOM.ENDED);
     } catch (error: unknown) {
       if (hasAxiosResponse(error)) {
         console.error(
@@ -85,7 +106,7 @@ export function useRoomController(roomId: string) {
     } finally {
       setIsEnding(false);
     }
-  }, [roomId, router]);
+  }, [roomId, router, updateState, success]);
 
   const handleLeaveRoom = useCallback(async () => {
     setIsLeaving(true);
