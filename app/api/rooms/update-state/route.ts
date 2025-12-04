@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "@/lib/authMiddleware";
-import { z } from "zod";
 import { RoomStateService } from "@/lib/services/roomStateService";
 import { UpdateRoomStateRequestSchema } from "@/lib/schemas/roomStateSchema";
 import { roomUpdateLimiter } from "@/lib/rateLimiter";

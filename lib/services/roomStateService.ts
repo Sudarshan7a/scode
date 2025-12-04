@@ -241,6 +241,7 @@ export class RoomStateService {
         error: errorMessage,
       };
     }
+  }
 
   /**
    * Update room state with state history tracking
@@ -275,7 +276,8 @@ export class RoomStateService {
       const now = new Date();
 
       // Update with history push
-      const result = await roomsCollection.updateOne(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = await (roomsCollection as any).updateOne(
         { _id: new ObjectId(roomId) },
         {
           $set: {
@@ -289,7 +291,7 @@ export class RoomStateService {
               to: newStatus,
               changedBy: userId,
               changedAt: now,
-              metadata,
+              metadata: metadata || {},
             },
           },
         }
@@ -374,3 +376,5 @@ export class RoomStateService {
         error: errorMessage,
       };
     }
+  }
+}
