@@ -39,8 +39,8 @@ export function useRoomAutoEnd({
       roomId,
       newStatus: "ended",
       metadata: {
-        endReason: "auto-ended",
-        endedBy: "host-page-unload",
+        reason: "auto-ended-page-unload",
+        notes: "Host closed or refreshed the page",
       },
     });
 
@@ -76,8 +76,8 @@ export function useRoomAutoEnd({
 
     try {
       await updateState(roomId, "ended", {
-        endReason: "auto-ended",
-        endedBy: "host-navigation",
+        reason: "auto-ended-navigation",
+        notes: "Host navigated away from the room",
       });
     } catch (error) {
       console.error("Failed to auto-end room:", error);

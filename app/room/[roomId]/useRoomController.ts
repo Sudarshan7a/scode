@@ -17,7 +17,7 @@ import type { RoomInfo, RoomState } from "@/types/room";
 export function useRoomController(roomId: string) {
   const router = useRouter();
   const { success } = useToast();
-  const { updateState, isLoading: isUpdatingState } = useRoomStateUpdate();
+  const { updateState } = useRoomStateUpdate();
 
   const [roomState, setRoomState] = useState<RoomState>("loading");
   const [isStarting, setIsStarting] = useState(false);
@@ -83,8 +83,8 @@ export function useRoomController(roomId: string) {
     try {
       // Use new room state API to transition to ended
       await updateState(roomId, "ended", {
-        endReason: "manual",
-        endedBy: "host-button",
+        reason: "manual-host-button",
+        notes: "Host manually ended the session",
       });
 
       // Update local state
