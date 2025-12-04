@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
 import { Play } from "lucide-react";
 import {
   ResizableHandle,
@@ -56,6 +57,7 @@ export default function CollaborativeEditor({
   // Supported languages (kept in a top-level constant for clarity)
   const languages = useMemo(() => SUPPORTED_LANGUAGES, []);
   const [languageId, setLanguageId] = useState("javascript");
+  const [showEndSessionDialog, setShowEndSessionDialog] = useState(false);
   
   // Sync with EditorContext for AI chat
   const { setEditorCode, setLanguageId: setContextLanguage } = useEditorContext();
@@ -149,6 +151,18 @@ export default function CollaborativeEditor({
     [selectLanguage]
   );
 
+  // Handle end session with confirmation
+  const handleEndSessionClick = useCallback(() => {
+    setShowEndSessionDialog(true);
+  }, []);
+
+  const confirmEndSession = useCallback(async () => {
+    if (onEndSession) {
+      await onEndSession();
+      setShowEndSessionDialog(false);
+    }
+  }, [onEndSession]);
+
   // container handles cleanup on unmount
   function LanguageSelector() {
     return (
@@ -200,7 +214,7 @@ export default function CollaborativeEditor({
           <Button
             variant="destructive"
             size="sm"
-            onClick={onEndSession}
+            onClick={handleEndSessionClick}
             disabled={isEnding}
             className="ml-auto"
           >
@@ -238,56 +252,71 @@ export default function CollaborativeEditor({
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <LanguageSelector />
-      <ResizablePanelGroup direction="vertical" className="flex-1">
-        {/* Editor Panel */}
-        <ResizablePanel minSize={30} defaultSize={output || error ? 70 : 100}>
-          <EditorContainer
-            ref={editorRef}
-            roomId={roomId}
-            languages={languages}
-            languageId={languageId}
-          />
-        </ResizablePanel>
+    <>
+      <div className="flex flex-col h-full">
+        <LanguageSelector />
+        <ResizablePanelGroup direction="vertical" className="flex-1">
+          {/* Editor Panel */}
+          <ResizablePanel minSize={30} defaultSize={output || error ? 70 : 100}>
+            <EditorContainer
+              ref={editorRef}
+              roomId={roomId}
+              languages={languages}
+              languageId={languageId}
+            />
+          </ResizablePanel>
 
-        {/* Output/Error Panel - Only show when there's output or error */}
-        {(output || error) && (
-          <>
-            <ResizableHandle withHandle />
-            <ResizablePanel minSize={20} defaultSize={30}>
-              <div className="h-full bg-gray-900 text-white p-4 overflow-auto scrollbar-hide">
-                {/* Show errors first (compilation/runtime errors) */}
-                {error && (
-                  <div className="mb-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-red-400 font-semibold">
-                        ⚠ Error
-                      </span>
+          {/* Output/Error Panel - Only show when there's output or error */}
+          {(output || error) && (
+            <>
+              <ResizableHandle withHandle />
+              <ResizablePanel minSize={20} defaultSize={30}>
+                <div className="h-full bg-gray-900 text-white p-4 overflow-auto scrollbar-hide">
+                  {/* Show errors first (compilation/runtime errors) */}
+                  {error && (
+                    <div className="mb-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-red-400 font-semibold">
+                          ⚠ Error
+                        </span>
+                      </div>
+                      <pre className="whitespace-pre-wrap font-mono text-sm text-red-300 bg-red-950/30 p-3 rounded border border-red-800 overflow-auto scrollbar-hide">
+                        {error}
+                      </pre>
                     </div>
-                    <pre className="whitespace-pre-wrap font-mono text-sm text-red-300 bg-red-950/30 p-3 rounded border border-red-800 overflow-auto scrollbar-hide">
-                      {error}
-                    </pre>
-                  </div>
-                )}
-                {/* Show output (stdout) */}
-                {output && (
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-green-400 font-semibold">
-                        ✓ Output
-                      </span>
+                  )}
+                  {/* Show output (stdout) */}
+                  {output && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-green-400 font-semibold">
+                          ✓ Output
+                        </span>
+                      </div>
+                      <pre className="whitespace-pre-wrap font-mono text-sm text-green-300 bg-green-950/30 p-3 rounded border border-green-800 overflow-auto scrollbar-hide">
+                        {output}
+                      </pre>
                     </div>
-                    <pre className="whitespace-pre-wrap font-mono text-sm text-green-300 bg-green-950/30 p-3 rounded border border-green-800 overflow-auto scrollbar-hide">
-                      {output}
-                    </pre>
-                  </div>
-                )}
-              </div>
-            </ResizablePanel>
-          </>
-        )}
-      </ResizablePanelGroup>
-    </div>
+                  )}
+                </div>
+              </ResizablePanel>
+            </>
+          )}
+        </ResizablePanelGroup>
+      </div>
+
+      {/* End Session Confirmation Dialog */}
+      <ConfirmationDialog
+        open={showEndSessionDialog}
+        onOpenChange={setShowEndSessionDialog}
+        title="End Session"
+        description="Are you sure you want to end this session? All participants will be disconnected and the room will be marked as ended."
+        confirmLabel="End Session"
+        cancelLabel="Cancel"
+        onConfirm={confirmEndSession}
+        isLoading={isEnding}
+        variant="destructive"
+      />
+    </>
   );
 }
