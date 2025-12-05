@@ -28,7 +28,7 @@ export function getUserIdOrIP(req: NextRequest): string {
   if (userId) {
     return `user:${userId}`;
   }
-  
+
   // Fallback to IP address for anonymous users
   const ip = getIP(req);
   return `ip:${ip}`;

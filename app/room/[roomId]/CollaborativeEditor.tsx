@@ -58,9 +58,10 @@ export default function CollaborativeEditor({
   const languages = useMemo(() => SUPPORTED_LANGUAGES, []);
   const [languageId, setLanguageId] = useState("javascript");
   const [showEndSessionDialog, setShowEndSessionDialog] = useState(false);
-  
+
   // Sync with EditorContext for AI chat
-  const { setEditorCode, setLanguageId: setContextLanguage } = useEditorContext();
+  const { setEditorCode, setLanguageId: setContextLanguage } =
+    useEditorContext();
 
   // Editor ref to access code for execution
   const editorRef = useRef<EditorContainerRef>(null);
@@ -68,10 +69,13 @@ export default function CollaborativeEditor({
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
 
-  const selectLanguage = useCallback((lang: string) => {
-    setLanguageId(lang);
-    setContextLanguage(lang);
-  }, [setContextLanguage]);
+  const selectLanguage = useCallback(
+    (lang: string) => {
+      setLanguageId(lang);
+      setContextLanguage(lang);
+    },
+    [setContextLanguage]
+  );
 
   // Sync editor code to context periodically for AI chat
   useEffect(() => {
