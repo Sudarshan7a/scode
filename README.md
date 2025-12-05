@@ -9,7 +9,7 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-green?logo=mongodb)](https://mongodb.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[🌐 Live Demo](https://scode-app.vercel.app) • [📖 Documentation](#getting-started) • [🐛 Report Bug](https://github.com/Sudarshan7a/scode/issues) • [💡 Request Feature](https://github.com/Sudarshan7a/scode/issues)
+[🌐 Live Demo](https://scode-app.vercel.app) • [📖 Technical Manual](docs/TECHNICAL_MANUAL.md) • [🐛 Report Bug](https://github.com/Sudarshan7a/scode/issues) • [💡 Request Feature](https://github.com/Sudarshan7a/scode/issues)
 
 </div>
 
