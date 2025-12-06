@@ -7,6 +7,7 @@ interface User {
   email: string;
   name: string;
   role: string;
+  avatarId?: number;
   notifications: boolean;
   createdAt: string;
   updatedAt: string;
