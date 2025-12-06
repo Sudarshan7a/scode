@@ -22,6 +22,7 @@ export const GET = withAuth(
           email: user.email,
           name: user.name,
           role: user.role,
+          avatarId: user.avatarId,
           notifications: user.notifications,
           createdAt: user.createdAt,
         },
