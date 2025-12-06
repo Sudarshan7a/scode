@@ -8,6 +8,7 @@ import { StreamVideoClient } from "@stream-io/video-react-sdk";
 import type { Call, User } from "@stream-io/video-react-sdk";
 import { fetchVideoToken } from "./tokenApi";
 import { ensureHostCall, checkCallExists } from "./callOperations";
+import { useUser } from "@/hooks/useUser";
 
 interface PreJoinResourceParams {
   apiKey?: string;
@@ -40,6 +41,8 @@ export function usePreJoinResources({
   roomId,
   isHost,
 }: PreJoinResourceParams): PreJoinResourceState {
+  const { user: dbUser, loading: userLoading } = useUser();
+
   const [state, setState] = useState<PreJoinResourceState>({
     status: apiKey ? "idle" : "error",
     client: null,
@@ -52,7 +55,7 @@ export function usePreJoinResources({
     let isActive = true;
 
     async function setup() {
-      if (!apiKey) return;
+      if (!apiKey || userLoading) return;
 
       setState((prev) => ({
         ...prev,
@@ -67,7 +70,14 @@ export function usePreJoinResources({
         const { token, userId } = await fetchVideoToken(roomId);
         if (!isActive) return;
 
-        const user: User = { id: userId };
+        const user: User = {
+          id: userId,
+          name: dbUser?.name,
+          image:
+            dbUser?.avatarId !== undefined
+              ? `/avatars/avatar${dbUser.avatarId}.jpg`
+              : undefined,
+        };
         const client = new StreamVideoClient({ apiKey, user, token });
         const call = client.call("default", roomId);
 
@@ -104,7 +114,7 @@ export function usePreJoinResources({
     return () => {
       isActive = false;
     };
-  }, [apiKey, isHost, roomId]);
+  }, [apiKey, isHost, roomId, userLoading, dbUser]);
 
   return state;
 }
