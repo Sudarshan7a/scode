@@ -9,6 +9,7 @@ import type { Call, User } from "@stream-io/video-react-sdk";
 import { fetchVideoToken } from "./tokenApi";
 import { ensureHostCall, checkCallExists } from "./callOperations";
 import { useUser } from "@/hooks/useUser";
+import { UserCache } from "@/lib/userCache";
 
 interface PreJoinResourceParams {
   apiKey?: string;
@@ -55,7 +56,13 @@ export function usePreJoinResources({
     let isActive = true;
 
     async function setup() {
-      if (!apiKey || userLoading) return;
+      if (!apiKey) return;
+
+      // Try to get user from cache first
+      const cachedUser = UserCache.get();
+      
+      // If we don't have cached user and useUser is still loading, wait
+      if (!cachedUser && userLoading) return;
 
       setState((prev) => ({
         ...prev,
@@ -70,12 +77,16 @@ export function usePreJoinResources({
         const { token, userId } = await fetchVideoToken(roomId);
         if (!isActive) return;
 
+        // Determine user details (prefer cache, fallback to dbUser)
+        const name = cachedUser?.name || dbUser?.name;
+        const avatarId = cachedUser?.avatarId ?? dbUser?.avatarId;
+        
         const user: User = {
           id: userId,
-          name: dbUser?.name,
+          name: name,
           image:
-            dbUser?.avatarId !== undefined
-              ? `/avatars/avatar${dbUser.avatarId}.jpg`
+            avatarId !== undefined
+              ? `/avatars/avatar${avatarId}.jpg`
               : undefined,
         };
         const client = new StreamVideoClient({ apiKey, user, token });
