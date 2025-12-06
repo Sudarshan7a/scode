@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { UserCache } from "@/lib/userCache";
 
 interface User {
   id: string;
@@ -49,6 +50,19 @@ export function useUser(): UseUserReturn {
 
       const data = await response.json();
       setUser(data.user);
+
+      // Update cache
+      if (data.user) {
+        UserCache.set({
+          id: data.user.id,
+          name: data.user.name,
+          email: data.user.email,
+          avatarId: data.user.avatarId ?? 0,
+          pronouns: data.user.pronouns,
+          role: data.user.role,
+          dateOfBirth: data.user.dateOfBirth,
+        });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch user");
       setUser(null);
