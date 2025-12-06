@@ -49,6 +49,7 @@ export function MyLoginForm() {
         if (result.user) {
           const avatarId = result.user.avatarId ?? 0; // Default to 0 if undefined
           UserCache.set({
+            id: result.user.id,
             name: result.user.name,
             email: result.user.email,
             avatarId: avatarId,

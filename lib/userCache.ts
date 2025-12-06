@@ -8,6 +8,7 @@
  */
 
 export interface CachedUserData {
+  id: string;
   name: string;
   email: string;
   avatarId: number;
@@ -18,6 +19,7 @@ export interface CachedUserData {
 }
 
 export interface UserDataInput {
+  id: string;
   name: string;
   email: string;
   avatarId: number;
@@ -36,6 +38,8 @@ function isValidCachedData(data: unknown): data is CachedUserData {
   if (!data || typeof data !== "object") return false;
   const d = data as Record<string, unknown>;
   return (
+    typeof d.id === "string" &&
+    d.id.length > 0 &&
     typeof d.name === "string" &&
     d.name.length > 0 &&
     typeof d.email === "string" &&
