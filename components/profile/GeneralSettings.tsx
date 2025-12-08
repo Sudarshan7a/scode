@@ -32,6 +32,7 @@ export function GeneralSettings() {
       if (response.data.success && response.data.authenticated) {
         setProfile(response.data.user);
         UserCache.set({
+          id: response.data.user.id,
           name: response.data.user.name,
           email: response.data.user.email,
           avatarId: response.data.user.avatarId,
@@ -85,6 +86,7 @@ export function GeneralSettings() {
 
         // Cache the user data
         UserCache.set({
+          id: response.data.user.id,
           name: response.data.user.name,
           email: response.data.user.email,
           avatarId: response.data.user.avatarId,
@@ -137,6 +139,7 @@ export function GeneralSettings() {
 
         // Update cache with new data
         UserCache.set({
+          id: response.data.user.id,
           name: response.data.user.name,
           email: response.data.user.email,
           avatarId: response.data.user.avatarId,

@@ -48,6 +48,7 @@ export default function Navbar() {
         if (data.authenticated && data.user) {
           // Populate the cache with user data
           UserCache.set({
+            id: data.user.id,
             name: data.user.name,
             email: data.user.email,
             avatarId: data.user.avatarId ?? 0,

@@ -69,6 +69,7 @@ export function SecuritySettings() {
 
         // Cache non-sensitive data
         UserCache.set({
+          id: response.data.user.id,
           name: response.data.user.name,
           email: response.data.user.email,
           avatarId: response.data.user.avatarId,
