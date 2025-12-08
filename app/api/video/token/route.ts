@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { ObjectId } from "mongodb";
 import { StreamClient } from "@stream-io/node-sdk";
 import { videoTokenLimiter } from "@/lib/rateLimiter";
+import { connectToMongo } from "@/lib/mongodb";
 
 function respond(status: number, body: Record<string, unknown>) {
   return NextResponse.json(body, { status });
@@ -43,18 +44,29 @@ export async function GET() {
     });
   }
 
-  // Build a basic user object (could be enriched from DB later)
-  const user = {
-    id: userId,
-    role: "user",
-    name: `User-${userId.slice(0, 6)}`,
-    image: "https://wallpapercave.com/wp/wp7151807.jpg",
-    custom: {
-      color: "red",
-    },
-  } as const;
-
+  // Fetch user data from database to get real name and avatarId
   try {
+    const { usersCollection } = await connectToMongo();
+    const dbUser = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+    if (!dbUser) {
+      return respond(404, { ok: false, message: "User not found" });
+    }
+
+    // Build user object with real data from database
+    const user = {
+      id: userId,
+      role: "user",
+      name: dbUser.name,
+      image:
+        dbUser.avatarId !== undefined
+          ? `/avatars/avatar${dbUser.avatarId}.jpg`
+          : undefined,
+      custom: {
+        color: "red",
+      },
+    };
+
     const server = new StreamClient(apiKey, apiSecret);
 
     await server.upsertUsers([user]);
@@ -74,8 +86,7 @@ export async function GET() {
       user,
     });
   } catch (e) {
-    void e;
-    // Error during user upsert or token generation
+    console.error("Failed to generate video token:", e);
     return respond(500, { ok: false, message: "Failed to generate token" });
   }
 }
