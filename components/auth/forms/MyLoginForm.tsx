@@ -62,7 +62,7 @@ export function MyLoginForm() {
           AvatarCache.set(avatarId);
 
           // Notify other components about auth state change
-          window.dispatchEvent(new Event('auth-change'));
+          window.dispatchEvent(new Event("auth-change"));
         }
       }
 

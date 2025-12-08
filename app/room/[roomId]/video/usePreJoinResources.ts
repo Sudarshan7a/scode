@@ -60,7 +60,7 @@ export function usePreJoinResources({
 
       // Try to get user from cache first
       const cachedUser = UserCache.get();
-      
+
       // If we don't have cached user and useUser is still loading, wait
       if (!cachedUser && userLoading) return;
 
@@ -80,7 +80,7 @@ export function usePreJoinResources({
         // Determine user details (prefer cache, fallback to dbUser)
         const name = cachedUser?.name || dbUser?.name;
         const avatarId = cachedUser?.avatarId ?? dbUser?.avatarId;
-        
+
         const user: User = {
           id: userId,
           name: name,

@@ -58,10 +58,7 @@ export async function GET() {
       id: userId,
       role: "user",
       name: dbUser.name,
-      image:
-        dbUser.avatarId !== undefined
-          ? `/avatars/avatar${dbUser.avatarId}.jpg`
-          : undefined,
+      image: "www.s-code.live/avatars/" + (dbUser.avatarId || 0) + ".png",
       custom: {
         color: "red",
       },
