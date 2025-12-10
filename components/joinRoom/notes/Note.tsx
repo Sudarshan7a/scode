@@ -125,7 +125,7 @@ function Note({ sessionId, pageNumber, onTitleChange, onDelete }: NoteProps) {
                 {status === "saving" && "Saving..."}
                 {status === "saved" &&
                   lastSaved &&
-                  `Saved at ${lastSaved.toLocaleTimeString()}`}
+                  `Saved at ${lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
                 {status === "unsaved" && "⚠️ Unsaved changes"}
               </span>
             </div>
