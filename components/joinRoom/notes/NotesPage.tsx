@@ -125,6 +125,7 @@ function NotesPage({ sessionId }: NotesPageProps) {
         onPageSelect={handlePageSelect}
         onCreatePage={handleCreatePage}
         onPagesLoad={handlePagesLoad}
+        pages={pages}
       />
       <Note
         key={`${sessionId}-page-${currentPage}`}

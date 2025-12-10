@@ -11,9 +11,10 @@ interface PagesPanelProps {
   onPageSelect: (pageNumber: number) => void;
   onCreatePage: () => void;
   onPagesLoad: (pages: NotePage[]) => void;
+  pages: NotePage[];
 }
 
-function Pages({ roomId, currentPage, onPageSelect, onCreatePage, onPagesLoad }: PagesPanelProps) {
+function Pages({ roomId, currentPage, onPageSelect, onCreatePage, onPagesLoad, pages: externalPages }: PagesPanelProps) {
   const [pages, setPages] = useState<NotePage[]>([]);
 
   const loadPages = useCallback(async () => {
@@ -29,6 +30,13 @@ function Pages({ roomId, currentPage, onPageSelect, onCreatePage, onPagesLoad }:
   useEffect(() => {
     loadPages();
   }, [loadPages]);
+
+  // Sync with external pages prop
+  useEffect(() => {
+    if (externalPages.length > 0) {
+      setPages(externalPages);
+    }
+  }, [externalPages]);
 
   const canAddMore = pages.length < MAX_PAGES;
 
