@@ -120,12 +120,17 @@ function Note({ sessionId, pageNumber, onTitleChange, onDelete }: NoteProps) {
               </button>
             )}
             <div className="flex items-center gap-2 text-sm ">
-              <span className="text-xs text-gray-500">{content.length}/5000</span>
+              <span className="text-xs text-gray-500">
+                {content.length}/5000
+              </span>
               <span>
                 {status === "saving" && "Saving..."}
                 {status === "saved" &&
                   lastSaved &&
-                  `Saved at ${lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+                  `Saved at ${lastSaved.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}`}
                 {status === "unsaved" && "⚠️ Unsaved changes"}
               </span>
             </div>

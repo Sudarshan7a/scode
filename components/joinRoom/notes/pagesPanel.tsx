@@ -14,7 +14,14 @@ interface PagesPanelProps {
   pages: NotePage[];
 }
 
-function Pages({ roomId, currentPage, onPageSelect, onCreatePage, onPagesLoad, pages: externalPages }: PagesPanelProps) {
+function Pages({
+  roomId,
+  currentPage,
+  onPageSelect,
+  onCreatePage,
+  onPagesLoad,
+  pages: externalPages,
+}: PagesPanelProps) {
   const [pages, setPages] = useState<NotePage[]>([]);
 
   const loadPages = useCallback(async () => {
@@ -51,14 +58,16 @@ function Pages({ roomId, currentPage, onPageSelect, onCreatePage, onPagesLoad, p
             key={page.id}
             onClick={() => onPageSelect(page.pageNumber)}
             className={`bg-mysecondary-hover w-full cursor-pointer hover:opacity-80 transition-opacity ${
-              currentPage === page.pageNumber ? "border-b-mysecondary border-b-4" : ""
+              currentPage === page.pageNumber
+                ? "border-b-mysecondary border-b-4"
+                : ""
             }`}
           >
             <h3 className="font-title p-1 truncate">{page.title}</h3>
           </div>
         ))}
         {canAddMore && (
-          <div 
+          <div
             onClick={onCreatePage}
             className="bg-mysecondary-hover w-full cursor-pointer hover:opacity-80 transition-opacity"
           >
