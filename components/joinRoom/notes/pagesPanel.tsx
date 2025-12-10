@@ -11,9 +11,17 @@ interface PagesPanelProps {
   onPageSelect: (pageNumber: number) => void;
   onCreatePage: () => void;
   onPagesLoad: (pages: NotePage[]) => void;
+  pages: NotePage[];
 }
 
-function Pages({ roomId, currentPage, onPageSelect, onCreatePage, onPagesLoad }: PagesPanelProps) {
+function Pages({
+  roomId,
+  currentPage,
+  onPageSelect,
+  onCreatePage,
+  onPagesLoad,
+  pages: externalPages,
+}: PagesPanelProps) {
   const [pages, setPages] = useState<NotePage[]>([]);
 
   const loadPages = useCallback(async () => {
@@ -30,6 +38,13 @@ function Pages({ roomId, currentPage, onPageSelect, onCreatePage, onPagesLoad }:
     loadPages();
   }, [loadPages]);
 
+  // Sync with external pages prop
+  useEffect(() => {
+    if (externalPages.length > 0) {
+      setPages(externalPages);
+    }
+  }, [externalPages]);
+
   const canAddMore = pages.length < MAX_PAGES;
 
   return (
@@ -43,14 +58,16 @@ function Pages({ roomId, currentPage, onPageSelect, onCreatePage, onPagesLoad }:
             key={page.id}
             onClick={() => onPageSelect(page.pageNumber)}
             className={`bg-mysecondary-hover w-full cursor-pointer hover:opacity-80 transition-opacity ${
-              currentPage === page.pageNumber ? "border-b-mysecondary border-b-4" : ""
+              currentPage === page.pageNumber
+                ? "border-b-mysecondary border-b-4"
+                : ""
             }`}
           >
             <h3 className="font-title p-1 truncate">{page.title}</h3>
           </div>
         ))}
         {canAddMore && (
-          <div 
+          <div
             onClick={onCreatePage}
             className="bg-mysecondary-hover w-full cursor-pointer hover:opacity-80 transition-opacity"
           >
