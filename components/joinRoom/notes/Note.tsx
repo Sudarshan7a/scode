@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { savePage, loadPage } from "@/lib/notesDB";
 import { Trash2 } from "lucide-react";
 
@@ -17,6 +17,7 @@ function Note({ sessionId, pageNumber, onTitleChange, onDelete }: NoteProps) {
   const [status, setStatus] = useState<"saved" | "saving" | "unsaved">("saved");
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const loadNote = useCallback(async () => {
     try {
@@ -58,32 +59,45 @@ function Note({ sessionId, pageNumber, onTitleChange, onDelete }: NoteProps) {
     []
   );
 
+  const saveNote = useCallback(async () => {
+    setStatus("saving");
+    try {
+      await savePage({
+        id: `${sessionId}-page-${pageNumber}`,
+        roomId: sessionId,
+        pageNumber,
+        title,
+        content,
+        updatedAt: Date.now(),
+      });
+      setStatus("saved");
+      setLastSaved(new Date());
+    } catch (error) {
+      console.error("Failed to save note:", error);
+      setStatus("unsaved");
+    }
+  }, [sessionId, pageNumber, title, content]);
+
+  // Debounced auto-save when user stops typing
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || status !== "unsaved") return;
 
-    const interval = setInterval(async () => {
-      if (status === "unsaved") {
-        setStatus("saving");
-        try {
-          await savePage({
-            id: `${sessionId}-page-${pageNumber}`,
-            roomId: sessionId,
-            pageNumber,
-            title,
-            content,
-            updatedAt: Date.now(),
-          });
-          setStatus("saved");
-          setLastSaved(new Date());
-        } catch (error) {
-          console.error("Failed to save note:", error);
-          setStatus("unsaved");
-        }
+    // Clear previous timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Set new timeout - save after 2 seconds of inactivity
+    saveTimeoutRef.current = setTimeout(() => {
+      saveNote();
+    }, 2000);
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
       }
-    }, 300000); // 5 minutes
-
-    return () => clearInterval(interval);
-  }, [content, title, sessionId, pageNumber, isLoaded, status]);
+    };
+  }, [content, title, isLoaded, status, saveNote]);
   return (
     <div className="flex-5 p-4 ">
       <div className="flex flex-col h-full">
