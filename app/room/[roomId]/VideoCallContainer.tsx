@@ -11,6 +11,8 @@ import {
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import PreJoinVideoPanel from "./PreJoinVideoPanel";
+import { toast } from "sonner";
+import { useBlockKickListener } from "./video/useBlockKickListener";
 
 type Props = {
   roomId: string;
@@ -98,6 +100,24 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
       resetSession();
     }
   }, [call, resetSession]);
+
+  const handleForcedExit = useCallback(async () => {
+    try {
+      toast.success("You have been removed from the call");
+      await call?.leave();
+    } catch (error) {
+      console.warn("Failed to leave call after being blocked/kicked", error);
+      toast.error("Error leaving call");
+    } finally {
+      resetSession();
+    }
+  }, [call, resetSession]);
+  // ADD THIS: Listen for block/kick events
+  useBlockKickListener({
+    call,
+    currentUserId: client?.user?.id || null,
+    onForcedExit: handleForcedExit,
+  });
 
   if (!apiKey) {
     return <VideoUnavailableNotice />;
