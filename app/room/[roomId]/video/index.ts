@@ -2,6 +2,8 @@
  * Video module exports
  * Central export point for all video-related utilities and hooks
  */
+// Video event listener for block/kick events
+export { useBlockKickListener } from "./useBlockKickListener";
 
 // Token API
 export { fetchVideoToken } from "./tokenApi";
