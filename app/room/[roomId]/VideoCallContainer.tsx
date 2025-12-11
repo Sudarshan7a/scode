@@ -7,6 +7,7 @@ import {
   StreamTheme,
   SpeakerLayout,
   CallControls,
+  useConnectedUser,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -39,19 +40,40 @@ function CallLoadingIndicator() {
   );
 }
 
+function CallWithListener({
+  call,
+  onForcedExit,
+}: {
+  call: StreamCallInstance;
+  onForcedExit: () => void | Promise<void>;
+}) {
+  const connectedUser = useConnectedUser();
+  
+  useBlockKickListener({
+    call,
+    currentUserId: connectedUser?.id || null,
+    onForcedExit,
+  });
+  
+  return null;
+}
+
 function ActiveCallSurface({
   client,
   call,
   onLeave,
+  onForcedExit,
 }: {
   client: StreamVideoClient;
   call: StreamCallInstance;
   onLeave: () => void | Promise<void>;
+  onForcedExit: () => void | Promise<void>;
 }) {
   return (
     <div className="w-full h-full rounded-md border border-mysecodary bg-background overflow-hidden">
       <StreamVideo client={client}>
         <StreamCall call={call}>
+          <CallWithListener call={call} onForcedExit={onForcedExit} />
           <StreamTheme className="h-full">
             <div className="flex flex-col justify-end h-full">
               <div className="min-h-64 h-full overflow-hidden">
@@ -103,7 +125,7 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
 
   const handleForcedExit = useCallback(async () => {
     try {
-      toast.success("You have been removed from the call");
+      toast.info("You have been removed from the call");
       await call?.leave();
     } catch (error) {
       console.warn("Failed to leave call after being blocked/kicked", error);
@@ -112,12 +134,6 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
       resetSession();
     }
   }, [call, resetSession]);
-  // ADD THIS: Listen for block/kick events
-  useBlockKickListener({
-    call,
-    currentUserId: client?.user?.id || null,
-    onForcedExit: handleForcedExit,
-  });
 
   if (!apiKey) {
     return <VideoUnavailableNotice />;
@@ -141,6 +157,11 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
   }
 
   return (
-    <ActiveCallSurface client={client} call={call} onLeave={handleLeave} />
+    <ActiveCallSurface 
+      client={client} 
+      call={call} 
+      onLeave={handleLeave}
+      onForcedExit={handleForcedExit}
+    />
   );
 }
