@@ -4,7 +4,7 @@ import RoomCard from "../../RoomCard";
 import { getUpcomingRooms, getOldRooms } from "@/lib/getMongoData";
 import { mockRooms } from "../../../types/roomsTypes";
 
-interface ActivitySection {
+interface ActivitySectionProps {
   title: string;
   rooms: mockRooms[];
   keyPrefix: string;
@@ -13,7 +13,7 @@ interface ActivitySection {
 // Component for rendering each activity section
 import { Button } from "@/components/ui/button";
 
-const YourActivities: React.FC<YourActivitiesProps> = ({
+const ActivitySection: React.FC<ActivitySectionProps> = ({
   title,
   rooms,
   keyPrefix,
@@ -43,7 +43,7 @@ export default async function YourActivities() {
   const upcoming = await getUpcomingRooms();
   const oldRooms = await getOldRooms();
 
-  const activitySections: ActivitySection[] = [
+  const activitySections: ActivitySectionProps[] = [
     {
       title: "Recent joined rooms",
       rooms: oldRooms.slice(0, 4),

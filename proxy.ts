@@ -38,7 +38,7 @@ async function validateRefreshToken(refreshToken: string, origin: string) {
   }
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const refreshToken = req.cookies.get("refreshToken")?.value;
 
   if (!refreshToken) {
