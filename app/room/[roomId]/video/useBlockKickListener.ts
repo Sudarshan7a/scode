@@ -4,7 +4,11 @@
  */
 
 import { useEffect } from "react";
-import type { Call, BlockedUserEvent, KickedUserEvent } from "@stream-io/video-react-sdk";
+import type {
+  Call,
+  BlockedUserEvent,
+  KickedUserEvent,
+} from "@stream-io/video-react-sdk";
 
 interface UseBlockKickListenerParams {
   call: Call | null;
@@ -28,7 +32,9 @@ export function useBlockKickListener({
   useEffect(() => {
     if (!call || !currentUserId) return;
 
-    const handleBlockedUser = async (event: { type: "call.blocked_user" } & BlockedUserEvent) => {
+    const handleBlockedUser = async (
+      event: { type: "call.blocked_user" } & BlockedUserEvent
+    ) => {
       console.log("User blocked event received:", event);
 
       // Check if the blocked user is the current user
@@ -39,7 +45,9 @@ export function useBlockKickListener({
       }
     };
 
-    const handleKickedUser = async (event: { type: "call.kicked_user" } & KickedUserEvent) => {
+    const handleKickedUser = async (
+      event: { type: "call.kicked_user" } & KickedUserEvent
+    ) => {
       console.log("User kicked event received:", event);
 
       // Check if the kicked user is the current user

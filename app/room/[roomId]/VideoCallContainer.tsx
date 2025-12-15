@@ -48,13 +48,13 @@ function CallWithListener({
   onForcedExit: () => void | Promise<void>;
 }) {
   const connectedUser = useConnectedUser();
-  
+
   useBlockKickListener({
     call,
     currentUserId: connectedUser?.id || null,
     onForcedExit,
   });
-  
+
   return null;
 }
 
@@ -157,9 +157,9 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
   }
 
   return (
-    <ActiveCallSurface 
-      client={client} 
-      call={call} 
+    <ActiveCallSurface
+      client={client}
+      call={call}
       onLeave={handleLeave}
       onForcedExit={handleForcedExit}
     />
