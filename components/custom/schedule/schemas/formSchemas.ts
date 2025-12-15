@@ -57,8 +57,7 @@ export const createRoomSchema = scheduleRoomSchema.extend({
   languagePreference: z.string().optional().nullable(),
   // helper UI-only fields - make scheduling date and time required
   scheduledAt: z.date({
-    required_error: "Please select a date for your session",
-    invalid_type_error: "Please enter a valid date"
+    message: "Please select a date for your session"
   }).refine((date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set to start of day for comparison
@@ -69,7 +68,7 @@ export const createRoomSchema = scheduleRoomSchema.extend({
     message: "Please select today or a future date"
   }),
   time: z.string({
-    required_error: "Please select a time for your session"
+    message: "Please select a time for your session"
   }).min(1, "Time is required"),
 }).refine((data) => {
   // Cross-field validation for date + time combination

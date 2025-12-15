@@ -66,12 +66,16 @@ export async function loadLanguageContribution(
   if (already) return;
   const loaders: Record<string, () => Promise<unknown>> = {
     "monaco-editor/esm/vs/basic-languages/python/python.contribution": () =>
+      // @ts-ignore
       import("monaco-editor/esm/vs/basic-languages/python/python.contribution"),
     "monaco-editor/esm/vs/basic-languages/go/go.contribution": () =>
+      // @ts-ignore
       import("monaco-editor/esm/vs/basic-languages/go/go.contribution"),
     "monaco-editor/esm/vs/basic-languages/java/java.contribution": () =>
+      // @ts-ignore
       import("monaco-editor/esm/vs/basic-languages/java/java.contribution"),
     "monaco-editor/esm/vs/basic-languages/cpp/cpp.contribution": () =>
+      // @ts-ignore
       import("monaco-editor/esm/vs/basic-languages/cpp/cpp.contribution"),
   };
 
