@@ -7,6 +7,7 @@ import { RootAuthGuard } from "./../components/auth/RootAuthGuard";
 import ErrorBoundary from "./../components/ErrorBoundary";
 import { ThemeProvider } from "./../components/ThemeProvider";
 import DesktopOnlyNotice from "./../components/DesktopOnlyNotice";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
   title: "S-Code | Real-time Collaborative Coding Platform",
@@ -38,6 +39,11 @@ export default function RootLayout({
             </RootAuthGuard>
           </ErrorBoundary>
         </ThemeProvider>
+        {process.env.NEXT_PUBLIC_GA_MEASURE_ID && (
+          <GoogleAnalytics
+            gaId={process.env.NEXT_PUBLIC_GA_MEASURE_ID as string}
+          />
+        )}
       </body>
     </html>
   );
