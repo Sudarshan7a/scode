@@ -2,22 +2,41 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 import { getAccessTokenFromHeader } from "./tokenUtils";
+import { auth } from "@/auth";
 
 export interface AuthValidationResult {
   success: boolean;
   userId?: string;
   error?: NextResponse;
+  provider?: "oauth" | "token";
 }
 
 export async function validateAuthToken(
   request: NextRequest
 ): Promise<AuthValidationResult> {
+  // First, check for OAuth session (NextAuth)
+  try {
+    const session = await auth();
+    if (
+      session?.user?.id &&
+      session?.expires &&
+      new Date(session.expires) > new Date()
+    ) {
+      return {
+        success: true,
+        userId: session.user.id,
+        provider: "oauth",
+      };
+    }
+  } catch {
+    // OAuth check failed, continue to token check
+  }
+
+  // Second, check for access token (custom auth)
   try {
     // Extract token from Authorization header
     const token = getAccessTokenFromHeader(request.headers);
-    console.log("[AUTH] Token present:", !!token, "- URL:", request.url);
     if (!token) {
-      console.log("[AUTH] FAIL: No access token in Authorization header");
       return {
         success: false,
         error: NextResponse.json(
@@ -30,9 +49,7 @@ export async function validateAuthToken(
     // Get userId from cookies
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
-    console.log("[AUTH] userId from cookie:", userId);
     if (!userId) {
-      console.log("[AUTH] FAIL: No userId cookie");
       return {
         success: false,
         error: NextResponse.json(
@@ -45,16 +62,9 @@ export async function validateAuthToken(
     // Verify JWT token
     const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);
     const verifyTokenPayload = await jwtVerify(token, secretKey);
-    console.log(
-      "[AUTH] JWT payload userId:",
-      verifyTokenPayload.payload.userId,
-      "vs cookie userId:",
-      userId
-    );
 
     // Validate token payload
     if (!verifyTokenPayload || verifyTokenPayload.payload.userId !== userId) {
-      console.log("[AUTH] FAIL: Token userId mismatch");
       return {
         success: false,
         error: NextResponse.json(
@@ -67,9 +77,10 @@ export async function validateAuthToken(
     return {
       success: true,
       userId: userId,
+      provider: "token",
     };
   } catch (err) {
-    console.log("[AUTH] FAIL: Exception during token verification:", err);
+    void err;
     return {
       success: false,
       error: NextResponse.json(
@@ -80,7 +91,7 @@ export async function validateAuthToken(
   }
 }
 
-// Alternative: Higher-order function approach
+// Higher-order function for protected routes
 export function withAuth(
   handler: (request: NextRequest, userId: string) => Promise<NextResponse>
 ) {
@@ -91,6 +102,10 @@ export function withAuth(
       return authResult.error!;
     }
 
-    return handler(request, authResult.userId!);
+    if (!authResult.userId) {
+      return NextResponse.json({ error: "User ID not found" }, { status: 401 });
+    }
+
+    return handler(request, authResult.userId);
   };
 }
