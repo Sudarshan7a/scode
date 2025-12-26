@@ -22,7 +22,7 @@ export default function OAuthButton({
 
   const handleClick = () => {
     // Show coming soon dialog instead of OAuth flow
-    setShowComingSoon(true);
+    //  (true);
     if (onClick) onClick();
   };
 
