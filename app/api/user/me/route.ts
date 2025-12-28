@@ -2,15 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToMongo } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { readHeavyLimiter } from "@/lib/rateLimiter";
+import { getAuthUserId } from "@/lib/getAuthUserId";
 
 /**
- * GET endpoint to fetch current user's profile using httpOnly cookies
- * This solves the problem of client-side code unable to read httpOnly cookies
+ * GET endpoint to fetch current user's profile
+ * Handles both OAuth and custom auth users
  */
 export async function GET(request: NextRequest) {
   try {
-    // Read userId from httpOnly cookie (server-side only)
-    const userId = request.cookies.get("userId")?.value;
+    // Use unified auth helper - works for both OAuth and custom auth
+    const userId = await getAuthUserId(request);
 
     if (!userId) {
       return NextResponse.json(
@@ -28,8 +29,7 @@ export async function GET(request: NextRequest) {
       );
       return NextResponse.json(
         {
-          error:
-            "Too many requests. Maximum 60 per minute. Please slow down.",
+          error: "Too many requests. Maximum 60 per minute. Please slow down.",
           authenticated: false,
         },
         { status: 429 }
