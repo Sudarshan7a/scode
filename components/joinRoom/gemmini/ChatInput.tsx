@@ -11,13 +11,26 @@ interface ChatInputProps {
 
 function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
   const [message, setMessage] = useState("");
-  const remainingChars = MAX_MESSAGE_LENGTH - message.length;
+  const [showLimitError, setShowLimitError] = useState(false);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    if (message.length > MAX_MESSAGE_LENGTH) {
+      setShowLimitError(true);
+      return;
+    }
     if (message.trim() && !isLoading) {
       onSendMessage(message);
       setMessage("");
+      setShowLimitError(false);
+    }
+  };
+
+  const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value.slice(0, MAX_MESSAGE_LENGTH);
+    setMessage(newValue);
+    if (showLimitError && newValue.length <= MAX_MESSAGE_LENGTH) {
+      setShowLimitError(false);
     }
   };
 
@@ -30,9 +43,11 @@ function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
               <div className="relative">
                 <Input
                   value={message}
-                  onChange={(e) => setMessage(e.target.value.slice(0, MAX_MESSAGE_LENGTH))}
+                  onChange={handleMessageChange}
                   placeholder="Ask about code, programming, or computer science..."
-                  className={`min-h-[2.5rem] pr-12 resize-none font-secondary ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`min-h-10 pr-12 resize-none font-secondary ${
+                    isLoading ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
                   aria-label="Message input"
                   disabled={isLoading}
                   maxLength={MAX_MESSAGE_LENGTH}
@@ -62,13 +77,14 @@ function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
             </div>
           </div>
         </form>
-        <div className="flex justify-between items-center mt-1">
-          <p className="text-xs text-muted-foreground">
-            AI can make mistakes. Verify important information.
-          </p>
-          {message.length > 0 && (
-            <p className={`text-xs ${remainingChars < 100 ? 'text-orange-500' : 'text-muted-foreground'}`}>
-              {remainingChars} chars left
+        <div className="mt-1">
+          {showLimitError ? (
+            <p className="text-xs text-red-500">
+              Message too long. Please reduce the input length.
+            </p>
+          ) : (
+            <p className="text-xs text-foreground">
+              AI can make mistakes. Verify important information.
             </p>
           )}
         </div>
