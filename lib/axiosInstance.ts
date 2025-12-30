@@ -5,6 +5,7 @@ import {
   setAccessToken,
   clearAccessToken,
 } from "@/lib/authTokenStore";
+import { getIsOAuthUser, isAuthStateInitialized } from "@/lib/authState";
 
 export const axiosInstance = axios.create({
   withCredentials: true, // Sends cookies like refresh token
@@ -46,6 +47,7 @@ function isAllowedDomain(url: string): boolean {
 }
 // for Centralizing token refresh to prevent duplicates
 async function refreshAccessToken(): Promise<string | null> {
+  //Ignore accesstoken for Oauth users
   if (tokenRefreshPromise) {
     return tokenRefreshPromise;
   }
@@ -77,7 +79,13 @@ async function refreshAccessToken(): Promise<string | null> {
 axiosInstance.interceptors.request.use(async (config) => {
   const isAuthNeeded = isAllowedDomain(config.url ?? "");
 
-  if (!isAuthNeeded) return config;
+  // Use the cached OAuth state instead of calling getSession() every time
+  const isOAuthUser = getIsOAuthUser();
+
+  // Skip token logic for OAuth users (they use session cookies)
+  if (!isAuthNeeded || isOAuthUser) {
+    return config;
+  }
 
   let token = await getAccessToken();
 
@@ -124,6 +132,13 @@ axiosInstance.interceptors.response.use(
 
     // Only retry once and only for 401 errors
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // Use the cached OAuth state
+      const isOAuthUser = getIsOAuthUser();
+
+      // OAuth users don't need token refresh - just reject silently
+      if (isOAuthUser) {
+        return Promise.reject(error);
+      }
       originalRequest._retry = true;
 
       // If already refreshing, wait for it
@@ -150,6 +165,12 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         void refreshError;
         clearAccessToken();
+
+        // Use the cached OAuth state
+        if (getIsOAuthUser()) {
+          return Promise.reject(refreshError);
+        }
+
         // Redirect to login for auth-required pages
         if (
           typeof window !== "undefined" &&
