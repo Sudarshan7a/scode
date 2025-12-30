@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToMongo } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { profileUpdateLimiter } from "@/lib/rateLimiter";
+import { getAuthUserId } from "@/lib/getAuthUserId";
 
 export async function PUT(request: NextRequest) {
   try {
-    // Get userId from httpOnly cookie
-    const userId = request.cookies.get("userId")?.value;
+    // Use unified auth helper - works for both OAuth and custom auth
+    const userId = await getAuthUserId(request);
 
     if (!userId) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });

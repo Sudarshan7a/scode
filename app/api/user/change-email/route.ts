@@ -4,11 +4,12 @@ import { ObjectId } from "mongodb";
 import crypto from "crypto";
 import { Resend } from "resend";
 import { emailChangeLimiter } from "@/lib/rateLimiter";
+import { getAuthUserId } from "@/lib/getAuthUserId";
 
 export async function POST(request: NextRequest) {
   try {
-    // Get userId from httpOnly cookie
-    const userId = request.cookies.get("userId")?.value;
+    // Use unified auth helper - works for both OAuth and custom auth
+    const userId = await getAuthUserId(request);
 
     if (!userId) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });

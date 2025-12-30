@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
     const domainValidation = validateDomain(email);
     if (domainValidation) return domainValidation;
 
-    const userResult = await createUser(email, password, username);
+    const userResult = await createUser(email, password, username, true);
     if ("error" in userResult) {
       const failure = userResult as { error: string; status?: number };
       console.error("User creation error:", failure.error);

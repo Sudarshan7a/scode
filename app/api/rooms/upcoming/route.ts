@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getUpcomingRooms } from "@/lib/getMongoData";
-import { cookies } from "next/headers";
+import { getAuthUserId } from "@/lib/getAuthUserId";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("userId")?.value;
+    // Use unified auth helper - works for both OAuth and custom auth
+    const userId = await getAuthUserId(request);
 
     if (!userId) {
       return NextResponse.json(
-        { error: "Unauthorized: userId not found" },
+        { error: "Unauthorized: not authenticated" },
         { status: 401 }
       );
     }
@@ -37,8 +37,6 @@ export async function GET(request: Request) {
 
       limit = parsed;
     }
-
-    console.log("API userId from cookies:", userId, "limit:", limit);
 
     const rooms = await getUpcomingRooms(userId, limit);
     return NextResponse.json({ rooms }, { status: 200 });

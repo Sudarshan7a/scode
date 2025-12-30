@@ -6,7 +6,9 @@ import type { User } from "@/types/mongodbTypes";
 export async function createUser(
   email: string,
   password: string,
-  username: string
+  username: string,
+  hashPasswordFlag: boolean = true,
+  authProvider?: string
 ) {
   const { usersCollection } = await connectToMongo();
 
@@ -15,7 +17,6 @@ export async function createUser(
     return { error: "User already exists", status: 409 } as const;
   }
 
-  const hashedPassword = await hashPassword(password);
   const lettersOnlyName = (username || "").replace(/[^A-Za-z]/g, "").trim();
   if (!lettersOnlyName || lettersOnlyName.length < 2) {
     return {
@@ -27,10 +28,14 @@ export async function createUser(
 
   const newUser: User = {
     email,
-    passwordHash: hashedPassword,
+    passwordHash: hashPasswordFlag
+      ? await hashPassword(password)
+      : authProvider
+      ? authProvider
+      : "",
     name: lettersOnlyName,
     role: "user" as const,
-    emailVerified: false,
+    emailVerified: authProvider ? true : false,
     createdAt: new Date(),
   };
 
@@ -44,10 +49,9 @@ export async function createUser(
     } as const;
   }
 }
-
 export async function createRefreshToken(userId: string) {
   const { refreshTokensCollection } = await connectToMongo();
-  const refreshToken = await generateRefreshToken(userId, 12);
+  const refreshToken = await generateRefreshToken();
 
   const newToken = {
     userId,

@@ -4,6 +4,7 @@ import Navbar from "./../components/Navbar";
 import Footer from "./../components/Footer";
 import { Toaster } from "./../components/ui/sonner";
 import { RootAuthGuard } from "./../components/auth/RootAuthGuard";
+import { SessionProviderWrapper } from "./../components/auth/SessionProviderWrapper";
 import ErrorBoundary from "./../components/ErrorBoundary";
 import { ThemeProvider } from "./../components/ThemeProvider";
 import DesktopOnlyNotice from "./../components/DesktopOnlyNotice";
@@ -23,22 +24,24 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ErrorBoundary>
-            <DesktopOnlyNotice />
-            <RootAuthGuard>
-              <Navbar />
-              {children}
-              <Toaster position="top-center" className=" rounded-sm" />
-              <Footer />
-            </RootAuthGuard>
-          </ErrorBoundary>
-        </ThemeProvider>
+        <SessionProviderWrapper>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ErrorBoundary>
+              <DesktopOnlyNotice />
+              <RootAuthGuard>
+                <Navbar />
+                {children}
+                <Toaster position="top-center" className=" rounded-sm" />
+                <Footer />
+              </RootAuthGuard>
+            </ErrorBoundary>
+          </ThemeProvider>
+        </SessionProviderWrapper>
         {process.env.NEXT_PUBLIC_GA_MEASURE_ID && (
           <GoogleAnalytics
             gaId={process.env.NEXT_PUBLIC_GA_MEASURE_ID as string}
