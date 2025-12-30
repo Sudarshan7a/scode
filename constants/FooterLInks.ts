@@ -18,5 +18,5 @@ export const socialLinks = [
   { href: "https://www.linkedin.com/in/sudarshan-a-3412b5325/", label: "LinkedIn", isExternal: true },
   { href: "https://github.com/Sudarshan7a", label: "Github", isExternal: true },
   { href: "https://discordapp.com/users/1276841090657288255", label: "Discord", isExternal: true },
-  { href: "https://twitter.com", label: "Twitter", isExternal: true },
+  { href: "#", label: "Twitter (Not Active)", isExternal: false },
 ];
