@@ -32,21 +32,12 @@ export async function connectToMongo(): Promise<{
   }
 
   return {
-    usersCollection: globalWithMongo._mongoClient.db().collection("users"),
-    refreshTokensCollection: globalWithMongo._mongoClient
-      .db()
-      .collection("refreshTokens"),
-
-    roomsCollection: globalWithMongo._mongoClient.db().collection("rooms"),
-    savedNotesCollection: globalWithMongo._mongoClient
-      .db()
-      .collection("savedNotes"),
-    savedCodeCollection: globalWithMongo._mongoClient
-      .db()
-      .collection("savedCode"),
-    usersActivitiesCollection: globalWithMongo._mongoClient
-      .db()
-      .collection("usersActivities"),
+    usersCollection: db.collection("users"),
+    refreshTokensCollection: db.collection("refreshTokens"),
+    roomsCollection: db.collection("rooms"),
+    savedNotesCollection: db.collection("savedNotes"),
+    savedCodeCollection: db.collection("savedCode"),
+    usersActivitiesCollection: db.collection("usersActivities"),
   };
 }
 
