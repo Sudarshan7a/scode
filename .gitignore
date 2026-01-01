@@ -52,8 +52,9 @@ config/secrets.*
 auth.json
 credentials.json
 
-#github // copilot instructions
-.github/
+#github // copilot instructions should be committed
+.github/*
+!.github/copilot-instructions.md
 
 # vercel
 .vercel
