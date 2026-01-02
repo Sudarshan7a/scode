@@ -9,6 +9,7 @@ import { useLayoutVisibility } from "../hooks/useLayoutVisibility";
 import RegistrationForm from "./custom/schedule/RegistrationForm"; // Import the hook
 import MyNotifications from "./custom/MyNotification";
 import { Button } from "./ui/button";
+import { signOut } from "next-auth/react";
 import {
   Popover,
   PopoverContent,
@@ -89,6 +90,11 @@ export default function Navbar() {
     // Clear all user caches from localStorage
     if (result.clearCache) {
       clearAllUserCaches();
+    }
+
+    // For OAuth users, also sign out from NextAuth
+    if (result.isOAuthUser) {
+      await signOut({ redirect: false });
     }
 
     if (result) {
