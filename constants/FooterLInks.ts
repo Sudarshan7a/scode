@@ -3,12 +3,11 @@ export const supportLinks = [
   { href: "/privacy-policy", label: "Privacy Policy" },
   { href: "/terms-of-service", label: "Terms of Service" },
   { href: "/contact", label: "Contact Support" },
-  { href: "/report-issue", label: "Report an Issue" },
-  { href: "/cookies-policy", label: "Cookies Policy" },
 ];
 
 export const navigationLinks = [
   { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
   { href: "/explore", label: "Explore" },
   { href: "/how-it-works", label: "How it works" },
   { href: "/profile", label: "Profile" }, // Assuming profile is an internal route
