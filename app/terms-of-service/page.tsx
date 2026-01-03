@@ -11,7 +11,8 @@ export default function TermsOfServicePage() {
             Terms of Service
           </h1>
           <p className="text-mysecondary">
-            Last updated: January 3, 2026 (we&apos;re from the future, obviously)
+            Last updated: January 3, 2026 (we&apos;re from the future,
+            obviously)
           </p>
         </div>
 
@@ -32,9 +33,7 @@ export default function TermsOfServicePage() {
               ✅ What You Can Do
             </h2>
             <ul className="list-disc list-inside text-mysecondary space-y-2">
-              <li>
-                Write code (obviously — that&apos;s literally the point)
-              </li>
+              <li>Write code (obviously — that&apos;s literally the point)</li>
               <li>
                 Collaborate with friends, colleagues, or that one person who
                 insists tabs are better than spaces
@@ -47,9 +46,7 @@ export default function TermsOfServicePage() {
                 Create rooms for interviews, pair programming, or pretending to
                 work
               </li>
-              <li>
-                Have fun! (Yes, coding can be fun. We said what we said.)
-              </li>
+              <li>Have fun! (Yes, coding can be fun. We said what we said.)</li>
             </ul>
           </section>
 
@@ -93,10 +90,10 @@ export default function TermsOfServicePage() {
             </h2>
             <p className="text-mysecondary leading-relaxed">
               Your code is yours. We don&apos;t claim ownership of anything you
-              write on S-code. That brilliant algorithm? Yours. That
-              spaghetti code you wrote at 3 AM? Also yours (sorry). We just
-              host it temporarily while you&apos;re collaborating. Once you
-              delete a room, it&apos;s gone. Like tears in rain.
+              write on S-code. That brilliant algorithm? Yours. That spaghetti
+              code you wrote at 3 AM? Also yours (sorry). We just host it
+              temporarily while you&apos;re collaborating. Once you delete a
+              room, it&apos;s gone. Like tears in rain.
             </p>
           </section>
 
@@ -135,8 +132,8 @@ export default function TermsOfServicePage() {
                 of experience.
               </li>
               <li>
-                If our service goes down, we&apos;ll fix it ASAP. But maybe
-                take a break? Go outside? Touch some grass?
+                If our service goes down, we&apos;ll fix it ASAP. But maybe take
+                a break? Go outside? Touch some grass?
               </li>
             </ul>
           </section>
@@ -148,9 +145,9 @@ export default function TermsOfServicePage() {
             <p className="text-mysecondary leading-relaxed">
               If you break the rules, we reserve the right to ban you. But
               we&apos;re not tyrants — we&apos;ll warn you first unless you do
-              something really bad (like trying to hack us). You can also
-              delete your account anytime. No hard feelings. We&apos;ll miss
-              you though 🥲
+              something really bad (like trying to hack us). You can also delete
+              your account anytime. No hard feelings. We&apos;ll miss you though
+              🥲
             </p>
           </section>
 
@@ -174,10 +171,10 @@ export default function TermsOfServicePage() {
               Got questions about these terms? Think we should add something?
               Just want to say hi? Email us at{" "}
               <a
-                href="mailto:legal@s-code.live"
+                href="mailto:sudarshanpower07@gmail.com"
                 className="text-myprimary hover:underline"
               >
-                legal@s-code.live
+                sudarshanpower07@gmail.com
               </a>
               . We promise a human will read it (eventually).
             </p>
@@ -208,10 +205,7 @@ export default function TermsOfServicePage() {
             Privacy Policy
           </Link>
           <span className="text-mysecondary">•</span>
-          <Link
-            href="/"
-            className="text-myprimary hover:underline"
-          >
+          <Link href="/" className="text-myprimary hover:underline">
             Back to coding
           </Link>
         </div>

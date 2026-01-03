@@ -12,44 +12,44 @@ import {
 const features = [
   {
     icon: Video,
-    title: "Live Voice Chat",
+    title: "Built-in Voice Chat",
     description:
-      "Communicate seamlessly with built-in voice channels. No extra apps needed.",
+      "No third-party hassle. Just code and talk. Finally, an end to 'Can you hear me now?'",
     color: "from-blue-500/20 to-blue-500/5",
   },
   {
     icon: GitBranch,
-    title: "Real-time Sync",
+    title: "Sub-100ms Sync",
     description:
-      "See every keystroke instantly. Collaborate like you're sitting side by side.",
+      "Real-time that actually feels real-time. Even on spotty WiFi. Not your dial-up era lag fest.",
     color: "from-purple-500/20 to-purple-500/5",
   },
   {
     icon: Sparkles,
-    title: "AI-Powered Assist",
+    title: "Gemini AI Assistant",
     description:
-      "Get intelligent suggestions, auto-complete, and error detection as you code.",
+      "Because asking Google 'how to center a div' for the 100th time is kinda lame. Fixes bugs before you rage-quit.",
     color: "from-pink-500/20 to-pink-500/5",
   },
   {
     icon: MessageSquare,
-    title: "Integrated Notes",
+    title: "Smart Notes System",
     description:
-      "Take shared notes, leave comments, and track decisions without leaving the editor.",
+      "Take notes, leave comments, and actually remember what you decided 2 hours ago.",
     color: "from-green-500/20 to-green-500/5",
   },
   {
     icon: Gauge,
     title: "Lightning Fast",
     description:
-      "Built for speed. No lag, no delays. Just pure, responsive collaboration.",
+      "No lag, no delays, no 'let me share my screen' nonsense. Just pure, responsive collaboration.",
     color: "from-orange-500/20 to-orange-500/5",
   },
   {
     icon: Lock,
-    title: "Secure & Private",
+    title: "E2E Encryption",
     description:
-      "End-to-end encryption for your code. Private rooms with invite-only access.",
+      "Your code stays yours. We don't train AI on it, sell it, or judge your variable names (much).",
     color: "from-red-500/20 to-red-500/5",
   },
 ];

@@ -145,10 +145,10 @@ export default function PrivacyPolicyPage() {
             <p className="text-mysecondary leading-relaxed">
               Questions? Concerns? Just want to chat about privacy? Reach out at{" "}
               <a
-                href="mailto:privacy@s-code.live"
+                href="mailto:sudarshanpower07@gmail.com"
                 className="text-myprimary hover:underline"
               >
-                privacy@s-code.live
+                sudarshanpower07@gmail.com
               </a>
               . We read every email (eventually).
             </p>

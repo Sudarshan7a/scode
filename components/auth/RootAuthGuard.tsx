@@ -44,6 +44,8 @@ export function RootAuthGuard({ children }: { children: React.ReactNode }) {
     "/reset-password", // base (fallback) – actual page is /reset-password/[token]
     "/privacy-policy",
     "/terms-of-service",
+    "/about",
+    "/contact",
   ];
 
   // Dynamic route patterns
