@@ -12,44 +12,44 @@ import {
 const features = [
   {
     icon: Video,
-    title: "Built-in Voice Chat",
+    title: "Live Voice Chat",
     description:
-      "No third-party hassle. Just code and talk. Finally, an end to 'Can you hear me now?'",
+      "Communicate seamlessly with built-in voice channels. No extra apps needed.",
     color: "from-blue-500/20 to-blue-500/5",
   },
   {
     icon: GitBranch,
-    title: "Sub-100ms Sync",
+    title: "Real-time Sync",
     description:
-      "Real-time that actually feels real-time. Even on spotty WiFi. Not your dial-up era lag fest.",
+      "See every keystroke instantly. Collaborate like you're sitting side by side.",
     color: "from-purple-500/20 to-purple-500/5",
   },
   {
     icon: Sparkles,
-    title: "Gemini AI Assistant",
+    title: "AI-Powered Assist",
     description:
-      "Because asking Google 'how to center a div' for the 100th time is kinda lame. Fixes bugs before you rage-quit.",
+      "Get intelligent suggestions, auto-complete, and error detection as you code.",
     color: "from-pink-500/20 to-pink-500/5",
   },
   {
     icon: MessageSquare,
-    title: "Smart Notes System",
+    title: "Integrated Notes",
     description:
-      "Take notes, leave comments, and actually remember what you decided 2 hours ago.",
+      "Take shared notes, leave comments, and track decisions without leaving the editor.",
     color: "from-green-500/20 to-green-500/5",
   },
   {
     icon: Gauge,
     title: "Lightning Fast",
     description:
-      "No lag, no delays, no 'let me share my screen' nonsense. Just pure, responsive collaboration.",
+      "Built for speed. No lag, no delays. Just pure, responsive collaboration.",
     color: "from-orange-500/20 to-orange-500/5",
   },
   {
     icon: Lock,
-    title: "E2E Encryption",
+    title: "Secure & Private",
     description:
-      "Your code stays yours. We don't train AI on it, sell it, or judge your variable names (much).",
+      "End-to-end encryption for your code. Private rooms with invite-only access.",
     color: "from-red-500/20 to-red-500/5",
   },
 ];

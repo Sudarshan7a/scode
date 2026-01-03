@@ -27,70 +27,59 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-mybackground py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-myforeground mb-6 bg-gradient-to-r from-myprimary to-mysecondary bg-clip-text text-transparent">
-            Get in Touch
+    <div className="min-h-screen bg-background py-16 px-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="mb-12">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
+            Contact Us
           </h1>
-          <p className="text-xl text-mysecondary">
+          <p className="text-muted-foreground">
             Bug reports welcome — include code! (We're devs too, we get it)
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-6 border border-mysecondary/10 hover:border-mysecondary/20 transition-all">
-            <div className="flex items-start space-x-4">
-              <div className="text-3xl">📧</div>
-              <div>
-                <h3 className="text-lg font-semibold text-myforeground mb-2">
-                  Email
-                </h3>
-                <a
-                  href="mailto:sudarshanpower07@gmail.com"
-                  className="text-myprimary hover:underline"
-                >
-                  sudarshanpower07@gmail.com
-                </a>
-                <p className="text-sm text-mysecondary mt-2">
-                  We actually read our emails (shocking, we know)
-                </p>
-              </div>
-            </div>
+        {/* Contact Info */}
+        <div className="space-y-6 mb-12">
+          <div className="border-l-4 border-primary pl-4">
+            <h3 className="text-lg font-semibold text-foreground mb-1">
+              Email
+            </h3>
+            <a
+              href="mailto:sudarshanpower07@gmail.com"
+              className="text-primary hover:underline text-sm"
+            >
+              sudarshanpower07@gmail.com
+            </a>
           </div>
 
-          <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-6 border border-mysecondary/10 hover:border-mysecondary/20 transition-all">
-            <div className="flex items-start space-x-4">
-              <div className="text-3xl">🐛</div>
-              <div>
-                <h3 className="text-lg font-semibold text-myforeground mb-2">
-                  Bug Reports & Feature Requests
-                </h3>
-                <a
-                  href="https://github.com/Sudarshan7a/scode/issues"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-myprimary hover:underline"
-                >
-                  GitHub Issues
-                </a>
-                <p className="text-sm text-mysecondary mt-2">
-                  Found a bug? Tell us before it becomes a feature
-                </p>
-              </div>
-            </div>
+          <div className="border-l-4 border-primary pl-4">
+            <h3 className="text-lg font-semibold text-foreground mb-1">
+              GitHub Issues
+            </h3>
+            <a
+              href="https://github.com/Sudarshan7a/scode/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline text-sm"
+            >
+              github.com/Sudarshan7a/scode/issues
+            </a>
+            <p className="text-xs text-muted-foreground mt-1">
+              Found a bug? Tell us before it becomes a feature
+            </p>
           </div>
         </div>
 
-        <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-8 border border-mysecondary/10">
-          <h2 className="text-2xl font-semibold text-myforeground mb-6">
-            Send Us a Message
+        {/* Contact Form */}
+        <div className="border border-border rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-foreground mb-6">
+            Send a Message
           </h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-mysecondary mb-2"
+                className="block text-sm font-medium text-foreground mb-1.5"
               >
                 Name
               </label>
@@ -103,14 +92,13 @@ export default function ContactPage() {
                   setFormData({ ...formData, name: e.target.value })
                 }
                 placeholder="Your name"
-                className="w-full"
               />
             </div>
 
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-mysecondary mb-2"
+                className="block text-sm font-medium text-foreground mb-1.5"
               >
                 Email
               </label>
@@ -123,14 +111,13 @@ export default function ContactPage() {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 placeholder="your.email@example.com"
-                className="w-full"
               />
             </div>
 
             <div>
               <label
                 htmlFor="subject"
-                className="block text-sm font-medium text-mysecondary mb-2"
+                className="block text-sm font-medium text-foreground mb-1.5"
               >
                 Subject
               </label>
@@ -143,14 +130,13 @@ export default function ContactPage() {
                   setFormData({ ...formData, subject: e.target.value })
                 }
                 placeholder="What's this about?"
-                className="w-full"
               />
             </div>
 
             <div>
               <label
                 htmlFor="message"
-                className="block text-sm font-medium text-mysecondary mb-2"
+                className="block text-sm font-medium text-foreground mb-1.5"
               >
                 Message
               </label>
@@ -161,25 +147,16 @@ export default function ContactPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, message: e.target.value })
                 }
-                placeholder="Tell us what's on your mind..."
+                placeholder="Your message..."
                 rows={6}
-                className="w-full px-3 py-2 bg-mybackground border border-mysecondary/20 rounded-md text-myforeground placeholder-mysecondary/50 focus:outline-none focus:ring-2 focus:ring-myprimary focus:border-transparent"
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
 
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-myprimary hover:bg-myprimary/90 text-mybackground font-semibold py-3 rounded-lg transition-all hover:scale-[1.02]"
-            >
+            <Button type="submit" disabled={isSubmitting} className="w-full">
               {isSubmitting ? "Sending..." : "Send Message"}
             </Button>
           </form>
-
-          <p className="text-sm text-mysecondary text-center mt-6">
-            Expected response time: 24-48 hours (unless it's a weekend, then we're
-            probably debugging our own code)
-          </p>
         </div>
       </div>
     </div>
