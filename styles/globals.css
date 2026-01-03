@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 
 @theme {
-  --color-mybackground: #eaffff;
+  --color-mybackground: #f0f0f0;
   --color-myforeground: #1a1a1a;
   --color-mysecondary: #3c8de3;
   --color-mysecondary-hover: #ff9819;

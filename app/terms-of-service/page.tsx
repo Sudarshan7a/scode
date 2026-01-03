@@ -17,7 +17,7 @@ export default function TermsOfServicePage() {
         </div>
 
         <div className="prose prose-invert max-w-none space-y-8">
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🎯 The TL;DR Version
             </h2>
@@ -28,7 +28,7 @@ export default function TermsOfServicePage() {
             </p>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               ✅ What You Can Do
             </h2>
@@ -50,7 +50,7 @@ export default function TermsOfServicePage() {
             </ul>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🚫 What You Can&apos;t Do
             </h2>
@@ -84,7 +84,7 @@ export default function TermsOfServicePage() {
             </ul>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               📝 Your Code
             </h2>
@@ -97,7 +97,7 @@ export default function TermsOfServicePage() {
             </p>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               💰 Payment & Pricing
             </h2>
@@ -110,7 +110,7 @@ export default function TermsOfServicePage() {
             </p>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               ⚠️ Disclaimers
             </h2>
@@ -138,7 +138,7 @@ export default function TermsOfServicePage() {
             </ul>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🔨 Account Termination
             </h2>
@@ -151,7 +151,7 @@ export default function TermsOfServicePage() {
             </p>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               ⚖️ Legal Stuff
             </h2>
@@ -163,7 +163,7 @@ export default function TermsOfServicePage() {
             </p>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               📧 Questions?
             </h2>
@@ -180,7 +180,7 @@ export default function TermsOfServicePage() {
             </p>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🎉 Final Words
             </h2>

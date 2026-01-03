@@ -36,8 +36,7 @@ export default function HeroSection() {
         <p className="text-xl md:text-2xl text-foreground/70 mb-12 max-w-3xl mx-auto leading-relaxed">
           The collaborative coding platform built for pair programming.
           <br className="hidden md:block" />
-          Write, debug, and learn together in real-time with voice chat and AI
-          assistance.
+          Write, debug, and learn together in real-time with AI assistance.
         </p>
 
         {/* CTA Buttons */}

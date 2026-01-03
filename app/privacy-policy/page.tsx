@@ -16,29 +16,29 @@ export default function PrivacyPolicyPage() {
         </div>
 
         <div className="prose prose-invert max-w-none space-y-8">
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🎭 The TL;DR Version
             </h2>
             <p className="text-myforeground/80 leading-relaxed">
-              We collect some data. We don&apos;t sell it. We&apos;re not Facebook.
-              You&apos;re welcome.
+              We collect some data. We don&apos;t sell it. We&apos;re not
+              Facebook. You&apos;re welcome.
             </p>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               📊 What We Collect
             </h2>
             <ul className="list-disc list-inside text-myforeground/80 space-y-2">
               <li>
                 <strong>Email address</strong> — So we can send you important
-                stuff (and maybe the occasional &quot;we miss you&quot; email that
-                you&apos;ll ignore)
+                stuff (and maybe the occasional &quot;we miss you&quot; email
+                that you&apos;ll ignore)
               </li>
               <li>
-                <strong>Name</strong> — Because calling you &quot;User #48291&quot;
-                felt impersonal
+                <strong>Name</strong> — Because calling you &quot;User
+                #48291&quot; felt impersonal
               </li>
               <li>
                 <strong>Your code</strong> — It lives on our servers while
@@ -58,7 +58,7 @@ export default function PrivacyPolicyPage() {
             </ul>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🔒 How We Protect Your Data
             </h2>
@@ -74,16 +74,12 @@ export default function PrivacyPolicyPage() {
                 HttpOnly cookies for auth tokens (XSS attackers hate this one
                 simple trick)
               </li>
-              <li>
-                Rate limiting everywhere (bots, please touch grass)
-              </li>
-              <li>
-                Security headers that would make OWASP proud
-              </li>
+              <li>Rate limiting everywhere (bots, please touch grass)</li>
+              <li>Security headers that would make OWASP proud</li>
             </ul>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🍪 Cookies
             </h2>
@@ -96,7 +92,7 @@ export default function PrivacyPolicyPage() {
             </p>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🤝 Third Parties
             </h2>
@@ -126,19 +122,19 @@ export default function PrivacyPolicyPage() {
             </ul>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🗑️ Data Deletion
             </h2>
             <p className="text-myforeground/80 leading-relaxed">
               Want to leave? We&apos;ll be sad, but we respect your decision.
               Contact us and we&apos;ll delete your data faster than you can say
-              &quot;GDPR compliance.&quot; Unlike that gym membership, we actually
-              let you cancel.
+              &quot;GDPR compliance.&quot; Unlike that gym membership, we
+              actually let you cancel.
             </p>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               📧 Contact Us
             </h2>
@@ -154,7 +150,7 @@ export default function PrivacyPolicyPage() {
             </p>
           </section>
 
-          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/20">
+          <section className="bg-card/50 rounded-lg p-6 border border-mysecondary/60">
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🔄 Changes to This Policy
             </h2>
@@ -167,10 +163,7 @@ export default function PrivacyPolicyPage() {
         </div>
 
         <div className="mt-12 text-center">
-          <Link
-            href="/"
-            className="text-myprimary hover:underline"
-          >
+          <Link href="/" className="text-myprimary hover:underline">
             ← Back to actually writing code
           </Link>
         </div>

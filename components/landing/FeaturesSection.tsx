@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import {
-  Video,
+  Code,
   MessageSquare,
   Sparkles,
   GitBranch,
@@ -11,10 +11,10 @@ import {
 
 const features = [
   {
-    icon: Video,
-    title: "Live Voice Chat",
+    icon: Code,
+    title: "Monaco Editor",
     description:
-      "Communicate seamlessly with built-in voice channels. No extra apps needed.",
+      "The power of VS Code in your browser. Syntax highlighting, IntelliSense, and more.",
     color: "from-blue-500/20 to-blue-500/5",
   },
   {
