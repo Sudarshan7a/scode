@@ -10,7 +10,7 @@ export default function PrivacyPolicyPage() {
           <h1 className="text-4xl font-bold text-myforeground mb-4">
             Privacy Policy
           </h1>
-          <p className="text-mysecondary">
+          <p className="text-myforeground/80">
             Last updated: January 3, 2026 (yes, the future is now)
           </p>
         </div>
@@ -20,7 +20,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🎭 The TL;DR Version
             </h2>
-            <p className="text-mysecondary leading-relaxed">
+            <p className="text-myforeground/80 leading-relaxed">
               We collect some data. We don&apos;t sell it. We&apos;re not Facebook.
               You&apos;re welcome.
             </p>
@@ -30,7 +30,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               📊 What We Collect
             </h2>
-            <ul className="list-disc list-inside text-mysecondary space-y-2">
+            <ul className="list-disc list-inside text-myforeground/80 space-y-2">
               <li>
                 <strong>Email address</strong> — So we can send you important
                 stuff (and maybe the occasional &quot;we miss you&quot; email that
@@ -62,7 +62,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🔒 How We Protect Your Data
             </h2>
-            <ul className="list-disc list-inside text-mysecondary space-y-2">
+            <ul className="list-disc list-inside text-myforeground/80 space-y-2">
               <li>
                 Passwords are hashed with bcrypt (the good stuff, not MD5 like
                 it&apos;s 2005)
@@ -87,7 +87,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🍪 Cookies
             </h2>
-            <p className="text-mysecondary leading-relaxed">
+            <p className="text-myforeground/80 leading-relaxed">
               Yes, we use cookies. No, not the delicious kind (sadly). Our
               cookies are strictly functional — they keep you logged in and
               remember your preferences. We don&apos;t use tracking cookies to
@@ -100,10 +100,10 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🤝 Third Parties
             </h2>
-            <p className="text-mysecondary leading-relaxed mb-4">
+            <p className="text-myforeground/80 leading-relaxed mb-4">
               We work with some third parties who are actually trustworthy:
             </p>
-            <ul className="list-disc list-inside text-mysecondary space-y-2">
+            <ul className="list-disc list-inside text-myforeground/80 space-y-2">
               <li>
                 <strong>MongoDB</strong> — Stores your data (they&apos;re cool)
               </li>
@@ -130,7 +130,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🗑️ Data Deletion
             </h2>
-            <p className="text-mysecondary leading-relaxed">
+            <p className="text-myforeground/80 leading-relaxed">
               Want to leave? We&apos;ll be sad, but we respect your decision.
               Contact us and we&apos;ll delete your data faster than you can say
               &quot;GDPR compliance.&quot; Unlike that gym membership, we actually
@@ -142,7 +142,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               📧 Contact Us
             </h2>
-            <p className="text-mysecondary leading-relaxed">
+            <p className="text-myforeground/80 leading-relaxed">
               Questions? Concerns? Just want to chat about privacy? Reach out at{" "}
               <a
                 href="mailto:sudarshanpower07@gmail.com"
@@ -158,7 +158,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-2xl font-semibold text-myforeground mb-4">
               🔄 Changes to This Policy
             </h2>
-            <p className="text-mysecondary leading-relaxed">
+            <p className="text-myforeground/80 leading-relaxed">
               We might update this policy occasionally. When we do, we&apos;ll
               update the date at the top. We won&apos;t send you a 47-page email
               about it like some companies. You&apos;re welcome (again).
