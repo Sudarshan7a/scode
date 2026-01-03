@@ -7,7 +7,7 @@ export default function FooterBottomSection() {
   }, []);
 
   return (
-    <div className="mt-12 border-t border-mysecondary pt-6 flex justify-between items-center text-sm text-myforeground opacity-70">
+    <div className="mt-6   border-t border-mysecondary pt-2 flex justify-between items-center text-sm text-myforeground opacity-70">
       <p>© 2025 Scode. All rights reserved.</p>
       <button
         onClick={handleScrollTop}

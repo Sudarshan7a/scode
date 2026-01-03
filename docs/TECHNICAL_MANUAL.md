@@ -130,12 +130,12 @@ The core of Scode's collaborative experience is built on **Y.js**, a high-perfor
 
 Scode implements a robust error handling strategy using React Error Boundaries to prevent app crashes and provide a graceful user experience.
 
--   **Global Boundary:** Wraps the entire app in `app/layout.tsx` to catch unhandled errors.
--   **Granular Boundaries:**
-    -   `ErrorBoundary.tsx`: Main class-based component with "Try Again" and "Go Home" recovery options.
-    -   `AsyncErrorBoundary.tsx`: Specialized wrapper for async operations (API calls), supporting retry logic.
--   **Hook:** `useErrorHandler` provides consistent error logging and reporting.
--   **Testing:** A dedicated test page `/test-error-boundaries` allows developers to verify error states.
+- **Global Boundary:** Wraps the entire app in `app/layout.tsx` to catch unhandled errors.
+- **Granular Boundaries:**
+  - `ErrorBoundary.tsx`: Main class-based component with "Try Again" and "Go Home" recovery options.
+  - `AsyncErrorBoundary.tsx`: Specialized wrapper for async operations (API calls), supporting retry logic.
+- **Hook:** `useErrorHandler` provides consistent error logging and reporting.
+- **Testing:** A dedicated test page `/test-error-boundaries` allows developers to verify error states.
 
 ## 5. Features
 
@@ -239,12 +239,13 @@ Scode implements a robust error handling strategy using React Error Boundaries t
     ```
 
 ### Useful Scripts
-| Command | Description |
-|---------|-------------|
-| `npm run lint` | Run ESLint to check for code quality issues. |
-| `npm run audit:repo` | Run a repository health audit script. |
-| `npm run audit:commits` | Analyze commit message quality. |
-| `npm run help:git` | Show Git learning resources. |
+
+| Command                 | Description                                  |
+| ----------------------- | -------------------------------------------- |
+| `npm run lint`          | Run ESLint to check for code quality issues. |
+| `npm run audit:repo`    | Run a repository health audit script.        |
+| `npm run audit:commits` | Analyze commit message quality.              |
+| `npm run help:git`      | Show Git learning resources.                 |
 
 ## 9. Diagrams
 
