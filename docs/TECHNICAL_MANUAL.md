@@ -141,10 +141,20 @@ Scode implements a robust error handling strategy using React Error Boundaries t
 
 ### Authentication & User Management
 
-- **Stack:** Custom JWT implementation using `jose` and `cookies-next`.
+- **Stack:** Hybrid authentication supporting both OAuth (NextAuth.js v5) and custom JWT implementation.
+- **OAuth Providers:** Google and GitHub sign-in via NextAuth.js
+- **Custom Auth:** Email/password with JWT tokens using `jose`
+- **Unified Middleware:** Single `withAuth` HOC and `getAuthUserId` helper for API routes
 - **Flow:**
-  - Sign Up / Login -> JWT generated -> Stored in HttpOnly Cookie.
-  - Middleware validates token on protected routes.
+  - OAuth: Sign in via provider -> Session created -> MongoDB userId injected via JWT callback
+  - Custom: Sign Up / Login -> Refresh token generated (crypto.randomBytes) -> Stored in HttpOnly Cookie
+  - Middleware validates session (OAuth) or token (custom) on protected routes
+- **Security Features:**
+  - Cryptographically secure refresh tokens
+  - Security headers (X-Frame-Options, X-Content-Type-Options, X-XSS-Protection)
+  - User enumeration prevention (generic error messages)
+  - Session invalidation on password reset
+  - Profile data exposure limits for non-owners
 - **Email Verification:** Uses `resend` to send verification codes.
 
 ### Dashboard

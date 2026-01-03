@@ -4,7 +4,7 @@
 
 **🚀 A collaborative, cloud-based coding platform for interview preparation and social coding**
 
-[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue?logo=typescript)](https://typescriptlang.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-green?logo=mongodb)](https://mongodb.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -63,8 +63,10 @@ S‑code makes coding practice feel like multiplayer gaming — secure, fast, an
 
 **Authentication & Security**
 
+- [NextAuth.js v5](https://authjs.dev/) for OAuth (Google, GitHub)
 - [bcrypt](https://github.com/kelektiv/node.bcrypt.js) for password hashing
 - [jose](https://github.com/panva/jose) for JWT token management
+- Cryptographically secure refresh tokens (crypto.randomBytes)
 - HttpOnly cookies for secure token storage
 - [Zod](https://zod.dev/) + [react-hook-form](https://react-hook-form.com/) for validation
 
@@ -89,24 +91,32 @@ S‑code makes coding practice feel like multiplayer gaming — secure, fast, an
 
 Privacy-first auth and token hygiene:
 
+- **OAuth Integration**: Google and GitHub sign-in via NextAuth.js v5
 - Email/password signup with domain restriction
 - Email verification with short‑lived tokens (stored in Redis)
+- **Cryptographic tokens**: Random bytes for unpredictable refresh tokens
 - Secure, HttpOnly refresh tokens in cookies (no access tokens in localStorage)
+- **Unified auth middleware**: Supports both OAuth and custom auth
 - Middleware-protected routes with server-side refresh validation
 - Rate limiting hooks in place to prevent brute-force attacks
 - Strong password hashing (bcrypt)
-- Extensible foundation for MFA and session management
+- **Security headers**: X-Frame-Options, X-Content-Type-Options, CSP
+- **User enumeration prevention**: Generic error messages on login/forgot-password
+- Session invalidation on password reset (logout all devices)
 
 ## Features (MVP)
 
 ### 🔐 Authentication System
 
+- **OAuth Support**: Google and GitHub sign-in via NextAuth.js v5
 - **Secure Registration**: Email/password signup with domain restrictions
 - **Email Verification**: Short-lived tokens stored in Redis for verification
 - **Session Management**: HttpOnly refresh tokens with automatic rotation
+- **Unified Auth Middleware**: Single auth layer for OAuth and custom auth
 - **Protected Routes**: Middleware-based route protection
 - **Rate Limiting**: Brute-force attack prevention
 - **Password Security**: Strong bcrypt hashing
+- **Security Headers**: XSS, clickjacking, and MIME-sniffing protection
 
 ### 👥 Collaborative Code Editor
 
@@ -181,18 +191,22 @@ Privacy-first auth and token hygiene:
 - **Authentication Improvements**: Real-time navbar updates, token refresh optimization
 - **Profile System**: Infinite loop fixes, cache management, avatar handling
 - **UI/UX Enhancements**: Responsive dashboard cards, improved skeleton loading
+- **OAuth Integration**: Google and GitHub sign-in via NextAuth.js v5
+- **Security Hardening**: Cryptographic tokens, security headers, user enumeration prevention
+- **Unified Auth Middleware**: Single auth layer supporting OAuth and custom authentication
+- **Profile Privacy**: Limited public profile exposure, full data only for own profile
 
 ### 🚧 In Progress
 
-- OAuth integrations (GitHub, Google) - UI components ready, API integration pending
 - Room roles & permissions system
 - Enhanced UI/UX improvements
 - Performance optimizations
+- Voice/video call integration
 
 ### 📋 Planned Features
 
 - **Authentication Enhancements**
-  - Complete OAuth integrations (GitHub, Google, Discord)
+  - Discord OAuth integration
   - Multi-factor authentication (TOTP)
   - Device-based trust and session management
 - **Collaboration Features**
@@ -269,6 +283,13 @@ MY_DOMAIN=http://localhost:3000
 
 # AI Assistant (Optional)
 GEMINI_API_KEY=your-gemini-api-key-here
+
+# OAuth Providers (NextAuth.js)
+AUTH_SECRET=your-auth-secret-here  # Generate with: npx auth secret
+AUTH_GOOGLE_ID=your-google-client-id
+AUTH_GOOGLE_SECRET=your-google-client-secret
+AUTH_GITHUB_ID=your-github-client-id
+AUTH_GITHUB_SECRET=your-github-client-secret
 ```
 
 4. **Start the WebSocket server** (for real-time collaboration)
