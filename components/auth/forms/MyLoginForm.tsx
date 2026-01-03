@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useToast, TOAST_MESSAGES } from "@/hooks/useToast";
 import { UserCache, AvatarCache } from "@/lib/userCache";
 import googleAuth from "@/lib/Oauth/GoogleProvider";
-import githubAuth from "@/lib/Oauth/GithubProvider";
+import githubAuth from "@/lib/Oauth/GitHubProvider";
 // import { useAuth } from "@/auth/nextjs/hooks";
 // import { logIn } from "@/auth/nextjs/actions";
 
