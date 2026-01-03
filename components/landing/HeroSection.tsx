@@ -25,18 +25,19 @@ export default function HeroSection() {
 
         {/* Main headline */}
         <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
-          Pair Programming
+          Code Together,
           <br />
           <span className="bg-gradient-to-r from-mysecondary to-mysecondary/60 bg-clip-text text-transparent">
-            Without the Awkward Zoom Screen Share
+            Think Faster
           </span>
         </h1>
 
         {/* Subheadline */}
         <p className="text-xl md:text-2xl text-foreground/70 mb-12 max-w-3xl mx-auto leading-relaxed">
-          Real-time coding with AI that won't steal your job (yet).
+          The collaborative coding platform built for pair programming.
           <br className="hidden md:block" />
-          Voice chat built-in. No third-party hassle. Sub-100ms sync even on spotty WiFi.
+          Write, debug, and learn together in real-time with voice chat and AI
+          assistance.
         </p>
 
         {/* CTA Buttons */}
@@ -46,7 +47,7 @@ export default function HeroSection() {
               size="lg"
               className="bg-mysecondary hover:bg-mysecondary-hover text-white px-8 py-6 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all group"
             >
-              Sign in with GitHub/Google — Free, No CC Needed
+              Start Pairing Now
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>

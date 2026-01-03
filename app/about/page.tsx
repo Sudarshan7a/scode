@@ -45,14 +45,6 @@ export default function AboutPage() {
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <h3 className="text-xl font-medium text-myforeground">
-                  🎤 Built-in Voice Chat
-                </h3>
-                <p className="text-mysecondary">
-                  No third-party apps. No "can you hear me?" spam. Just code and talk.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-medium text-myforeground">
                   🤖 AI That Actually Helps
                 </h3>
                 <p className="text-mysecondary">
@@ -76,6 +68,15 @@ export default function AboutPage() {
                 <p className="text-mysecondary">
                   Real-time collaboration that actually feels real-time, even on
                   spotty WiFi.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-medium text-myforeground">
+                  🎨 Monaco Editor
+                </h3>
+                <p className="text-mysecondary">
+                  The same editor that powers VS Code, with full syntax highlighting
+                  and IntelliSense.
                 </p>
               </div>
             </div>
