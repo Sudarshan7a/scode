@@ -30,9 +30,13 @@ function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
               <div className="relative">
                 <Input
                   value={message}
-                  onChange={(e) => setMessage(e.target.value.slice(0, MAX_MESSAGE_LENGTH))}
+                  onChange={(e) =>
+                    setMessage(e.target.value.slice(0, MAX_MESSAGE_LENGTH))
+                  }
                   placeholder="Ask about code, programming, or computer science..."
-                  className={`min-h-[2.5rem] pr-12 resize-none font-secondary ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`min-h-[2.5rem] pr-12 resize-none font-secondary ${
+                    isLoading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                   aria-label="Message input"
                   disabled={isLoading}
                   maxLength={MAX_MESSAGE_LENGTH}
@@ -67,7 +71,13 @@ function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
             AI can make mistakes. Verify important information.
           </p>
           {message.length > 0 && (
-            <p className={`text-xs ${remainingChars < 100 ? 'text-orange-500' : 'text-muted-foreground'}`}>
+            <p
+              className={`text-xs ${
+                remainingChars < 100
+                  ? "text-orange-500"
+                  : "text-muted-foreground"
+              }`}
+            >
               {remainingChars} chars left
             </p>
           )}
