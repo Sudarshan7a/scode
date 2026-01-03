@@ -51,14 +51,16 @@ async function authenticateUser(
 ) {
   const result = await usersCollection.findOne({ email });
   if (!result) {
-    return { success: false, error: "User not found", status: 404 };
+    // Use same error message to prevent user enumeration
+    return { success: false, error: "Invalid email or password", status: 401 };
   }
 
   const isMatch = await verifyPassword(password, result.passwordHash);
   if (!isMatch) {
+    // Use same error message to prevent user enumeration
     return {
       success: false,
-      error: "Invalid password, please try again",
+      error: "Invalid email or password",
       status: 401,
     };
   }

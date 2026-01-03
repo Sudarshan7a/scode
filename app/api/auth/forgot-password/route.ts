@@ -42,25 +42,20 @@ export async function POST(req: NextRequest) {
     const { email } = parse.data;
     const { usersCollection } = await connectToMongo();
     const user = await usersCollection.findOne({ email });
-    if (!user) {
-      return NextResponse.json(
-        {
-          ok: false,
-          message: "Email not registered",
-          fieldErrors: { email: "Email not registered" },
-        },
-        { status: 404 }
-      );
+
+    // Always return success to prevent email enumeration
+    // Only send email if user actually exists
+    if (user) {
+      await sendActionToken({
+        action: "forgotPassword",
+        userId: String(user._id),
+        email,
+      });
     }
-    // generate + send reset token (best-effort)
-    await sendActionToken({
-      action: "forgotPassword",
-      userId: String(user._id),
-      email,
-    });
+
     return NextResponse.json({
       ok: true,
-      message: "A reset link was sent to your email address",
+      message: "If this email is registered, you will receive a reset link",
     });
   } catch {
     return NextResponse.json(

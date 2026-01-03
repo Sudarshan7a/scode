@@ -5,6 +5,10 @@ import { generateAccessToken } from "@/auth/utils/generateAccessToken";
 import { connectToMongo } from "@/lib/mongodb";
 
 export async function POST() {
+  const authProvider = (await cookies()).get("authProvider")?.value;
+  if (authProvider === "True") {
+    return NextResponse.json({ message: "OAuth user" }, { status: 200 });
+  }
   const refreshToken = (await cookies()).get("refreshToken")?.value;
 
   if (!refreshToken) {

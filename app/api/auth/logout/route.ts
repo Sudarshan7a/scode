@@ -1,29 +1,66 @@
-// import { redirect } from "next/dist/server/api-utils";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { connectToMongo } from "@/lib/mongodb";
+import { signOut } from "@/auth";
 
 export async function POST(): Promise<NextResponse> {
   try {
-    const cookieStore = await cookies(); // from next/headers
+    const cookieStore = await cookies();
+    const authProvider = cookieStore.get("authProvider")?.value;
     const refreshToken = cookieStore.get("refreshToken")?.value;
 
-    const { refreshTokensCollection } = await connectToMongo();
+    // For custom auth users - delete refresh token from DB
     if (refreshToken) {
+      const { refreshTokensCollection } = await connectToMongo();
       await refreshTokensCollection.deleteOne({ token: refreshToken });
     }
-  } catch {
-    // Error handling - silent fail for logout
-  } finally {
+
+    // For OAuth users - sign out from NextAuth session
+    if (authProvider === "oauth") {
+      try {
+        await signOut({ redirect: false });
+      } catch {
+        // NextAuth signOut may fail if no active session, continue anyway
+      }
+    }
+
+    // Build response with cleared cookies
     const res = NextResponse.json({
       message: "Logged out",
       redirect: "/login",
-      clearCache: true, // Instruction to clear localStorage
+      clearCache: true,
+      isOAuthUser: authProvider === "oauth",
     });
-    res.cookies.set("refreshToken", "", { maxAge: 0, path: "/" });
-    res.cookies.set("userId", "", { maxAge: 0, path: "/" });
+
+    // Clear all auth cookies
+    const clearCookie = { maxAge: 0, path: "/" };
+    res.cookies.set("refreshToken", "", clearCookie);
+    res.cookies.set("userId", "", clearCookie);
+    res.cookies.set("authProvider", "", clearCookie);
     res.cookies.set("isLoggedIn", "false", { maxAge: 10, path: "/" });
-    res.cookies.set("isAuthenticated", "", { maxAge: 0, path: "/" });
+    res.cookies.set("isAuthenticated", "", clearCookie);
+
+    // Clear NextAuth session cookies
+    res.cookies.set("authjs.session-token", "", clearCookie);
+    res.cookies.set("__Secure-authjs.session-token", "", clearCookie);
+
+    return res;
+  } catch {
+    // Error handling - still clear cookies on failure
+    const res = NextResponse.json({
+      message: "Logged out",
+      redirect: "/login",
+      clearCache: true,
+    });
+
+    const clearCookie = { maxAge: 0, path: "/" };
+    res.cookies.set("refreshToken", "", clearCookie);
+    res.cookies.set("userId", "", clearCookie);
+    res.cookies.set("authProvider", "", clearCookie);
+    res.cookies.set("isLoggedIn", "false", { maxAge: 10, path: "/" });
+    res.cookies.set("isAuthenticated", "", clearCookie);
+    res.cookies.set("authjs.session-token", "", clearCookie);
+    res.cookies.set("__Secure-authjs.session-token", "", clearCookie);
 
     return res;
   }
