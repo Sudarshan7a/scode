@@ -9,14 +9,25 @@ import TermsAndPrivacy from "../common/TermsAndPrivacy";
 import { useRouter } from "next/navigation";
 import { useToast, TOAST_MESSAGES } from "@/hooks/useToast";
 import { UserCache, AvatarCache } from "@/lib/userCache";
+import googleAuth from "@/lib/Oauth/GoogleProvider";
+import githubAuth from "@/lib/Oauth/GithubProvider";
+// import { useAuth } from "@/auth/nextjs/hooks";
 // import { logIn } from "@/auth/nextjs/actions";
 
 export function MyLoginForm() {
   const router = useRouter();
   const { success, error } = useToast();
   // Handler for OAuth login
-  const handleOAuthLogin = (_providerId: string): void => {
+  const handleOAuthLogin = async (_providerId: string): Promise<void> => {
     console.log("OAuth login with provider:", _providerId);
+    if (_providerId === "google") {
+      // Call Google OAuth flow
+      await googleAuth();
+    } else if (_providerId === "github") {
+      // Call GitHub OAuth flow
+      await githubAuth();
+    }
+
     // TODO: Implement OAuth login flow
     // Here you would implement the actual OAuth flow
     // For example, with NextAuth.js you might use signIn(providerId)

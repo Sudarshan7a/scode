@@ -5,12 +5,11 @@ import { generateRefreshToken } from "../auth/utils/generateRefreshToken";
 interface IssueOptions {
   rotate?: boolean; // delete existing tokens
   ttlDays?: number;
-  saltRounds?: number; // bcrypt cost for token generation
 }
 
 export async function issueRefreshSession(
   userId: string,
-  { rotate = false, ttlDays = 7, saltRounds = 12 }: IssueOptions = {}
+  { rotate = false, ttlDays = 7 }: IssueOptions = {}
 ) {
   const { refreshTokensCollection } = await connectToMongo();
 
@@ -18,7 +17,8 @@ export async function issueRefreshSession(
     await refreshTokensCollection.deleteMany({ userId });
   }
 
-  const refreshToken = await generateRefreshToken(userId, saltRounds);
+  // Generate cryptographically secure token
+  const refreshToken = await generateRefreshToken();
   const now = Date.now();
   const newToken = {
     userId,
@@ -39,9 +39,9 @@ export function setAuthCookies(
   const maxAge = ttlDays * 24 * 60 * 60; // seconds
   const base = {
     httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  // Use 'lax' so the cookie is available on top-level navigations after login
-  sameSite: "lax" as const,
+    secure: process.env.NODE_ENV === "production",
+    // Use 'lax' so the cookie is available on top-level navigations after login
+    sameSite: "lax" as const,
     maxAge,
     path: "/",
   };

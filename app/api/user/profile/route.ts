@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToMongo } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { readMediumLimiter, getUserIdOrIP } from "@/lib/rateLimiter";
+import { getAuthUserId } from "@/lib/getAuthUserId";
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,36 +24,55 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
+    const targetUserId = searchParams.get("userId");
 
-    if (!userId) {
+    if (!targetUserId) {
       return NextResponse.json(
         { error: "User ID is required" },
         { status: 400 }
       );
     }
 
+    // Get authenticated user (if any)
+    const currentUserId = await getAuthUserId(request);
+    const isOwnProfile = currentUserId === targetUserId;
+
     const { usersCollection } = await connectToMongo();
 
     const user = await usersCollection.findOne({
-      _id: new ObjectId(userId),
+      _id: new ObjectId(targetUserId),
     });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // Return full profile for own profile, limited for others
+    if (isOwnProfile) {
+      return NextResponse.json({
+        success: true,
+        user: {
+          id: user._id.toString(),
+          email: user.email,
+          name: user.name,
+          role: user.role || "",
+          avatarId: user.avatarId ?? 0,
+          pronouns: user.pronouns || "",
+          dateOfBirth: user.dateOfBirth || "",
+          oauth: user.oauth || {},
+        },
+      });
+    }
+
+    // Public profile - only non-sensitive fields
     return NextResponse.json({
       success: true,
       user: {
         id: user._id.toString(),
-        email: user.email,
         name: user.name,
-        role: user.role || "",
         avatarId: user.avatarId ?? 0,
         pronouns: user.pronouns || "",
-        dateOfBirth: user.dateOfBirth || "",
-        oauth: user.oauth || {},
+        role: user.role || "",
       },
     });
   } catch (error) {

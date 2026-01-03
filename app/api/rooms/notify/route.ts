@@ -1,22 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToMongo } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { getAuthUserId } from "@/lib/getAuthUserId";
 
 export async function POST(req: NextRequest) {
   try {
-    const { roomId, userId } = await req.json();
-    console.log("Notify request received");
+    // Use unified auth helper - works for both OAuth and custom auth
+    const userId = await getAuthUserId(req);
 
-    if (!roomId || !userId) {
+    if (!userId) {
       return NextResponse.json(
-        { error: "roomId and userId are required" },
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
+    const { roomId } = await req.json();
+
+    if (!roomId) {
+      return NextResponse.json(
+        { error: "roomId is required" },
         { status: 400 }
       );
     }
 
-    if (!ObjectId.isValid(roomId) || !ObjectId.isValid(userId)) {
+    if (!ObjectId.isValid(roomId)) {
       return NextResponse.json(
-        { error: "Invalid roomId or userId format" },
+        { error: "Invalid roomId format" },
         { status: 400 }
       );
     }

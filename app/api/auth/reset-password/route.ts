@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { usersCollection } = await connectToMongo();
+    const { usersCollection, refreshTokensCollection } = await connectToMongo();
     const passwordHash = await hashPassword(password);
     const update = await usersCollection.updateOne(
       { _id: new ObjectId(userId) },
@@ -79,7 +79,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Invalidate token (optional — still fine to delete after use)
+    // SECURITY: Invalidate ALL refresh tokens for this user
+    // This logs out all devices when password is reset
+    await refreshTokensCollection.deleteMany({ userId }).catch(() => {});
+
+    // Invalidate the password reset token
     await redis.del(redisKey).catch(() => {});
 
     return NextResponse.json({

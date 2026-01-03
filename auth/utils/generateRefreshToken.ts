@@ -1,12 +1,9 @@
-import bcrypt from "bcrypt";
+import crypto from "crypto";
 
-export async function generateRefreshToken(
-  userId: string,
-  saltRounds: number = 12
-): Promise<string> {
-  try {
-    return await bcrypt.hash(userId, saltRounds);
-  } catch (error) {
-    throw new Error(`Failed to generate refresh token: ${error}`);
-  }
+/**
+ * Generates a cryptographically secure refresh token
+ * Uses random bytes instead of bcrypt hash for unpredictability
+ */
+export async function generateRefreshToken(): Promise<string> {
+  return crypto.randomBytes(64).toString("hex");
 }

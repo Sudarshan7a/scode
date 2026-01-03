@@ -147,14 +147,6 @@ function getRoomIdFromPayload(payload: {
   return roomIdStr;
 }
 
-function getUserCookieId(request: NextRequest) {
-  const userCookie = request.cookies.get("userId");
-  if (!userCookie?.value) {
-    throw new HttpError(401, { error: "Unauthorized" });
-  }
-  return String(userCookie.value);
-}
-
 async function findRoomOrThrow(
   roomsCollection: Collection<Document>,
   roomIdStr: string
@@ -166,19 +158,18 @@ async function findRoomOrThrow(
   return room;
 }
 
-export const POST = withAuth(async (request: NextRequest) => {
+export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
     const body = await request.json();
     const payload = validateJoinPayload(body);
     const roomIdStr = getRoomIdFromPayload(payload);
-    const userCookieId = getUserCookieId(request);
 
     // Rate limiting by userId
-    const { success } = await roomJoinLimiter.limit(userCookieId);
+    const { success } = await roomJoinLimiter.limit(userId);
 
     if (!success) {
       console.warn(
-        `[RateLimit] Room join blocked: user ${userCookieId} (too many joins)`
+        `[RateLimit] Room join blocked: user ${userId} (too many joins)`
       );
       return NextResponse.json(
         {
@@ -195,7 +186,7 @@ export const POST = withAuth(async (request: NextRequest) => {
     const statusResp = checkRoomStatus(room, roomIdStr);
     if (statusResp) return statusResp;
 
-    const isOwner = String(room.ownerId) === String(userCookieId);
+    const isOwner = String(room.ownerId) === String(userId);
     if (isOwner) {
       return NextResponse.json(
         { role: "host", roomId: roomIdStr, room },
@@ -203,7 +194,7 @@ export const POST = withAuth(async (request: NextRequest) => {
       );
     }
 
-    await ensureCollaborator(roomsCollection, room, userCookieId, payload.role);
+    await ensureCollaborator(roomsCollection, room, userId, payload.role);
 
     return NextResponse.json(
       { role: "participant", roomId: roomIdStr, room },

@@ -1,17 +1,18 @@
-import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { StreamClient } from "@stream-io/node-sdk";
 import { videoTokenLimiter } from "@/lib/rateLimiter";
 import { connectToMongo } from "@/lib/mongodb";
+import { getAuthUserId } from "@/lib/getAuthUserId";
 
 function respond(status: number, body: Record<string, unknown>) {
   return NextResponse.json(body, { status });
 }
 
-export async function GET() {
-  const store = await cookies();
-  const userId = store.get("userId")?.value;
+export async function GET(request: NextRequest) {
+  // Use unified auth helper - works for both OAuth and custom auth
+  const userId = await getAuthUserId(request);
+
   if (!userId)
     return respond(401, { ok: false, message: "Authentication required" });
   if (!ObjectId.isValid(userId))

@@ -1,22 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
-  const cookieStore = await cookies();
+/**
+ * SECURITY: This debug route has been disabled in production.
+ * In development, it only shows boolean flags, never actual tokens.
+ */
+export async function GET() {
+  // Block in production - this route should not exist in prod
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
 
-  // Check for refresh token in cookies
-  const refreshToken = cookieStore.get("refreshToken")?.value;
-  const isLoggedIn = cookieStore.get("isLoggedIn")?.value;
-
-  // Check for access token in Authorization header
-  const authHeader = request.headers.get("Authorization");
-  const hasAccessToken = authHeader && authHeader.startsWith("Bearer ");
-
+  // Even in development, don't expose sensitive data
   return NextResponse.json({
-    hasRefreshToken: !!refreshToken,
-    hasAccessToken: !!hasAccessToken,
-    isLoggedIn: isLoggedIn === "true",
-    accessToken: hasAccessToken ? authHeader.split(" ")[1] : null,
+    message: "Debug route disabled for security reasons",
+    hint: "Use browser DevTools to inspect cookies and network requests",
     timestamp: new Date().toISOString(),
   });
 }
