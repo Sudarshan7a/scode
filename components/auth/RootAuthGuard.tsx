@@ -42,6 +42,8 @@ export function RootAuthGuard({ children }: { children: React.ReactNode }) {
     "/verify-email-change", // Email change verification
     "/check-email",
     "/reset-password", // base (fallback) – actual page is /reset-password/[token]
+    "/privacy-policy",
+    "/terms-of-service",
   ];
 
   // Dynamic route patterns
