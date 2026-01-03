@@ -33,7 +33,7 @@ export default function ContactPage() {
           <h1 className="text-4xl font-bold text-foreground mb-4">
             Contact Us
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-foreground">
             Bug reports welcome — include code! (We're devs too, we get it)
           </p>
         </div>
@@ -64,7 +64,7 @@ export default function ContactPage() {
             >
               github.com/Sudarshan7a/scode/issues
             </a>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-foreground mt-1">
               Found a bug? Tell us before it becomes a feature
             </p>
           </div>
@@ -149,7 +149,7 @@ export default function ContactPage() {
                 }
                 placeholder="Your message..."
                 rows={6}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
 
