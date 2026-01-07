@@ -15,7 +15,7 @@ export default function CTASection() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-          <Link href="/signup">
+          <Link href="/dashboard">
             <Button
               size="lg"
               className="bg-mysecondary hover:bg-mysecondary-hover text-white px-8 py-6 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all group"
