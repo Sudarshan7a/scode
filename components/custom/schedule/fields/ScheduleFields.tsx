@@ -1,14 +1,14 @@
 import React from "react";
 import { UseFormSetValue, FieldErrors } from "react-hook-form";
-import { Label } from "@radix-ui/react-label";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@radix-ui/react-select";
-import { Calendar24 } from "../../MyDateAndTimePicker";
+} from "@/components/ui/select";
+import { DateTimePicker } from "./DateTimePicker";
 import { CreateRoomSchema } from "../schemas/formSchemas";
 
 interface ScheduleFieldsProps {
@@ -25,8 +25,8 @@ export function ScheduleFields({
   return (
     <div>
       <Label htmlFor="scheduledAt">Select Date and Time *</Label>
-      <div className="mt-2 border-mysecondary">
-        <Calendar24
+      <div className="mt-2">
+        <DateTimePicker
           selected={selectedDate}
           onChangeDate={(date: Date) => {
             setValue("scheduledAt", date, { shouldValidate: true });
@@ -44,7 +44,7 @@ export function ScheduleFields({
       {errors.time && (
         <p className="text-red-500 text-sm">{errors.time.message as string}</p>
       )}
-      <div className="mt-2">
+      <div className="mt-4">
         <Label htmlFor="duration">Duration in minutes</Label>
         <Select
           defaultValue="30"
@@ -54,11 +54,11 @@ export function ScheduleFields({
         >
           <SelectTrigger
             id="duration"
-            className="border-1 border-mysecondary mt-1"
+            className="mt-1"
           >
             <SelectValue placeholder="Select Duration" />
           </SelectTrigger>
-          <SelectContent className="border-1 border-mysecondary">
+          <SelectContent>
             <SelectItem value="30">30 minutes</SelectItem>
             <SelectItem value="60">1 hour</SelectItem>
             <SelectItem value="90">1.5 hours</SelectItem>
