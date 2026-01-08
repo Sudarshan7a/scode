@@ -8,6 +8,7 @@ import { connectToMongo } from "@/lib/mongodb"; // Safe to import here!
 //https://next-auth.js.org/configuration/callbacks#session-callback
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   providers: [GitHub, Google],
   callbacks: {
     async redirect({ url, baseUrl }) {
