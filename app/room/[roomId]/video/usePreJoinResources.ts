@@ -89,7 +89,20 @@ export function usePreJoinResources({
               ? `/avatars/avatar${avatarId}.jpg`
               : undefined,
         };
-        const client = new StreamVideoClient({ apiKey, user, token });
+
+        // Use tokenProvider for automatic token refresh
+        // This prevents mid-call disconnections when tokens expire
+        const tokenProvider = async () => {
+          const { token } = await fetchVideoToken(roomId);
+          return token;
+        };
+
+        const client = new StreamVideoClient({
+          apiKey,
+          user,
+          token,
+          tokenProvider,
+        });
         const call = client.call("default", roomId);
 
         const hostRoomExists = isHost
@@ -124,6 +137,13 @@ export function usePreJoinResources({
 
     return () => {
       isActive = false;
+      // Dispose client when component unmounts or dependencies change
+      // This prevents memory leaks and permission issues
+      if (state.client) {
+        state.client.disconnectUser().catch((err) => {
+          console.warn("Failed to disconnect video client", err);
+        });
+      }
     };
   }, [apiKey, isHost, roomId, userLoading, dbUser]);
 

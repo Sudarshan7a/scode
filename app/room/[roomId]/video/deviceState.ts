@@ -50,6 +50,23 @@ export async function enableMicrophone(call: Call): Promise<boolean> {
 }
 
 /**
+ * Disables "speaking while muted" notification
+ * Some users may be uncomfortable with the microphone staying on for detection
+ * Call this if users prefer complete microphone privacy when muted
+ *
+ * @param call - The Stream Video call instance
+ */
+export async function disableSpeakingWhileMutedNotification(
+  call: Call
+): Promise<void> {
+  try {
+    await call.microphone.disableSpeakingWhileMutedNotification();
+  } catch (err) {
+    console.warn("Failed to disable speaking-while-muted notification", err);
+  }
+}
+
+/**
  * Applies initial device state before joining a call
  * Ensures camera and microphone are in the desired state
  *

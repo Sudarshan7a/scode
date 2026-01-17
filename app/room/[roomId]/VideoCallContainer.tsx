@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   StreamVideo,
   StreamVideoClient,
@@ -134,6 +134,22 @@ export default function VideoCallContainer({ roomId, isHost }: Props) {
       resetSession();
     }
   }, [call, resetSession]);
+
+  // Cleanup: Ensure proper disposal of call and client on unmount
+  useEffect(() => {
+    return () => {
+      if (call) {
+        call.leave().catch((err) => {
+          console.warn("Cleanup: Failed to leave call", err);
+        });
+      }
+      if (client) {
+        client.disconnectUser().catch((err) => {
+          console.warn("Cleanup: Failed to disconnect client", err);
+        });
+      }
+    };
+  }, [call, client]);
 
   if (!apiKey) {
     return <VideoUnavailableNotice />;

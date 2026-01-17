@@ -68,7 +68,9 @@ export async function GET(request: NextRequest) {
 
     await server.upsertUsers([user]);
 
-    const validitySeconds = 60 * 60; // 1 hour
+    // Use recommended 4-hour token validity for better UX
+    // Short enough for security, long enough to avoid mid-call refreshes
+    const validitySeconds = 4 * 60 * 60; // 4 hours
     const token = server.generateUserToken({
       user_id: userId,
       validity_in_seconds: validitySeconds,

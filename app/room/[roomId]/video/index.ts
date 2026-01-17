@@ -20,11 +20,14 @@ export {
   applyInitialDeviceState,
   enableCamera,
   enableMicrophone,
+  disableSpeakingWhileMutedNotification,
 } from "./deviceState";
 
 // Hooks
 export { useCameraPreview } from "./useCameraPreview";
 export { usePreJoinResources } from "./usePreJoinResources";
+export { useDevicePermissions } from "./useDevicePermissions";
 
 // Re-export types
 export type { Call, StreamVideoClient, User } from "@stream-io/video-react-sdk";
+export type { DevicePermissionState } from "./useDevicePermissions";

@@ -20,7 +20,12 @@ import {
   isCallNotFound,
   usePreJoinResources,
   useCameraPreview,
+  useDevicePermissions,
 } from "./video";
+import {
+  PermissionDeniedWarning,
+  PermissionPrompting,
+} from "@/components/room/PermissionWarnings";
 
 type Props = {
   roomId: string;
@@ -139,6 +144,7 @@ function PreviewContent({
     <StreamVideo client={client}>
       <StreamCall call={call}>
         <div className="flex flex-col gap-3">
+          <PermissionStateMonitor />
           <PreviewSurface previewError={previewError} />
           {!isHost && (
             <div className="text-center text-xs text-foreground">
@@ -162,6 +168,43 @@ function PreviewContent({
       </StreamCall>
     </StreamVideo>
   );
+}
+
+/**
+ * Component to monitor and display permission states
+ * Shows warnings when permissions are denied or prompting
+ */
+function PermissionStateMonitor() {
+  const permissions = useDevicePermissions();
+
+  const cameraPrompting = permissions.camera.isPromptingPermission;
+  const micPrompting = permissions.microphone.isPromptingPermission;
+  const cameraDenied = !permissions.camera.hasBrowserPermission && !cameraPrompting;
+  const micDenied = !permissions.microphone.hasBrowserPermission && !micPrompting;
+
+  // Show prompting state
+  if (cameraPrompting && micPrompting) {
+    return <PermissionPrompting device="both" />;
+  }
+  if (cameraPrompting) {
+    return <PermissionPrompting device="camera" />;
+  }
+  if (micPrompting) {
+    return <PermissionPrompting device="microphone" />;
+  }
+
+  // Show denied state
+  if (cameraDenied && micDenied) {
+    return <PermissionDeniedWarning device="both" />;
+  }
+  if (cameraDenied) {
+    return <PermissionDeniedWarning device="camera" />;
+  }
+  if (micDenied) {
+    return <PermissionDeniedWarning device="microphone" />;
+  }
+
+  return null;
 }
 
 function LoadingState() {
