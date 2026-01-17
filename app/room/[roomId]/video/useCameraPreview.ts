@@ -12,12 +12,13 @@ interface CameraPreviewResult {
 }
 
 /**
- * Hook to manage camera preview for pre-join screens
+ * Hook to manage camera and microphone preview for pre-join screens
  *
- * - Attempts to enable camera preview when call is available
+ * - Camera: Disabled by default (user can enable via toggle button)
+ * - Microphone: Enabled by default for audio testing
  * - Gracefully handles permission errors without showing warnings
  * - The PermissionStateMonitor component will show permission UI
- * - Disables camera on cleanup (unless user has joined)
+ * - Disables devices on cleanup (unless user has joined)
  *
  * @param call - The Stream Video call instance (null before ready)
  * @returns Preview error state and markJoined callback
@@ -33,33 +34,45 @@ export function useCameraPreview(call: Call | null): CameraPreviewResult {
     let cancelled = false;
     setPreviewError(null);
 
-    // Attempt to enable camera for preview
-    // If this fails due to permissions, the PermissionStateMonitor
-    // component will show appropriate UI guidance
-    call.camera.enable().catch((error) => {
-      if (cancelled) return;
-      
-      // Only log the error, don't show UI here
-      // The PermissionStateMonitor component handles permission UI
-      console.debug("[Camera Preview] Camera enable failed:", error.message || error);
-      
-      // Only show error for non-permission issues
-      const isPermissionError = 
-        error?.message?.toLowerCase().includes('permission') ||
-        error?.message?.toLowerCase().includes('denied') ||
-        error?.name === 'NotAllowedError';
-      
-      if (!isPermissionError) {
-        setPreviewError("Camera unavailable. Please check your device.");
+    // Set default device states
+    // Camera: Disabled by default (privacy-friendly)
+    // Microphone: Enabled by default (for audio testing)
+    const setupDevices = async () => {
+      try {
+        // Disable camera by default
+        await call.camera.disable();
         
-        // Auto-hide error after 5 seconds
-        hideTimer.current = setTimeout(() => {
-          if (!cancelled) {
-            setPreviewError(null);
-          }
-        }, 5000);
+        // Enable microphone by default
+        await call.microphone.enable();
+      } catch (error) {
+        if (cancelled) return;
+        
+        // Only log the error, don't show UI here
+        // The PermissionStateMonitor component handles permission UI
+        console.debug("[Device Setup] Device setup failed:", error);
+        
+        // Only show error for non-permission issues
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorName = error instanceof Error ? error.name : '';
+        const isPermissionError = 
+          errorMessage.toLowerCase().includes('permission') ||
+          errorMessage.toLowerCase().includes('denied') ||
+          errorName === 'NotAllowedError';
+        
+        if (!isPermissionError) {
+          setPreviewError("Device unavailable. Please check your devices.");
+          
+          // Auto-hide error after 5 seconds
+          hideTimer.current = setTimeout(() => {
+            if (!cancelled) {
+              setPreviewError(null);
+            }
+          }, 5000);
+        }
       }
-    });
+    };
+    
+    setupDevices();
 
     return () => {
       cancelled = true;
@@ -69,9 +82,10 @@ export function useCameraPreview(call: Call | null): CameraPreviewResult {
         hideTimer.current = null;
       }
 
-      // Only disable camera if user hasn't joined yet
+      // Disable devices if user hasn't joined yet
       if (!joinedRef.current) {
         call.camera.disable().catch(() => undefined);
+        call.microphone.disable().catch(() => undefined);
       }
     };
   }, [call]);
