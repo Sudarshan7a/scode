@@ -14,9 +14,9 @@ interface CameraPreviewResult {
 /**
  * Hook to manage camera preview for pre-join screens
  *
- * - Enables camera preview when call is available
- * - Handles permission errors gracefully
- * - Auto-hides error messages after 5 seconds
+ * - Attempts to enable camera preview when call is available
+ * - Gracefully handles permission errors without showing warnings
+ * - The PermissionStateMonitor component will show permission UI
  * - Disables camera on cleanup (unless user has joined)
  *
  * @param call - The Stream Video call instance (null before ready)
@@ -33,19 +33,32 @@ export function useCameraPreview(call: Call | null): CameraPreviewResult {
     let cancelled = false;
     setPreviewError(null);
 
+    // Attempt to enable camera for preview
+    // If this fails due to permissions, the PermissionStateMonitor
+    // component will show appropriate UI guidance
     call.camera.enable().catch((error) => {
       if (cancelled) return;
-      console.warn("Camera preview failed", error);
-      setPreviewError(
-        "Camera preview unavailable. Check your browser permissions."
-      );
-
-      // Auto-hide error after 5 seconds
-      hideTimer.current = setTimeout(() => {
-        if (!cancelled) {
-          setPreviewError(null);
-        }
-      }, 5000);
+      
+      // Only log the error, don't show UI here
+      // The PermissionStateMonitor component handles permission UI
+      console.debug("[Camera Preview] Camera enable failed:", error.message || error);
+      
+      // Only show error for non-permission issues
+      const isPermissionError = 
+        error?.message?.toLowerCase().includes('permission') ||
+        error?.message?.toLowerCase().includes('denied') ||
+        error?.name === 'NotAllowedError';
+      
+      if (!isPermissionError) {
+        setPreviewError("Camera unavailable. Please check your device.");
+        
+        // Auto-hide error after 5 seconds
+        hideTimer.current = setTimeout(() => {
+          if (!cancelled) {
+            setPreviewError(null);
+          }
+        }, 5000);
+      }
     });
 
     return () => {
