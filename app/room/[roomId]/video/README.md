@@ -44,11 +44,46 @@ Stream Video call lifecycle operations.
 
 #### `deviceState.ts`
 
-Camera and microphone state management.
+Camera and microphone state management with proper permission handling.
+
+**Important:** When permissions have been reset, the browser will automatically prompt the user when you call `enable()` on the camera or microphone. All device operations use try/catch blocks to handle permission denials gracefully.
 
 **Exports:**
 
-- `applyInitialDeviceState(call: Call, state: DeviceState)` - Sets camera/mic state before joining
+- `applyInitialDeviceState(call: Call, state: DeviceState)` - Sets camera/mic state before joining (with error handling)
+- `enableCamera(call: Call)` - Safely enables camera with error handling
+- `enableMicrophone(call: Call)` - Safely enables microphone with error handling
+
+**Permission Handling:**
+
+The browser shows its native permission prompt when `enable()` is called, provided:
+- The user hasn't previously denied permissions
+- Permissions have been reset
+
+**Usage:**
+
+```typescript
+// Using individual device controls
+const cameraEnabled = await enableCamera(call);
+const micEnabled = await enableMicrophone(call);
+
+if (!cameraEnabled || !micEnabled) {
+  // Handle permission denial gracefully
+  showToast("Please enable camera/microphone permissions");
+}
+
+// Using applyInitialDeviceState (wrapped in try/catch at call site)
+try {
+  await applyInitialDeviceState(call, {
+    micMuted: false,
+    cameraMuted: false,
+  });
+  await call.join();
+} catch (err) {
+  // Handle errors (permission denied, device not found, etc.)
+  console.error("Device setup failed", err);
+}
+```
 
 ### React Hooks
 

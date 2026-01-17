@@ -16,7 +16,11 @@ export {
 } from "./callOperations";
 
 // Device state management
-export { applyInitialDeviceState } from "./deviceState";
+export {
+  applyInitialDeviceState,
+  enableCamera,
+  enableMicrophone,
+} from "./deviceState";
 
 // Hooks
 export { useCameraPreview } from "./useCameraPreview";
