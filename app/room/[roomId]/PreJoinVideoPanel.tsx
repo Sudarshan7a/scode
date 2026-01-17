@@ -140,47 +140,77 @@ function PreviewContent({
   joining: boolean;
   onJoin: () => void;
 }) {
-  const permissions = useDevicePermissions();
-  
-  // Check if any device permissions are denied (not prompting and no permission)
-  const cameraPrompting = permissions.camera.isPromptingPermission;
-  const micPrompting = permissions.microphone.isPromptingPermission;
-  const cameraDenied = !permissions.camera.hasBrowserPermission && !cameraPrompting;
-  const micDenied = !permissions.microphone.hasBrowserPermission && !micPrompting;
-  const hasPermissionIssue = cameraDenied || micDenied;
-
   return (
     <StreamVideo client={client}>
       <StreamCall call={call}>
-        <div className="flex flex-col gap-3">
-          <PermissionStateMonitor />
-          <PreviewSurface previewError={previewError} />
-          {!isHost && (
-            <div className="text-center text-xs text-foreground">
-              {hostRoomExists === false
-                ? "Click 'Join Call' to check if the host has started."
-                : "Ready to join the call."}
-            </div>
-          )}
-          <div className="flex gap-2 justify-center">
-            <PreviewControls />
-          </div>
-          <Button
-            size="default"
-            className="w-full font-semibold"
-            disabled={joining || hasPermissionIssue}
-            onClick={onJoin}
-            title={
-              hasPermissionIssue
-                ? "Please grant camera/microphone permissions to join"
-                : undefined
-            }
-          >
-            {joining ? "Joining…" : "Join Call"}
-          </Button>
-        </div>
+        <PreviewContentInner
+          previewError={previewError}
+          isHost={isHost}
+          hostRoomExists={hostRoomExists}
+          joining={joining}
+          onJoin={onJoin}
+        />
       </StreamCall>
     </StreamVideo>
+  );
+}
+
+/**
+ * Inner content that uses call state hooks
+ * Must be inside StreamCall context
+ */
+function PreviewContentInner({
+  previewError,
+  isHost,
+  hostRoomExists,
+  joining,
+  onJoin,
+}: {
+  previewError: string | null;
+  isHost: boolean;
+  hostRoomExists: boolean | null;
+  joining: boolean;
+  onJoin: () => void;
+}) {
+  const permissions = useDevicePermissions();
+
+  // Check if any device permissions are denied (not prompting and no permission)
+  const cameraPrompting = permissions.camera.isPromptingPermission;
+  const micPrompting = permissions.microphone.isPromptingPermission;
+  const cameraDenied =
+    !permissions.camera.hasBrowserPermission && !cameraPrompting;
+  const micDenied =
+    !permissions.microphone.hasBrowserPermission && !micPrompting;
+  const hasPermissionIssue = cameraDenied || micDenied;
+
+  return (
+    <div className="flex flex-col gap-3">
+      <PermissionStateMonitor />
+      <PreviewSurface previewError={previewError} />
+      {!isHost && (
+        <div className="text-center text-xs text-foreground">
+          {hostRoomExists === false
+            ? "Click 'Join Call' to check if the host has started."
+            : "Ready to join the call."}
+        </div>
+      )}
+      <div className="flex gap-2 justify-center">
+        <PreviewControls />
+      </div>
+      <Button
+        size="default"
+        className="w-full font-semibold"
+        disabled={joining || hasPermissionIssue}
+        onClick={onJoin}
+        title={
+          hasPermissionIssue
+            ? "Please grant camera/microphone permissions to join"
+            : undefined
+        }
+      >
+        {joining ? "Joining…" : "Join Call"}
+      </Button>
+    </div>
   );
 }
 
