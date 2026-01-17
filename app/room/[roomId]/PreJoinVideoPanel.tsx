@@ -140,6 +140,15 @@ function PreviewContent({
   joining: boolean;
   onJoin: () => void;
 }) {
+  const permissions = useDevicePermissions();
+  
+  // Check if any device permissions are denied (not prompting and no permission)
+  const cameraPrompting = permissions.camera.isPromptingPermission;
+  const micPrompting = permissions.microphone.isPromptingPermission;
+  const cameraDenied = !permissions.camera.hasBrowserPermission && !cameraPrompting;
+  const micDenied = !permissions.microphone.hasBrowserPermission && !micPrompting;
+  const hasPermissionIssue = cameraDenied || micDenied;
+
   return (
     <StreamVideo client={client}>
       <StreamCall call={call}>
@@ -159,8 +168,13 @@ function PreviewContent({
           <Button
             size="default"
             className="w-full font-semibold"
-            disabled={joining}
+            disabled={joining || hasPermissionIssue}
             onClick={onJoin}
+            title={
+              hasPermissionIssue
+                ? "Please grant camera/microphone permissions to join"
+                : undefined
+            }
           >
             {joining ? "Joining…" : "Join Call"}
           </Button>
