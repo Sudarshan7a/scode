@@ -61,6 +61,13 @@ S‑code makes coding practice feel like multiplayer gaming — secure, fast, an
 - WebSocket server for real-time document synchronization
 - [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) for offline persistence
 
+**Video Conferencing**
+
+- [Stream Video SDK](https://getstream.io/video/) for real-time video calls
+- Camera and microphone permission handling
+- Pre-join preview with device controls
+- Block/kick event handling for moderation
+
 **Authentication & Security**
 
 - [NextAuth.js v5](https://authjs.dev/) for OAuth (Google, GitHub)
@@ -100,7 +107,8 @@ Privacy-first auth and token hygiene:
 - Middleware-protected routes with server-side refresh validation
 - Rate limiting hooks in place to prevent brute-force attacks
 - Strong password hashing (bcrypt)
-- **Security headers**: X-Frame-Options, X-Content-Type-Options, CSP
+- **Security headers**: X-Frame-Options, X-Content-Type-Options, Permissions-Policy
+- **Permissions-Policy**: Camera and microphone access enabled for same-origin (video calls)
 - **User enumeration prevention**: Generic error messages on login/forgot-password
 - Session invalidation on password reset (logout all devices)
 
@@ -162,6 +170,18 @@ Privacy-first auth and token hygiene:
 - **Formatted Responses**: Clean, readable output with code examples
 - **Rate Limited**: Prevents abuse with message length limits
 
+### 📹 Video Call Integration
+
+- **Stream Video SDK**: Real-time video conferencing in coding sessions
+- **Pre-join Preview**: Test camera and microphone before joining
+- **Device Management**: Toggle camera/mic with visual feedback
+- **Permission Handling**: Smart browser permission detection and user guidance
+- **Permission UI**: Clear instructions when permissions are denied or prompting
+- **Block/Kick Events**: Host moderation capabilities for managing participants
+- **Automatic Cleanup**: Proper resource disposal to prevent memory leaks
+- **Rejoin Support**: Seamless reconnection after leaving or being kicked
+- **Permissions Policy**: Configured to allow camera/mic for same-origin (security compliant)
+
 ### ⚙️ Developer Features
 
 - **Type Safety**: Full TypeScript implementation
@@ -195,13 +215,16 @@ Privacy-first auth and token hygiene:
 - **Security Hardening**: Cryptographic tokens, security headers, user enumeration prevention
 - **Unified Auth Middleware**: Single auth layer supporting OAuth and custom authentication
 - **Profile Privacy**: Limited public profile exposure, full data only for own profile
+- **Video Call Integration**: Stream Video SDK with pre-join preview and device management
+- **Permission Handling**: Browser camera/microphone permission monitoring and user guidance
+- **Video Moderation**: Block/kick event handling for room hosts
 
 ### 🚧 In Progress
 
 - Room roles & permissions system
 - Enhanced UI/UX improvements
 - Performance optimizations
-- Voice/video call integration
+- Advanced video features (screen sharing, recording)
 
 ### 📋 Planned Features
 
@@ -210,10 +233,10 @@ Privacy-first auth and token hygiene:
   - Multi-factor authentication (TOTP)
   - Device-based trust and session management
 - **Collaboration Features**
-  - Voice/video integration for interviews
   - Screen sharing capabilities
   - Real-time chat system
   - Code review and commenting
+  - Video call recording and playback
 - **Room Management**
   - Advanced room templates
   - Automated interview scheduling
@@ -290,6 +313,11 @@ AUTH_GOOGLE_ID=your-google-client-id
 AUTH_GOOGLE_SECRET=your-google-client-secret
 AUTH_GITHUB_ID=your-github-client-id
 AUTH_GITHUB_SECRET=your-github-client-secret
+
+# Stream Video (for video calls)
+NEXT_PUBLIC_STREAM_API_KEY=your-public-stream-api-key-here
+STREAM_API_KEY=your-stream-api-key-here
+STREAM_API_SECRET=your-stream-api-secret-here
 ```
 
 4. **Start the WebSocket server** (for real-time collaboration)

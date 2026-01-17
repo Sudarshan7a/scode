@@ -111,6 +111,33 @@ The core of Scode's collaborative experience is built on **Y.js**, a high-perfor
   - `WebsocketProvider`: Syncs state with the server and other clients.
   - `IndexeddbPersistence`: Persists state locally to `indexeddb` for offline support and faster load times.
 
+### Video Call Integration (Stream Video SDK)
+
+Real-time video conferencing is powered by **Stream Video SDK**, providing enterprise-grade video calling.
+
+- **Pre-join Preview:** Test camera/microphone before joining with device controls
+- **Permission Handling:** Smart detection of browser permission states (denied, prompting, granted)
+- **Device Management:** Toggle camera/mic with visual feedback and proper cleanup
+- **Moderation:** Block/kick event handling for host controls
+- **Architecture:**
+  - `StreamVideoClient`: Manages WebRTC connections and user state
+  - `Call`: Represents individual video call instance
+  - Token-based auth via `/api/video/token` endpoint
+  - Proper resource cleanup to prevent memory leaks
+
+**Critical Configuration:**
+
+The Permissions-Policy header in [next.config.ts](../../next.config.ts) **must** allow camera/microphone:
+
+```typescript
+{
+  key: "Permissions-Policy",
+  value: "camera=(self), microphone=(self), geolocation=()",
+}
+```
+
+See [Permissions-Policy Documentation](./security/permissions-policy.md) for details.
+
 ### Editor Lifecycle
 
 1.  **Initialization:** `EditorContainer` mounts and dynamically loads the Monaco Editor.
@@ -162,6 +189,30 @@ Scode implements a robust error handling strategy using React Error Boundaries t
 - Displays user's rooms and activity.
 - Fetches data from MongoDB (`users` and `rooms` collections).
 
+### Video Conferencing
+
+- **Provider:** Stream Video SDK for real-time video calls
+- **Architecture:**
+  - Pre-join preview panel with device testing
+  - Permission state monitoring (`useDevicePermissions` hook)
+  - Automatic permission UI (`PermissionDeniedWarning`, `PermissionPrompting`)
+  - Block/kick event handling for moderation
+  - Proper cleanup on unmount and user exit
+- **Key Files:**
+  - `app/room/[roomId]/VideoCallContainer.tsx` - Main video call UI
+  - `app/room/[roomId]/PreJoinVideoPanel.tsx` - Pre-join preview
+  - `app/room/[roomId]/video/` - Modular video utilities
+  - `app/api/video/token/route.ts` - Token generation endpoint
+- **Security:**
+  - Token-based authentication (1-hour validity)
+  - Permissions-Policy header allows camera/mic for same-origin
+  - User data from MongoDB (name, avatar) injected into Stream
+- **User Experience:**
+  - Clear permission guidance when denied
+  - Visual feedback for prompting state
+  - Disabled join button when permissions missing
+  - Seamless rejoin after leaving or being kicked
+
 ### Rate Limiting
 
 - Implemented using `@upstash/ratelimit` and Redis.
@@ -189,12 +240,40 @@ Scode implements a robust error handling strategy using React Error Boundaries t
 - **API Routes:** Integrated backend simplifies deployment and type sharing.
 - **Streaming:** Supports streaming UI updates for better perceived performance.
 
+### Why Stream Video SDK?
+
+- **Enterprise-grade:** Proven reliability with built-in scalability
+- **WebRTC Abstraction:** Handles complex WebRTC negotiations and peer connections
+- **React SDK:** First-class React support with hooks and components
+- **Moderation:** Built-in block/kick events for host controls
+- **Device Management:** Comprehensive camera/microphone state management
+- **Token-based Auth:** Secure authentication without exposing API secrets client-side
+
+### Permission-First UX Design
+
+Browser permissions are **one-shot opportunities** - users can only deny once, then must manually reset in settings. Our approach:
+
+- **Proactive Monitoring:** `useDevicePermissions` hook detects permission states
+- **Clear Guidance:** Show specific instructions when permissions denied
+- **Visual Feedback:** Different UI for prompting vs denied states
+- **Graceful Degradation:** Disable join button when permissions missing
+- **Configuration:** Permissions-Policy header must allow `camera=(self), microphone=(self)`
+
+Without proper UX, users will get "permission denied" errors with no explanation, leading to support requests and frustration.
+
 ## 7. Lessons Learned
 
 ### Real-time Data Handling
 
 - **Binary vs JSON:** Y.js communicates via binary messages. The WebSocket handler must distinguish between Y.js binary updates and custom JSON control messages (e.g., "room-ended").
 - **Connection Resilience:** Handling disconnects gracefully is critical. We use `y-indexeddb` to ensure users don't lose work if the connection drops.
+
+### Video Call Permission Challenges
+
+- **Permissions-Policy Override:** The biggest issue was `camera=(), microphone=()` in headers **blocking all access**, even after users granted permissions. Changed to `camera=(self), microphone=(self)` to allow same-origin.
+- **One-Shot Permissions:** Users only get one chance to grant permissions. If denied, they must manually reset in browser settings. This requires clear UI guidance.
+- **Permission State Detection:** Using Stream's `hasBrowserPermission` and `isPromptingPermission` flags to show appropriate UI (prompting spinner vs denied warning).
+- **Cleanup Challenges:** Proper disposal of StreamVideoClient to prevent memory leaks and ghost connections.
 
 ### Monaco Editor Integration
 
