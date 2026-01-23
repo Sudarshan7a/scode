@@ -32,7 +32,7 @@ export default function LivePreJoinState({ visible }: LivePreJoinStateProps) {
 
   // Handle join with password for private rooms
   const onJoinClick = () => {
-    if (isPrivate && !isHost && requiresPassword) {
+    if (requiresPassword) {
       handleJoinRoom(password);
     } else {
       handleJoinRoom();
@@ -40,7 +40,7 @@ export default function LivePreJoinState({ visible }: LivePreJoinStateProps) {
   };
 
   // Password input for private rooms (non-host only)
-  const passwordSection = isPrivate && !isHost && requiresPassword ? (
+  const passwordSection = requiresPassword ? (
     <div className="space-y-2 p-3 rounded-lg bg-gradient-to-r from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-amber-800/20 border border-amber-200/50 dark:border-amber-700/50">
       <div className="flex items-center gap-2">
         <Lock className="w-4 h-4 text-amber-600 dark:text-amber-400" />

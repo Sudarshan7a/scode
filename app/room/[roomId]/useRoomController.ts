@@ -148,6 +148,7 @@ export function useRoomController(roomId: string) {
             endedAt?: unknown;
             room?: unknown;
             isPrivate?: boolean;
+            hasPassword?: boolean;
           };
           const { nextState, nextInfo, isHost } = deriveRoomState(typedData);
           setIsHost(isHost);
@@ -155,8 +156,8 @@ export function useRoomController(roomId: string) {
           setRoomInfo(nextInfo);
           // Set isPrivate from room details
           setIsPrivate(!!typedData.isPrivate);
-          // If user is not host and room is private, they'll need password
-          if (!isHost && typedData.isPrivate) {
+          // If user is not host and room has password protection, they'll need password
+          if (!isHost && typedData.hasPassword) {
             setRequiresPassword(true);
           }
           return;

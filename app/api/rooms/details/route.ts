@@ -44,6 +44,9 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
     // Check if current user is the host/owner
     const isHost = String(room.ownerId) === userId;
 
+    // Check if room has password protection (don't expose actual password)
+    const hasPassword = Boolean(room.isPrivate && room.roomPassword);
+
     // Return room details with host status
     return NextResponse.json(
       {
@@ -57,6 +60,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
         endedAt: room.endedAt,
         duration: room.duration,
         isPrivate: room.isPrivate,
+        hasPassword: hasPassword,
         room: room,
       },
       { status: 200 }
