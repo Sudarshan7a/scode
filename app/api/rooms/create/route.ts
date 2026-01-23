@@ -32,6 +32,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       description: z.string().optional().nullable(),
       language: z.string().optional().nullable(),
       isPrivate: z.boolean().optional(),
+      roomPassword: z.string().optional().nullable(), // Password for private rooms
       status: z.string().optional(),
     });
 
@@ -52,6 +53,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       ownerId: new ObjectId(userId),
       collaborators: [],
       isPrivate: payload.isPrivate ?? false,
+      roomPassword: payload.isPrivate && payload.roomPassword ? payload.roomPassword : null,
       createdAt: new Date(),
       duration,
       scheduledAt: payload.scheduledAt ? new Date(payload.scheduledAt) : null,

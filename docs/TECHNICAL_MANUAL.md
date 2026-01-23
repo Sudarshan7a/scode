@@ -37,20 +37,17 @@ Scode employs a hybrid architecture combining server-side rendering (SSR) for pe
 ### Core Components
 
 1.  **Frontend Application (Next.js 15):**
-
     - Uses the **App Router** for routing and layouts.
     - **React Server Components (RSC)** for initial data fetching and shell rendering.
     - **Client Components** for interactive features (Editor, Dashboard).
 
 2.  **Real-time Engine (Y.js):**
-
     - **CRDTs:** Uses `Y.Doc` and `Y.Text` to manage shared state.
     - **Synchronization:** `y-websocket` provider connects clients to a central WebSocket server.
     - **Persistence:** `y-indexeddb` caches updates locally for offline resilience.
     - **Binding:** `y-monaco` binds the Y.js state to the Monaco Editor instance.
 
 3.  **Data Layer:**
-
     - **MongoDB:** Primary store for Users, Rooms, and persistent application state.
     - **Redis (Upstash):** High-performance store for rate limiting and ephemeral session data.
 

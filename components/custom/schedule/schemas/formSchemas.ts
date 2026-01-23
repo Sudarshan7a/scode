@@ -15,6 +15,7 @@ const collaboratorSchema = z.object({
 export const scheduleRoomSchema = z.object({
   title: z.string().min(1, "Title is required").trim(),
   isPrivate: z.boolean(),
+  roomPassword: z.string().optional().nullable(), // Password for private rooms
   createdAt: z.date().optional(),
   duration: z.number().positive().int(),
   scheduledAt: z.date().optional().nullable(),
@@ -96,12 +97,14 @@ export const startRoomSchema = z.object({
   description: z.string().optional().nullable(),
   roomType: z.enum(["interview", "mock", "pairing"]).optional(),
   privacyLevel: z.enum(["public", "private"]).optional(),
+  roomPassword: z.string().optional().nullable(), // Password for private rooms
   editorEnabled: z.boolean().optional(),
   languagePreference: z.string().optional().nullable(),
 });
 
 export const joinRoomSchema = z.object({
   roomName: z.string().min(1, "Room link or ID is required"),
+  password: z.string().optional(), // Password for private rooms
 });
 
 // Form value types (used by react-hook-form in the UI)

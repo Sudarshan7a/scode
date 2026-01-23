@@ -24,6 +24,7 @@ const startSchema = z.object({
   description: z.string().optional().nullable(),
   language: z.string().optional().nullable(),
   isPrivate: z.boolean().optional(),
+  roomPassword: z.string().optional().nullable(), // Password for private rooms
   status: z.string().optional(),
 });
 
@@ -53,6 +54,7 @@ function buildRoomDoc(payload: StartPayload, userId: string) {
     title,
     ownerId: new ObjectId(userId),
     isPrivate: Boolean(payload.isPrivate),
+    roomPassword: payload.isPrivate && payload.roomPassword ? payload.roomPassword : null,
     createdAt: startedAt,
     duration,
     // start immediately: set scheduledAt to startedAt

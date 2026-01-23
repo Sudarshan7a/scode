@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import { mockRooms } from "../types/roomsTypes";
 import { axiosInstance } from "@/lib/axiosInstance";
 import {
@@ -34,6 +35,10 @@ const RoomCard = ({
   const router = useRouter();
   const [isNotifying, setIsNotifying] = useState(false);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [roomPassword, setRoomPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
 
   const {
     title,
@@ -71,10 +76,47 @@ const RoomCard = ({
     setShowDetailsDialog(true);
   };
 
-  const handleJoinRoom = () => {
+  const handleJoinRoom = async () => {
     const roomId = _id?.$oid || _id?.toString() || _id;
-    if (roomId) {
-      router.push(`/room/${roomId}`);
+    if (!roomId) return;
+
+    // If it's a private room and user is not owner, show password dialog
+    if (isPrivate && !isOwner) {
+      setShowPasswordDialog(true);
+      return;
+    }
+
+    // Direct navigation for public rooms or owners
+    router.push(`/room/${roomId}`);
+  };
+
+  const handlePasswordSubmit = async () => {
+    const roomId = _id?.$oid || _id?.toString() || _id;
+    if (!roomId) return;
+
+    setIsJoining(true);
+    setPasswordError("");
+
+    try {
+      const response = await axiosInstance.post("/api/rooms/join", {
+        roomId,
+        password: roomPassword,
+      });
+
+      if (response.data && response.data.roomId) {
+        setShowPasswordDialog(false);
+        setRoomPassword("");
+        router.push(`/room/${response.data.roomId}`);
+      }
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { error?: string; requiresPassword?: boolean } } };
+      if (axiosError.response?.data?.requiresPassword) {
+        setPasswordError(axiosError.response?.data?.error || "Incorrect password");
+      } else {
+        setPasswordError("Failed to join room. Please try again.");
+      }
+    } finally {
+      setIsJoining(false);
     }
   };
 
@@ -314,6 +356,62 @@ const RoomCard = ({
               <span className="px-3 py-1 rounded-full bg-mysecondary/20 text-mysecondary text-sm font-medium capitalize">
                 {status}
               </span>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Password Dialog for Private Rooms */}
+      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+              <Lock className="h-5 w-5 text-mysecondary" />
+              Private Room
+            </DialogTitle>
+            <DialogDescription className="text-foreground/70">
+              This room is password protected. Enter the password to join.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 mt-4">
+            <div>
+              <Input
+                type="password"
+                placeholder="Enter room password"
+                value={roomPassword}
+                onChange={(e) => setRoomPassword(e.target.value)}
+                className="w-full"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handlePasswordSubmit();
+                  }
+                }}
+              />
+              {passwordError && (
+                <p className="text-red-500 text-sm mt-2">{passwordError}</p>
+              )}
+            </div>
+
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowPasswordDialog(false);
+                  setRoomPassword("");
+                  setPasswordError("");
+                }}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handlePasswordSubmit}
+                disabled={isJoining || !roomPassword}
+                className="flex-1 bg-mysecondary hover:bg-mysecondary-hover text-white"
+              >
+                {isJoining ? "Joining..." : "Join Room"}
+              </Button>
             </div>
           </div>
         </DialogContent>

@@ -39,9 +39,12 @@ export default function DashboardJoinButton() {
   const { error, promise } = useToast();
   const [isJoining, setIsJoining] = useState(false);
   const [open, setOpen] = useState(false);
+  const [showPasswordField, setShowPasswordField] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | undefined>();
 
   const handleJoinSubmit = async (data: JoinFormValues) => {
     setIsJoining(true);
+    setPasswordError(undefined);
     try {
       const JoinRoomPayload = {
         ...data,
@@ -61,12 +64,19 @@ export default function DashboardJoinButton() {
       // Handle success - redirect to the room
       if (JoinRoomResult.data && JoinRoomResult.data.roomId) {
         setOpen(false);
+        setShowPasswordField(false);
         window.location.href = `/room/${JoinRoomResult.data.roomId}`;
       } else {
         error("Unable to join room. Please check the room ID and try again.");
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Failed to join room:", err);
+      // Check if password is required
+      const axiosError = err as { response?: { data?: { requiresPassword?: boolean; error?: string } } };
+      if (axiosError.response?.data?.requiresPassword) {
+        setShowPasswordField(true);
+        setPasswordError(axiosError.response?.data?.error || "Password required for this private room");
+      }
     } finally {
       setIsJoining(false);
     }
@@ -111,7 +121,7 @@ export default function DashboardJoinButton() {
                   Enter the room link or ID to join an existing session.
                 </DialogDescription>
               </DialogHeader>
-              <JoinForm onSubmit={handleJoinSubmit} isLoading={isJoining} />
+              <JoinForm onSubmit={handleJoinSubmit} isLoading={isJoining} showPasswordField={showPasswordField} passwordError={passwordError} />
             </div>
 
             <div className="h-px w-full bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />

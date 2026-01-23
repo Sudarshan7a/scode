@@ -124,6 +124,7 @@ function validateJoinPayload(body: unknown) {
     url: z.string().optional(),
     id: z.string().optional(),
     role: z.string().optional(),
+    password: z.string().optional(), // Password for private rooms
   });
 
   const parsedReq = joinSchema.safeParse(body);
@@ -182,6 +183,23 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
 
     const { roomsCollection } = await connectToMongo();
     const room = await findRoomOrThrow(roomsCollection, roomIdStr);
+
+    // Check if room is private and requires password (skip for owner)
+    const isOwner = String(room.ownerId) === String(userId);
+    if (room.isPrivate && room.roomPassword && !isOwner) {
+      if (!payload.password) {
+        return NextResponse.json(
+          { error: "Password required", requiresPassword: true },
+          { status: 403 }
+        );
+      }
+      if (payload.password !== room.roomPassword) {
+        return NextResponse.json(
+          { error: "Incorrect password", requiresPassword: true },
+          { status: 403 }
+        );
+      }
+    }
 
     const statusResp = checkRoomStatus(room, roomIdStr);
     if (statusResp) return statusResp;

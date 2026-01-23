@@ -4,6 +4,8 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@radix-ui/react-label";
 import { startRoomSchema, type StartRoomSchema } from "../schemas/formSchemas";
 import { RoomNameInput } from "../fields/RoomNameInput";
 import { DescriptionInput } from "../fields/DescriptionInput";
@@ -21,6 +23,7 @@ export function HostForm({ onSubmit, isLoading = false }: HostFormProps) {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<StartRoomSchema>({
     resolver: zodResolver(startRoomSchema),
@@ -29,10 +32,13 @@ export function HostForm({ onSubmit, isLoading = false }: HostFormProps) {
       description: "",
       roomType: "interview",
       privacyLevel: "public",
+      roomPassword: "",
       editorEnabled: false,
       languagePreference: "",
     },
   });
+
+  const privacyLevel = watch("privacyLevel");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -40,6 +46,24 @@ export function HostForm({ onSubmit, isLoading = false }: HostFormProps) {
       <DescriptionInput register={register} />
       <RoomTypeSelect setValue={setValue} errors={errors} />
       <PrivacyLevelSelect setValue={setValue} errors={errors} />
+      
+      {/* Password field for private rooms */}
+      {privacyLevel === "private" && (
+        <div>
+          <Label htmlFor="roomPassword">Room Password</Label>
+          <Input
+            id="roomPassword"
+            type="password"
+            placeholder="Enter password for private room"
+            {...register("roomPassword")}
+            className="mt-2 border border-mysecondary"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Participants will need this password to join
+          </p>
+        </div>
+      )}
+      
       <EditorEnabledCheckbox register={register} />
       <Button
         type="submit"
