@@ -15,7 +15,12 @@ interface JoinFormProps {
   passwordError?: string;
 }
 
-export function JoinForm({ onSubmit, isLoading = false, showPasswordField = false, passwordError }: JoinFormProps) {
+export function JoinForm({
+  onSubmit,
+  isLoading = false,
+  showPasswordField = false,
+  passwordError,
+}: JoinFormProps) {
   const {
     register,
     handleSubmit,
@@ -42,7 +47,7 @@ export function JoinForm({ onSubmit, isLoading = false, showPasswordField = fals
           <p className="text-red-500 text-sm">{errors.roomName.message}</p>
         )}
       </div>
-      
+
       {/* Password field for private rooms */}
       {showPasswordField && (
         <div>
@@ -59,7 +64,7 @@ export function JoinForm({ onSubmit, isLoading = false, showPasswordField = fals
           )}
         </div>
       )}
-      
+
       <Button
         type="submit"
         disabled={isLoading}

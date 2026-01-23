@@ -58,7 +58,7 @@ export default function DashboardJoinButton() {
           loading: "Joining room...",
           success: TOAST_MESSAGES.ROOM.JOINED,
           error: TOAST_MESSAGES.ROOM.JOIN_ERROR,
-        }
+        },
       );
 
       // Handle success - redirect to the room
@@ -72,10 +72,15 @@ export default function DashboardJoinButton() {
     } catch (err: unknown) {
       console.error("Failed to join room:", err);
       // Check if password is required
-      const axiosError = err as { response?: { data?: { requiresPassword?: boolean; error?: string } } };
+      const axiosError = err as {
+        response?: { data?: { requiresPassword?: boolean; error?: string } };
+      };
       if (axiosError.response?.data?.requiresPassword) {
         setShowPasswordField(true);
-        setPasswordError(axiosError.response?.data?.error || "Password required for this private room");
+        setPasswordError(
+          axiosError.response?.data?.error ||
+            "Password required for this private room",
+        );
       }
     } finally {
       setIsJoining(false);
@@ -121,7 +126,12 @@ export default function DashboardJoinButton() {
                   Enter the room link or ID to join an existing session.
                 </DialogDescription>
               </DialogHeader>
-              <JoinForm onSubmit={handleJoinSubmit} isLoading={isJoining} showPasswordField={showPasswordField} passwordError={passwordError} />
+              <JoinForm
+                onSubmit={handleJoinSubmit}
+                isLoading={isJoining}
+                showPasswordField={showPasswordField}
+                passwordError={passwordError}
+              />
             </div>
 
             <div className="h-px w-full bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />

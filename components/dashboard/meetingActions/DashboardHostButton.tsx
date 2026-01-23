@@ -35,7 +35,8 @@ export default function DashboardHostButton() {
         // Map privacyLevel to isPrivate for API
         isPrivate: data.privacyLevel === "private",
         // Include roomPassword for private rooms
-        roomPassword: data.privacyLevel === "private" ? data.roomPassword : null,
+        roomPassword:
+          data.privacyLevel === "private" ? data.roomPassword : null,
         timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         language: navigator.language,
         browserTime: new Date().toISOString(),
@@ -48,7 +49,7 @@ export default function DashboardHostButton() {
           loading: "Creating your room...",
           success: TOAST_MESSAGES.ROOM.CREATED,
           error: TOAST_MESSAGES.ROOM.CREATE_ERROR,
-        }
+        },
       );
 
       // Handle success - redirect to the room
@@ -57,7 +58,7 @@ export default function DashboardHostButton() {
         window.location.href = `/room/${StartRoomResult.data.roomId}`;
       } else {
         error(
-          "Room created but no room ID was returned. Please check your dashboard."
+          "Room created but no room ID was returned. Please check your dashboard.",
         );
       }
     } catch (err) {

@@ -41,7 +41,7 @@ function extractRoomId(input: unknown): string | null {
 // helper: find a room by id string
 async function findRoom(
   roomsCollection: Collection<Document>,
-  roomIdStr: string
+  roomIdStr: string,
 ): Promise<Document | null> {
   return await roomsCollection.findOne({ _id: new ObjectId(roomIdStr) });
 }
@@ -49,7 +49,7 @@ async function findRoom(
 // helper: check status and return a response if not joinable, otherwise null
 function checkRoomStatus(
   room: RoomLike,
-  roomIdStr: string
+  roomIdStr: string,
 ): NextResponse | null {
   const status = room.status;
   if (status === "scheduled") {
@@ -59,14 +59,14 @@ function checkRoomStatus(
         scheduledAt: room.scheduledAt ?? null,
         roomId: roomIdStr,
       },
-      { status: 200 }
+      { status: 200 },
     );
   }
 
   if (room.status === "ended") {
     return NextResponse.json(
       { status: "ended", roomId: roomIdStr },
-      { status: 200 }
+      { status: 200 },
     );
   }
 
@@ -82,7 +82,7 @@ async function ensureCollaborator(
   roomsCollection: Collection<Document>,
   room: RoomLike,
   userIdStr: string,
-  role: string | undefined
+  role: string | undefined,
 ): Promise<void> {
   type Collaborator = {
     userId: ObjectId;
@@ -150,7 +150,7 @@ function getRoomIdFromPayload(payload: {
 
 async function findRoomOrThrow(
   roomsCollection: Collection<Document>,
-  roomIdStr: string
+  roomIdStr: string,
 ) {
   const room = await findRoom(roomsCollection, roomIdStr);
   if (!room) {
@@ -170,14 +170,14 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
 
     if (!success) {
       console.warn(
-        `[RateLimit] Room join blocked: user ${userId} (too many joins)`
+        `[RateLimit] Room join blocked: user ${userId} (too many joins)`,
       );
       return NextResponse.json(
         {
           error:
             "Too many room joins. Maximum 30 joins per 10 minutes. Please slow down.",
         },
-        { status: 429 }
+        { status: 429 },
       );
     }
 
@@ -190,13 +190,13 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       if (!payload.password) {
         return NextResponse.json(
           { error: "Password required", requiresPassword: true },
-          { status: 403 }
+          { status: 403 },
         );
       }
       if (payload.password !== room.roomPassword) {
         return NextResponse.json(
           { error: "Incorrect password", requiresPassword: true },
-          { status: 403 }
+          { status: 403 },
         );
       }
     }
@@ -204,11 +204,11 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
     const statusResp = checkRoomStatus(room, roomIdStr);
     if (statusResp) return statusResp;
 
-    const isOwner = String(room.ownerId) === String(userId);
+    // isOwner already defined above for password check
     if (isOwner) {
       return NextResponse.json(
         { role: "host", roomId: roomIdStr, room },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -216,7 +216,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
 
     return NextResponse.json(
       { role: "participant", roomId: roomIdStr, room },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err: unknown) {
     console.error("[API] /api/rooms/join error:", err);

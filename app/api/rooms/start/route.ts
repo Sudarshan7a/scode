@@ -54,7 +54,8 @@ function buildRoomDoc(payload: StartPayload, userId: string) {
     title,
     ownerId: new ObjectId(userId),
     isPrivate: Boolean(payload.isPrivate),
-    roomPassword: payload.isPrivate && payload.roomPassword ? payload.roomPassword : null,
+    roomPassword:
+      payload.isPrivate && payload.roomPassword ? payload.roomPassword : null,
     createdAt: startedAt,
     duration,
     // start immediately: set scheduledAt to startedAt
@@ -73,14 +74,14 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
 
     if (!success) {
       console.warn(
-        `[RateLimit] Room start blocked: user ${userId} (too many starts)`
+        `[RateLimit] Room start blocked: user ${userId} (too many starts)`,
       );
       return NextResponse.json(
         {
           error:
             "Too many room starts. Maximum 20 starts per 10 minutes. Please slow down.",
         },
-        { status: 429 }
+        { status: 429 },
       );
     }
 
@@ -94,7 +95,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       if (!ObjectId.isValid(payload.roomId)) {
         return NextResponse.json(
           { error: "Invalid room ID format" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -110,7 +111,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       if (String(room.ownerId) !== userId) {
         return NextResponse.json(
           { error: "Only the room owner can start the session" },
-          { status: 403 }
+          { status: 403 },
         );
       }
 
@@ -118,7 +119,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       if (room.status !== "scheduled") {
         return NextResponse.json(
           { error: "Room is not in scheduled state" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -132,7 +133,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
             startedAt: startedAt,
             updatedAt: startedAt,
           },
-        }
+        },
       );
 
       return NextResponse.json(
@@ -141,7 +142,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
           roomId: payload.roomId,
           status: "live",
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -154,7 +155,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
         message: "Room started successfully",
         roomId: result.insertedId.toString(),
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err: unknown) {
     if (err instanceof HttpError) {

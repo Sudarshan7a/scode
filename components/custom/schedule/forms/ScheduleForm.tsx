@@ -63,7 +63,7 @@ export function ScheduleForm({
       />
       <RoomTypeSelect setValue={setValue} errors={errors} />
       <PrivacyLevelSelect setValue={setValue} errors={errors} />
-      
+
       {/* Password field for private rooms */}
       {privacyLevel === "private" && (
         <div>
@@ -73,6 +73,7 @@ export function ScheduleForm({
             type="password"
             placeholder="Enter password for private room"
             {...register("roomPassword")}
+            autoComplete="new-password"
             className="mt-2 border border-mysecondary"
           />
           <p className="text-xs text-gray-500 mt-1">
@@ -80,7 +81,7 @@ export function ScheduleForm({
           </p>
         </div>
       )}
-      
+
       <EditorEnabledCheckbox register={register} />
       <Button
         type="button"

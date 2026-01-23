@@ -12,14 +12,14 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
 
     if (!success) {
       console.warn(
-        `[RateLimit] Room creation blocked: user ${userId} (too many rooms)`
+        `[RateLimit] Room creation blocked: user ${userId} (too many rooms)`,
       );
       return NextResponse.json(
         {
           error:
             "Too many room creations. Maximum 10 rooms per 10 minutes. Please slow down.",
         },
-        { status: 429 }
+        { status: 429 },
       );
     }
 
@@ -40,7 +40,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
     if (!parsed.success) {
       return NextResponse.json(
         { error: parsed.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -53,7 +53,8 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       ownerId: new ObjectId(userId),
       collaborators: [],
       isPrivate: payload.isPrivate ?? false,
-      roomPassword: payload.isPrivate && payload.roomPassword ? payload.roomPassword : null,
+      roomPassword:
+        payload.isPrivate && payload.roomPassword ? payload.roomPassword : null,
       createdAt: new Date(),
       duration,
       scheduledAt: payload.scheduledAt ? new Date(payload.scheduledAt) : null,
@@ -72,7 +73,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
         message: "Room created successfully",
         roomId: result.insertedId.toString(),
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);

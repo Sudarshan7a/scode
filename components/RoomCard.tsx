@@ -69,8 +69,8 @@ const RoomCard = ({
   const displayDate = scheduledAt
     ? formatDate(scheduledAt)
     : startedAt
-    ? formatDate(startedAt)
-    : "Date not set";
+      ? formatDate(startedAt)
+      : "Date not set";
 
   const handleDetails = () => {
     setShowDetailsDialog(true);
@@ -109,9 +109,13 @@ const RoomCard = ({
         router.push(`/room/${response.data.roomId}`);
       }
     } catch (err: unknown) {
-      const axiosError = err as { response?: { data?: { error?: string; requiresPassword?: boolean } } };
+      const axiosError = err as {
+        response?: { data?: { error?: string; requiresPassword?: boolean } };
+      };
       if (axiosError.response?.data?.requiresPassword) {
-        setPasswordError(axiosError.response?.data?.error || "Incorrect password");
+        setPasswordError(
+          axiosError.response?.data?.error || "Incorrect password",
+        );
       } else {
         setPasswordError("Failed to join room. Please try again.");
       }
@@ -145,7 +149,7 @@ const RoomCard = ({
       });
 
       alert(
-        response.data.message || "Successfully subscribed to notifications"
+        response.data.message || "Successfully subscribed to notifications",
       );
     } catch (error) {
       console.error("Notification subscription failed:", error);
@@ -169,8 +173,8 @@ const RoomCard = ({
         label: isOwner
           ? "Start Room"
           : isNotifying
-          ? "Subscribing..."
-          : "Notify Me",
+            ? "Subscribing..."
+            : "Notify Me",
         variant: "default",
         onClick: !isOwner ? handleNotify : undefined,
       },
