@@ -24,6 +24,7 @@ const startSchema = z.object({
   description: z.string().optional().nullable(),
   language: z.string().optional().nullable(),
   isPrivate: z.boolean().optional(),
+  privacyLevel: z.enum(["public", "private"]).optional(), // Accept privacyLevel from form
   roomPassword: z.string().optional().nullable(), // Password for private rooms
   status: z.string().optional(),
 });
@@ -50,12 +51,16 @@ function buildRoomDoc(payload: StartPayload, userId: string) {
 
   const startedAt = new Date();
 
+  // Map privacyLevel to isPrivate (privacyLevel takes precedence if provided)
+  const isPrivate = payload.privacyLevel
+    ? payload.privacyLevel === "private"
+    : Boolean(payload.isPrivate);
+
   return {
     title,
     ownerId: new ObjectId(userId),
-    isPrivate: Boolean(payload.isPrivate),
-    roomPassword:
-      payload.isPrivate && payload.roomPassword ? payload.roomPassword : null,
+    isPrivate,
+    roomPassword: isPrivate && payload.roomPassword ? payload.roomPassword : null,
     createdAt: startedAt,
     duration,
     // start immediately: set scheduledAt to startedAt
@@ -68,7 +73,11 @@ function buildRoomDoc(payload: StartPayload, userId: string) {
 }
 
 export const POST = withAuth(async (request: NextRequest, userId: string) => {
-  try {
+  try {    // DEBUG: Log raw request body
+    const body = await request.json();
+    console.log("[DEBUG] /api/rooms/start - Raw body received:", JSON.stringify(body, null, 2));
+    console.log("[DEBUG] /api/rooms/start - isPrivate value:", body.isPrivate, "type:", typeof body.isPrivate);
+    console.log("[DEBUG] /api/rooms/start - roomPassword value:", body.roomPassword);
     // Rate limiting by userId
     const { success } = await roomStartLimiter.limit(userId);
 
@@ -85,7 +94,6 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       );
     }
 
-    const body = await request.json();
     const payload = validateStart(body);
     const { roomsCollection } = await connectToMongo();
 

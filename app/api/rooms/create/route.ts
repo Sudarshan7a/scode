@@ -7,6 +7,12 @@ import { roomCreateLimiter } from "@/lib/rateLimiter";
 
 export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
+    // DEBUG: Log raw request body
+    const body = await request.json();
+    console.log("[DEBUG] /api/rooms/create - Raw body received:", JSON.stringify(body, null, 2));
+    console.log("[DEBUG] /api/rooms/create - isPrivate value:", body.isPrivate, "type:", typeof body.isPrivate);
+    console.log("[DEBUG] /api/rooms/create - roomPassword value:", body.roomPassword);
+
     // Rate limiting by userId
     const { success } = await roomCreateLimiter.limit(userId);
 
@@ -23,8 +29,6 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       );
     }
 
-    const body = await request.json();
-
     const createSchema = z.object({
       title: z.string().min(1),
       duration: z.number().int().positive().optional(),
@@ -32,6 +36,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       description: z.string().optional().nullable(),
       language: z.string().optional().nullable(),
       isPrivate: z.boolean().optional(),
+      privacyLevel: z.enum(["public", "private"]).optional(), // Accept privacyLevel from form
       roomPassword: z.string().optional().nullable(), // Password for private rooms
       status: z.string().optional(),
     });
@@ -48,13 +53,17 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
     const title = payload.title;
     const duration = payload.duration ?? 30;
 
+    // Map privacyLevel to isPrivate (privacyLevel takes precedence if provided)
+    const isPrivate = payload.privacyLevel
+      ? payload.privacyLevel === "private"
+      : Boolean(payload.isPrivate);
+
     const doc = {
       title,
       ownerId: new ObjectId(userId),
       collaborators: [],
-      isPrivate: payload.isPrivate ?? false,
-      roomPassword:
-        payload.isPrivate && payload.roomPassword ? payload.roomPassword : null,
+      isPrivate,
+      roomPassword: isPrivate && payload.roomPassword ? payload.roomPassword : null,
       createdAt: new Date(),
       duration,
       scheduledAt: payload.scheduledAt ? new Date(payload.scheduledAt) : null,
