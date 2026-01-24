@@ -62,7 +62,7 @@ export function ScheduleForm({
         errors={errors}
       />
       <RoomTypeSelect setValue={setValue} errors={errors} />
-      <PrivacyLevelSelect setValue={setValue} errors={errors} />
+      <PrivacyLevelSelect setValue={setValue} watch={watch} errors={errors} />
 
       {/* Password field for private rooms */}
       {privacyLevel === "private" && (

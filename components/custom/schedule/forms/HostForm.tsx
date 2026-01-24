@@ -45,7 +45,7 @@ export function HostForm({ onSubmit, isLoading = false }: HostFormProps) {
       <RoomNameInput register={register} errors={errors} />
       <DescriptionInput register={register} />
       <RoomTypeSelect setValue={setValue} errors={errors} />
-      <PrivacyLevelSelect setValue={setValue} errors={errors} />
+      <PrivacyLevelSelect setValue={setValue} watch={watch} errors={errors} />
 
       {/* Password field for private rooms */}
       {privacyLevel === "private" && (
