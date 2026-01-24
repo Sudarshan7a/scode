@@ -1,5 +1,5 @@
 import React from "react";
-import { UseFormSetValue, FieldErrors } from "react-hook-form";
+import { UseFormSetValue, FieldErrors, UseFormWatch } from "react-hook-form";
 import { Label } from "@radix-ui/react-label";
 import {
   Select,
@@ -13,23 +13,30 @@ interface PrivacyLevelSelectProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setValue: UseFormSetValue<any>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  watch: UseFormWatch<any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors: FieldErrors<any>;
 }
 
 export function PrivacyLevelSelect({
   setValue,
+  watch,
   errors,
 }: PrivacyLevelSelectProps) {
+  const currentValue = watch("privacyLevel") || "public";
+
   return (
     <div>
       <Label htmlFor="privacyLevel">Room Privacy</Label>
       <Select
-        defaultValue="public"
-        onValueChange={(value: string) =>
+        value={currentValue}
+        onValueChange={(value: string) => {
+          console.log("[DEBUG] PrivacyLevelSelect onValueChange:", value);
           setValue("privacyLevel", value as "public" | "private", {
             shouldValidate: true,
-          })
-        }
+            shouldDirty: true,
+          });
+        }}
       >
         <SelectTrigger
           id="privacyLevel"
