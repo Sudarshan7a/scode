@@ -13,6 +13,9 @@ export default function LivePreJoinState({ visible }: LivePreJoinStateProps) {
   const { isHost, isStarting, isJoining, handleStartRoom, handleJoinRoom, roomId, isPrivate, requiresPassword, passwordError } = useRoomContext();
   const [password, setPassword] = useState("");
   
+  // DEBUG: Log password-related context values
+  console.log('[DEBUG] LivePreJoinState:', { visible, isHost, isPrivate, requiresPassword, passwordError });
+  
   if (!visible) return null;
   
   const subtitle = isHost

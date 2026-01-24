@@ -151,13 +151,25 @@ export function useRoomController(roomId: string) {
             hasPassword?: boolean;
           };
           const { nextState, nextInfo, isHost } = deriveRoomState(typedData);
+          
+          // DEBUG: Log room details for password debugging
+          console.log('[DEBUG] Room details:', JSON.stringify({
+            isHost,
+            isPrivate: typedData.isPrivate,
+            hasPassword: typedData.hasPassword,
+            status: typedData.status,
+            roomId: roomId,
+          }, null, 2));
+          
           setIsHost(isHost);
           setRoomState(nextState);
           setRoomInfo(nextInfo);
           // Set isPrivate from room details
           setIsPrivate(!!typedData.isPrivate);
           // If user is not host and room has password protection, they'll need password
-          if (!isHost && typedData.hasPassword) {
+          const needsPassword = !isHost && typedData.hasPassword;
+          console.log('[DEBUG] Password requirement:', { isHost, hasPassword: typedData.hasPassword, needsPassword });
+          if (needsPassword) {
             setRequiresPassword(true);
           }
           return;
