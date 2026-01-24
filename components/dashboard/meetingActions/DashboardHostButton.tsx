@@ -30,6 +30,9 @@ export default function DashboardHostButton() {
   const handleHostSubmit = async (data: HostFormValues) => {
     setIsHosting(true);
     try {
+      // DEBUG: Log form data
+      console.log('[DEBUG] HostForm data:', JSON.stringify(data, null, 2));
+      
       const StartRoomPayload = {
         ...data,
         // Map privacyLevel to isPrivate for API
@@ -42,6 +45,9 @@ export default function DashboardHostButton() {
         browserTime: new Date().toISOString(),
         userAgent: navigator.userAgent,
       };
+
+      // DEBUG: Log payload being sent to API
+      console.log('[DEBUG] StartRoomPayload:', JSON.stringify(StartRoomPayload, null, 2));
 
       const StartRoomResult = await promise(
         axiosInstance.post("/api/rooms/start", StartRoomPayload),
