@@ -40,11 +40,11 @@ export function PrivacyLevelSelect({
       >
         <SelectTrigger
           id="privacyLevel"
-          className="border-1 border-mysecondary mt-1"
+          className="border border-mysecondary mt-1"
         >
           <SelectValue placeholder="Select here" />
         </SelectTrigger>
-        <SelectContent className="border-1 border-mysecondary">
+        <SelectContent className="border border-mysecondary">
           <SelectItem value="public">Public</SelectItem>
           <SelectItem value="private">Private</SelectItem>
         </SelectContent>

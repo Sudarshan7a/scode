@@ -54,11 +54,11 @@ export function ScheduleFields({
         >
           <SelectTrigger
             id="duration"
-            className="mt-1"
+            className="mt-1 border border-mysecondary"
           >
             <SelectValue placeholder="Select Duration" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="border border-mysecondary">
             <SelectItem value="30">30 minutes</SelectItem>
             <SelectItem value="60">1 hour</SelectItem>
             <SelectItem value="90">1.5 hours</SelectItem>

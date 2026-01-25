@@ -31,7 +31,7 @@ export function RoomNameInput<T extends Record<string, unknown>>({
       <Label htmlFor={key}>{key === "roomName" ? "Room Name" : "Title"}</Label>
       <Input
         id={key}
-        className="mt-2"
+        className="mt-2 border border-mysecondary"
         placeholder={key === "roomName" ? "Room name...." : "Title..."}
         {...register(key as Path<T>)}
       />

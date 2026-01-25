@@ -85,7 +85,7 @@ export function DateTimePicker({
           id="time-picker"
           step="1"
           defaultValue="10:30:00"
-          className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+          className="bg-background border border-mysecondary appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
           onChange={handleTimeChange}
         />
       </div>
