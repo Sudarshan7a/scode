@@ -55,7 +55,7 @@ export default function LivePreJoinState({ visible }: LivePreJoinStateProps) {
         Please enter the password to join this room
       </p>
       <Input
-        type="password"
+        type="text"
         placeholder="Enter room password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}

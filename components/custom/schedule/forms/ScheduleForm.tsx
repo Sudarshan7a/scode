@@ -70,7 +70,7 @@ export function ScheduleForm({
           <Label htmlFor="roomPassword">Room Password</Label>
           <Input
             id="roomPassword"
-            type="password"
+            type="text"
             placeholder="Enter password for private room"
             {...register("roomPassword")}
             autoComplete="new-password"
