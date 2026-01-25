@@ -7,23 +7,23 @@ import { roomCreateLimiter } from "@/lib/rateLimiter";
 
 export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
+    const body = await request.json();
+
     // Rate limiting by userId
     const { success } = await roomCreateLimiter.limit(userId);
 
     if (!success) {
       console.warn(
-        `[RateLimit] Room creation blocked: user ${userId} (too many rooms)`
+        `[RateLimit] Room creation blocked: user ${userId} (too many rooms)`,
       );
       return NextResponse.json(
         {
           error:
             "Too many room creations. Maximum 10 rooms per 10 minutes. Please slow down.",
         },
-        { status: 429 }
+        { status: 429 },
       );
     }
-
-    const body = await request.json();
 
     const createSchema = z.object({
       title: z.string().min(1),
@@ -32,6 +32,8 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       description: z.string().optional().nullable(),
       language: z.string().optional().nullable(),
       isPrivate: z.boolean().optional(),
+      privacyLevel: z.enum(["public", "private"]).optional(), // Accept privacyLevel from form
+      roomPassword: z.string().optional().nullable(), // Password for private rooms
       status: z.string().optional(),
     });
 
@@ -39,7 +41,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
     if (!parsed.success) {
       return NextResponse.json(
         { error: parsed.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -47,11 +49,17 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
     const title = payload.title;
     const duration = payload.duration ?? 30;
 
+    // Map privacyLevel to isPrivate (privacyLevel takes precedence if provided)
+    const isPrivate = payload.privacyLevel
+      ? payload.privacyLevel === "private"
+      : Boolean(payload.isPrivate);
+
     const doc = {
       title,
       ownerId: new ObjectId(userId),
       collaborators: [],
-      isPrivate: payload.isPrivate ?? false,
+      isPrivate,
+      roomPassword: isPrivate && payload.roomPassword ? payload.roomPassword : null,
       createdAt: new Date(),
       duration,
       scheduledAt: payload.scheduledAt ? new Date(payload.scheduledAt) : null,
@@ -70,7 +78,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
         message: "Room created successfully",
         roomId: result.insertedId.toString(),
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);

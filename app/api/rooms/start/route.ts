@@ -24,6 +24,8 @@ const startSchema = z.object({
   description: z.string().optional().nullable(),
   language: z.string().optional().nullable(),
   isPrivate: z.boolean().optional(),
+  privacyLevel: z.enum(["public", "private"]).optional(), // Accept privacyLevel from form
+  roomPassword: z.string().optional().nullable(), // Password for private rooms
   status: z.string().optional(),
 });
 
@@ -49,10 +51,16 @@ function buildRoomDoc(payload: StartPayload, userId: string) {
 
   const startedAt = new Date();
 
+  // Map privacyLevel to isPrivate (privacyLevel takes precedence if provided)
+  const isPrivate = payload.privacyLevel
+    ? payload.privacyLevel === "private"
+    : Boolean(payload.isPrivate);
+
   return {
     title,
     ownerId: new ObjectId(userId),
-    isPrivate: Boolean(payload.isPrivate),
+    isPrivate,
+    roomPassword: isPrivate && payload.roomPassword ? payload.roomPassword : null,
     createdAt: startedAt,
     duration,
     // start immediately: set scheduledAt to startedAt
@@ -66,23 +74,24 @@ function buildRoomDoc(payload: StartPayload, userId: string) {
 
 export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
+    const body = await request.json();
+
     // Rate limiting by userId
     const { success } = await roomStartLimiter.limit(userId);
 
     if (!success) {
       console.warn(
-        `[RateLimit] Room start blocked: user ${userId} (too many starts)`
+        `[RateLimit] Room start blocked: user ${userId} (too many starts)`,
       );
       return NextResponse.json(
         {
           error:
             "Too many room starts. Maximum 20 starts per 10 minutes. Please slow down.",
         },
-        { status: 429 }
+        { status: 429 },
       );
     }
 
-    const body = await request.json();
     const payload = validateStart(body);
     const { roomsCollection } = await connectToMongo();
 
@@ -92,7 +101,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       if (!ObjectId.isValid(payload.roomId)) {
         return NextResponse.json(
           { error: "Invalid room ID format" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -108,7 +117,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       if (String(room.ownerId) !== userId) {
         return NextResponse.json(
           { error: "Only the room owner can start the session" },
-          { status: 403 }
+          { status: 403 },
         );
       }
 
@@ -116,7 +125,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       if (room.status !== "scheduled") {
         return NextResponse.json(
           { error: "Room is not in scheduled state" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -130,7 +139,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
             startedAt: startedAt,
             updatedAt: startedAt,
           },
-        }
+        },
       );
 
       return NextResponse.json(
@@ -139,7 +148,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
           roomId: payload.roomId,
           status: "live",
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -152,7 +161,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
         message: "Room started successfully",
         roomId: result.insertedId.toString(),
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err: unknown) {
     if (err instanceof HttpError) {

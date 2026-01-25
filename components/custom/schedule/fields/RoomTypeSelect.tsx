@@ -34,11 +34,11 @@ export function RoomTypeSelect({ setValue, errors }: RoomTypeSelectProps) {
       >
         <SelectTrigger
           id="roomType"
-          className="border-1 border-mysecondary mt-1"
+          className="border border-mysecondary mt-1"
         >
           <SelectValue placeholder="Select here" />
         </SelectTrigger>
-        <SelectContent className="border-1 border-mysecondary">
+        <SelectContent className="border border-mysecondary">
           <SelectItem value="interview">Interview</SelectItem>
           <SelectItem value="mock">Mock</SelectItem>
           <SelectItem value="pairing">Pair Programming</SelectItem>

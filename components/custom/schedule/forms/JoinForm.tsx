@@ -11,9 +11,16 @@ import { joinFormSchema, type JoinFormValues } from "../schemas/formSchemas";
 interface JoinFormProps {
   onSubmit: (data: JoinFormValues) => void;
   isLoading?: boolean;
+  showPasswordField?: boolean;
+  passwordError?: string;
 }
 
-export function JoinForm({ onSubmit, isLoading = false }: JoinFormProps) {
+export function JoinForm({
+  onSubmit,
+  isLoading = false,
+  showPasswordField = false,
+  passwordError,
+}: JoinFormProps) {
   const {
     register,
     handleSubmit,
@@ -22,6 +29,7 @@ export function JoinForm({ onSubmit, isLoading = false }: JoinFormProps) {
     resolver: zodResolver(joinFormSchema),
     defaultValues: {
       roomName: "",
+      password: "",
     },
   });
 
@@ -39,6 +47,24 @@ export function JoinForm({ onSubmit, isLoading = false }: JoinFormProps) {
           <p className="text-red-500 text-sm">{errors.roomName.message}</p>
         )}
       </div>
+
+      {/* Password field for private rooms */}
+      {showPasswordField && (
+        <div>
+          <Label htmlFor="roomPassword">Room Password</Label>
+          <Input
+            id="roomPassword"
+            type="password"
+            placeholder="Enter room password"
+            {...register("password")}
+            className="mt-2"
+          />
+          {passwordError && (
+            <p className="text-red-500 text-sm">{passwordError}</p>
+          )}
+        </div>
+      )}
+
       <Button
         type="submit"
         disabled={isLoading}

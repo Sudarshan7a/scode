@@ -27,6 +27,9 @@ export function useRoomController(roomId: string) {
   const [isHost, setIsHost] = useState(false);
   const [hasJoinedEditor, setHasJoinedEditor] = useState(false);
   const [roomInfo, setRoomInfo] = useState<RoomInfo>(null);
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [requiresPassword, setRequiresPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
 
   // Auto-end room when host closes tab or navigates away
   useRoomAutoEnd({
@@ -55,19 +58,29 @@ export function useRoomController(roomId: string) {
     }
   }, [roomId]);
 
-  const handleJoinRoom = useCallback(async () => {
+  const handleJoinRoom = useCallback(async (password?: string) => {
     setIsJoining(true);
+    setPasswordError("");
     try {
       if (!isValidObjectId(roomId)) {
         console.error("Invalid roomId format, aborting join:", roomId);
         return;
       }
-      const resp = await axiosInstance.post("/api/rooms/join", { roomId });
+      const resp = await axiosInstance.post("/api/rooms/join", { roomId, password });
       if (resp.data) {
+        setRequiresPassword(false);
         setHasJoinedEditor(true);
       }
     } catch (error: unknown) {
       logRequestError("Failed to join room", error);
+      // Check if password is required
+      if (hasAxiosResponse(error)) {
+        const errorData = error.response.data as { requiresPassword?: boolean; error?: string };
+        if (errorData?.requiresPassword) {
+          setRequiresPassword(true);
+          setPasswordError(errorData?.error || "Password required for this private room");
+        }
+      }
     } finally {
       setIsJoining(false);
     }
@@ -129,20 +142,29 @@ export function useRoomController(roomId: string) {
         if (!mounted) return;
         const data = resp.data as unknown;
         if (isObject(data)) {
-          const { nextState, nextInfo, isHost } = deriveRoomState(
-            data as {
-              isHost?: boolean;
-              status?: string;
-              scheduledAt?: string | null;
-              title?: unknown;
-              description?: unknown;
-              endedAt?: unknown;
-              room?: unknown;
-            }
-          );
+          const typedData = data as {
+            isHost?: boolean;
+            status?: string;
+            scheduledAt?: string | null;
+            title?: unknown;
+            description?: unknown;
+            endedAt?: unknown;
+            room?: unknown;
+            isPrivate?: boolean;
+            hasPassword?: boolean;
+          };
+          const { nextState, nextInfo, isHost } = deriveRoomState(typedData);
+          
           setIsHost(isHost);
           setRoomState(nextState);
           setRoomInfo(nextInfo);
+          // Set isPrivate from room details
+          setIsPrivate(!!typedData.isPrivate);
+          // If user is not host and room has password protection, they'll need password
+          const needsPassword = !isHost && typedData.hasPassword;
+          if (needsPassword) {
+            setRequiresPassword(true);
+          }
           return;
         }
       } catch (err: unknown) {
@@ -168,6 +190,9 @@ export function useRoomController(roomId: string) {
     isHost,
     hasJoinedEditor,
     roomInfo,
+    isPrivate,
+    requiresPassword,
+    passwordError,
     // setters (limited exposure)
     setHasJoinedEditor,
     setRoomState,

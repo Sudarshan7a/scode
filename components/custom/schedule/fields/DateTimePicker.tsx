@@ -60,7 +60,7 @@ export function DateTimePicker({
             <Button
               variant="default"
               id="date-picker"
-              className="w-32 justify-between font-normal  border border-mysecondary/40 bg-background"
+              className="w-32 justify-between font-normal border border-mysecondary bg-background"
             >
               {date ? date.toLocaleDateString() : "Select date"}
               <ChevronDownIcon className="h-4 w-4" />
@@ -85,7 +85,7 @@ export function DateTimePicker({
           id="time-picker"
           step="1"
           defaultValue="10:30:00"
-          className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+          className="bg-background border border-mysecondary appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
           onChange={handleTimeChange}
         />
       </div>

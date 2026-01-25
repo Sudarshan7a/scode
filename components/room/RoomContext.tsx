@@ -10,8 +10,11 @@ interface RoomContextValue {
   isJoining: boolean;
   isEnding: boolean;
   isLeaving: boolean;
+  isPrivate: boolean;
+  requiresPassword: boolean;
+  passwordError: string;
   handleStartRoom: () => void;
-  handleJoinRoom: () => void;
+  handleJoinRoom: (password?: string) => void;
   handleEndSession: () => Promise<void>;
   handleLeaveRoom: () => Promise<void>;
 }

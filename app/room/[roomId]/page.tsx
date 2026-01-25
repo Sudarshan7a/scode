@@ -22,6 +22,9 @@ export default function RoomPage() {
     isHost,
     hasJoinedEditor,
     roomInfo,
+    isPrivate,
+    requiresPassword,
+    passwordError,
     handleStartRoom,
     handleJoinRoom,
     handleEndSession,
@@ -36,6 +39,9 @@ export default function RoomPage() {
     isJoining,
     isEnding,
     isLeaving,
+    isPrivate,
+    requiresPassword,
+    passwordError,
     handleStartRoom,
     handleJoinRoom,
     handleEndSession,
@@ -56,4 +62,3 @@ export default function RoomPage() {
     </RoomProvider>
   );
 }
-

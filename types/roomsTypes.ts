@@ -5,6 +5,7 @@ export type mockRooms = {
   language: string;
   status: "live" | "scheduled" | "ended" | "saved";
   isPrivate: boolean;
+  roomPassword?: string; // Password for private rooms
   host: {
     name: string;
     avatar: string;

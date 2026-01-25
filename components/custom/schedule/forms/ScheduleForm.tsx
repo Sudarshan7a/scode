@@ -4,6 +4,8 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@radix-ui/react-label";
 import { CreateRoomSchema, createRoomSchema } from "../schemas/formSchemas";
 import { RoomNameInput } from "../fields/RoomNameInput";
 import { DescriptionInput } from "../fields/DescriptionInput";
@@ -32,6 +34,7 @@ export function ScheduleForm({
     defaultValues: {
       title: "",
       isPrivate: false,
+      roomPassword: "",
       createdAt: new Date(),
       duration: 30,
       description: undefined,
@@ -47,6 +50,7 @@ export function ScheduleForm({
   });
 
   const selectedDate = watch("scheduledAt");
+  const privacyLevel = watch("privacyLevel");
 
   return (
     <form className="space-y-4">
@@ -58,7 +62,26 @@ export function ScheduleForm({
         errors={errors}
       />
       <RoomTypeSelect setValue={setValue} errors={errors} />
-      <PrivacyLevelSelect setValue={setValue} errors={errors} />
+      <PrivacyLevelSelect setValue={setValue} watch={watch} errors={errors} />
+
+      {/* Password field for private rooms */}
+      {privacyLevel === "private" && (
+        <div>
+          <Label htmlFor="roomPassword">Room Password</Label>
+          <Input
+            id="roomPassword"
+            type="text"
+            placeholder="Enter password for private room"
+            {...register("roomPassword")}
+            autoComplete="new-password"
+            className="mt-2 border border-mysecondary"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Participants will need this password to join
+          </p>
+        </div>
+      )}
+
       <EditorEnabledCheckbox register={register} />
       <Button
         type="button"

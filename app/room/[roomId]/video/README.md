@@ -62,11 +62,13 @@ Camera/mic controls with permission handling.
 **Key Point:** Users get ONE shot at granting permissions. If denied, they must manually reset in browser settings.
 
 **Exports:**
+
 - `applyInitialDeviceState()` - Set camera/mic before joining
 - `enableCamera()` - Turn on camera
 - `enableMicrophone()` - Turn on mic
 
 **Usage:**
+
 ```typescript
 try {
   await applyInitialDeviceState(call, { micMuted: false, cameraMuted: false });
@@ -179,9 +181,9 @@ function PreJoinPanel({ roomId, isHost }) {
   const permissions = useDevicePermissions();
 
   // Check if permissions are denied
-  const cameraDenied = !permissions.camera.hasBrowserPermission && 
+  const cameraDenied = !permissions.camera.hasBrowserPermission &&
                        !permissions.camera.isPromptingPermission;
-  const micDenied = !permissions.microphone.hasBrowserPermission && 
+  const micDenied = !permissions.microphone.hasBrowserPermission &&
                     !permissions.microphone.isPromptingPermission;
 
   // Apply device state before joining
@@ -227,14 +229,15 @@ This module was refactored from a single `preJoinHooks.ts` file to improve:
 
 ## Troubleshooting
 
-| Problem | Fix |
-|---------|-----|
+| Problem           | Fix                                                      |
+| ----------------- | -------------------------------------------------------- |
 | Permission denied | Check `next.config.ts` → `camera=(self)` not `camera=()` |
-| No prompt | User denied before → Lock icon 🔒 → Reset permissions |
-| Silent fail | Missing env vars → Check `.env.local` |
-| Call not found | Host hasn't started → Wait or check `isHost` |
+| No prompt         | User denied before → Lock icon 🔒 → Reset permissions    |
+| Silent fail       | Missing env vars → Check `.env.local`                    |
+| Call not found    | Host hasn't started → Wait or check `isHost`             |
 
 **Quick checklist:**
+
 - [ ] `next.config.ts` has `camera=(self), microphone=(self)`
 - [ ] Stream API keys in `.env.local`
 - [ ] Dev server restarted
