@@ -74,9 +74,12 @@ export function useRoomController(roomId: string) {
     } catch (error: unknown) {
       logRequestError("Failed to join room", error);
       // Check if password is required
-      if (hasAxiosResponse(error) && error.response.data?.requiresPassword) {
-        setRequiresPassword(true);
-        setPasswordError(error.response.data?.error || "Password required for this private room");
+      if (hasAxiosResponse(error)) {
+        const errorData = error.response.data as { requiresPassword?: boolean; error?: string };
+        if (errorData?.requiresPassword) {
+          setRequiresPassword(true);
+          setPasswordError(errorData?.error || "Password required for this private room");
+        }
       }
     } finally {
       setIsJoining(false);
