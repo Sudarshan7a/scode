@@ -31,7 +31,6 @@ export function PrivacyLevelSelect({
       <Select
         value={currentValue}
         onValueChange={(value: string) => {
-          console.log("[DEBUG] PrivacyLevelSelect onValueChange:", value);
           setValue("privacyLevel", value as "public" | "private", {
             shouldValidate: true,
             shouldDirty: true,

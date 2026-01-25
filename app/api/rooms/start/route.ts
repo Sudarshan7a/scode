@@ -73,11 +73,9 @@ function buildRoomDoc(payload: StartPayload, userId: string) {
 }
 
 export const POST = withAuth(async (request: NextRequest, userId: string) => {
-  try {    // DEBUG: Log raw request body
+  try {
     const body = await request.json();
-    console.log("[DEBUG] /api/rooms/start - Raw body received:", JSON.stringify(body, null, 2));
-    console.log("[DEBUG] /api/rooms/start - isPrivate value:", body.isPrivate, "type:", typeof body.isPrivate);
-    console.log("[DEBUG] /api/rooms/start - roomPassword value:", body.roomPassword);
+
     // Rate limiting by userId
     const { success } = await roomStartLimiter.limit(userId);
 

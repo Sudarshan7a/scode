@@ -7,11 +7,7 @@ import { roomCreateLimiter } from "@/lib/rateLimiter";
 
 export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
-    // DEBUG: Log raw request body
     const body = await request.json();
-    console.log("[DEBUG] /api/rooms/create - Raw body received:", JSON.stringify(body, null, 2));
-    console.log("[DEBUG] /api/rooms/create - isPrivate value:", body.isPrivate, "type:", typeof body.isPrivate);
-    console.log("[DEBUG] /api/rooms/create - roomPassword value:", body.roomPassword);
 
     // Rate limiting by userId
     const { success } = await roomCreateLimiter.limit(userId);
