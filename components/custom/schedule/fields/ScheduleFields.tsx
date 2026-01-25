@@ -24,7 +24,6 @@ export function ScheduleFields({
 }: ScheduleFieldsProps) {
   return (
     <div>
-      <Label htmlFor="scheduledAt">Select Date and Time *</Label>
       <div className="mt-2">
         <DateTimePicker
           selected={selectedDate}
