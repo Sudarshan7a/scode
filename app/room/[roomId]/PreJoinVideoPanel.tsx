@@ -233,6 +233,7 @@ function useJoinHandler(params: JoinHandlerParams) {
     setJoining(true);
     try {
       // Get current mic and camera state from the call
+      // Default: Audio ON (mic not muted), Video OFF (camera muted)
       const isMicMuted =
         !call.microphone.state.status ||
         call.microphone.state.status === "disabled";
