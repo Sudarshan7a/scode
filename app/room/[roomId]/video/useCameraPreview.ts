@@ -1,6 +1,10 @@
 /**
  * Camera preview hook
  * Manages camera preview lifecycle and error handling
+ *
+ * Default behavior: Audio ON, Video OFF
+ * - Enables microphone by default for audio preview
+ * - Camera is disabled by default (user can enable manually)
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -12,12 +16,13 @@ interface CameraPreviewResult {
 }
 
 /**
- * Hook to manage camera preview for pre-join screens
+ * Hook to manage device preview for pre-join screens
  *
- * - Enables camera preview when call is available
+ * - Enables microphone by default (audio ON)
+ * - Keeps camera disabled by default (video OFF)
  * - Handles permission errors gracefully
  * - Auto-hides error messages after 5 seconds
- * - Disables camera on cleanup (unless user has joined)
+ * - Disables microphone on cleanup (unless user has joined)
  *
  * @param call - The Stream Video call instance (null before ready)
  * @returns Preview error state and markJoined callback
@@ -33,11 +38,15 @@ export function useCameraPreview(call: Call | null): CameraPreviewResult {
     let cancelled = false;
     setPreviewError(null);
 
-    call.camera.enable().catch((error) => {
+    // Disable camera by default (video OFF)
+    call.camera.disable().catch(() => undefined);
+
+    // Enable microphone by default (audio ON)
+    call.microphone.enable().catch((error) => {
       if (cancelled) return;
-      console.warn("Camera preview failed", error);
+      console.warn("Microphone preview failed", error);
       setPreviewError(
-        "Camera preview unavailable. Check your browser permissions."
+        "Microphone unavailable. Check your browser permissions."
       );
 
       // Auto-hide error after 5 seconds
@@ -56,9 +65,9 @@ export function useCameraPreview(call: Call | null): CameraPreviewResult {
         hideTimer.current = null;
       }
 
-      // Only disable camera if user hasn't joined yet
+      // Only disable microphone if user hasn't joined yet
       if (!joinedRef.current) {
-        call.camera.disable().catch(() => undefined);
+        call.microphone.disable().catch(() => undefined);
       }
     };
   }, [call]);
