@@ -8,15 +8,20 @@ import FormDivider from "../common/FormDivider";
 import SignupEmailPasswordForm from "./SignupEmailPasswordForm";
 import TermsAndPrivacy from "../common/TermsAndPrivacy";
 import { useToast, TOAST_MESSAGES } from "@/hooks/useToast";
+import googleAuth from "@/lib/Oauth/GoogleProvider";
+import githubAuth from "@/lib/Oauth/GitHubProvider";
+
 export function MySignupForm() {
   const router = useRouter();
   const { success, error } = useToast();
 
   // Handler for OAuth signup
-  const handleOAuthSignup = (_providerId: string): void => {
-    console.log("OAuth signup with provider:", _providerId);
-    // TODO: Implement OAuth signup flow
-    // Implement actual OAuth flow here (e.g., signIn(providerId))
+  const handleOAuthSignup = async (providerId: string): Promise<void> => {
+    if (providerId === "google") {
+      await googleAuth();
+    } else if (providerId === "github") {
+      await githubAuth();
+    }
   };
 
   // Handler for email/password signup

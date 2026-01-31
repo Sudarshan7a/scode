@@ -5,7 +5,7 @@ import OAuthButton from "./OAuthButton";
 import { oauthProviders } from "@/constants/OAuthProviders";
 
 interface OAuthSectionProps {
-  onOAuthLogin: (providerId: string) => void;
+  onOAuthLogin: (providerId: string) => void | Promise<void>;
 }
 
 export function OAuthSection({ onOAuthLogin }: OAuthSectionProps) {
