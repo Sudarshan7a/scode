@@ -11,26 +11,18 @@ import { useToast, TOAST_MESSAGES } from "@/hooks/useToast";
 import { UserCache, AvatarCache } from "@/lib/userCache";
 import googleAuth from "@/lib/Oauth/GoogleProvider";
 import githubAuth from "@/lib/Oauth/GitHubProvider";
-// import { useAuth } from "@/auth/nextjs/hooks";
-// import { logIn } from "@/auth/nextjs/actions";
 
 export function MyLoginForm() {
   const router = useRouter();
   const { success, error } = useToast();
+
   // Handler for OAuth login
-  const handleOAuthLogin = async (_providerId: string): Promise<void> => {
-    console.log("OAuth login with provider:", _providerId);
-    if (_providerId === "google") {
-      // Call Google OAuth flow
+  const handleOAuthLogin = async (providerId: string): Promise<void> => {
+    if (providerId === "google") {
       await googleAuth();
-    } else if (_providerId === "github") {
-      // Call GitHub OAuth flow
+    } else if (providerId === "github") {
       await githubAuth();
     }
-
-    // TODO: Implement OAuth login flow
-    // Here you would implement the actual OAuth flow
-    // For example, with NextAuth.js you might use signIn(providerId)
   };
 
   // Handler for email/password login
@@ -110,7 +102,7 @@ export function MyLoginForm() {
   return (
     <div
       className="min-w-md mx-auto rounded-xl p-4 md:p-5 border backdrop-blur-md relative overflow-hidden
-      border-[var(--color-mysecondary)]/25 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.15)]
+      border-mysecondary/25 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.15)]
       bg-background"
     >
       <div
