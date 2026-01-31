@@ -1,16 +1,58 @@
 import { User } from "../types/user";
 import { connectToMongo } from "./mongodb";
-import { ObjectId, WithId, Document } from "mongodb";
+import { ObjectId, WithId, Document, Collection } from "mongodb";
 import { mockRooms } from "../types/roomsTypes";
 
 /**
- * Transforms a MongoDB room document to the BSON Extended JSON format expected by mockRooms
+ * Fetches user info for a list of owner IDs
+ * Returns a map of ownerId -> { name, avatarId }
  */
-function transformRoomDocument(room: WithId<Document>): mockRooms {
+async function getHostInfoForRooms(
+  usersCollection: Collection<Document>,
+  ownerIds: ObjectId[]
+): Promise<Map<string, { name: string; avatarId?: number }>> {
+  const hostMap = new Map<string, { name: string; avatarId?: number }>();
+
+  if (ownerIds.length === 0) return hostMap;
+
+  const users = await usersCollection
+    .find(
+      { _id: { $in: ownerIds } },
+      { projection: { _id: 1, name: 1, avatarId: 1 } }
+    )
+    .toArray();
+
+  for (const user of users) {
+    hostMap.set(user._id.toString(), {
+      name: user.name as string,
+      avatarId: user.avatarId as number | undefined,
+    });
+  }
+
+  return hostMap;
+}
+
+/**
+ * Transforms a MongoDB room document to the BSON Extended JSON format expected by mockRooms
+ * Optionally includes host info if provided
+ */
+function transformRoomDocument(
+  room: WithId<Document>,
+  hostInfo?: { name: string; avatarId?: number }
+): mockRooms {
+  const avatarPath =
+    hostInfo?.avatarId !== undefined
+      ? `/avatars/avatar${hostInfo.avatarId}.jpg`
+      : "/avatars/avatar0.jpg";
+
   return {
     ...room,
     _id: { $oid: room._id.toString() },
     ownerId: { $oid: room.ownerId.toString() },
+    host: {
+      name: hostInfo?.name ?? "Unknown",
+      avatar: avatarPath,
+    },
     createdAt: room.createdAt ? { $date: room.createdAt.toISOString() } : null,
     scheduledAt: room.scheduledAt
       ? { $date: room.scheduledAt.toISOString() }
@@ -48,7 +90,7 @@ export async function getUpcomingRooms(
   userId?: string,
   limit?: number
 ): Promise<mockRooms[]> {
-  const { roomsCollection } = await connectToMongo();
+  const { roomsCollection, usersCollection } = await connectToMongo();
 
   if (!userId) {
     console.log("No userId provided");
@@ -80,18 +122,32 @@ export async function getUpcomingRooms(
 
   console.log("Found rooms:", results.length);
 
-  // Transform the data to match the expected format
-  return results.map(transformRoomDocument);
+  // Get unique owner IDs and fetch host info
+  const ownerIds = [...new Set(results.map((r) => r.ownerId as ObjectId))];
+  const hostMap = await getHostInfoForRooms(usersCollection, ownerIds);
+
+  // Transform the data to match the expected format with host info
+  return results.map((room) => {
+    const hostInfo = hostMap.get(room.ownerId.toString());
+    return transformRoomDocument(room, hostInfo);
+  });
 }
 
 export async function getOldRooms() {
-  const { roomsCollection } = await connectToMongo();
+  const { roomsCollection, usersCollection } = await connectToMongo();
   const results = await roomsCollection
     .find({ endTime: { $lt: new Date() } })
     .toArray();
 
-  // Transform the data to match the expected format
-  return results.map(transformRoomDocument);
+  // Get unique owner IDs and fetch host info
+  const ownerIds = [...new Set(results.map((r) => r.ownerId as ObjectId))];
+  const hostMap = await getHostInfoForRooms(usersCollection, ownerIds);
+
+  // Transform the data to match the expected format with host info
+  return results.map((room) => {
+    const hostInfo = hostMap.get(room.ownerId.toString());
+    return transformRoomDocument(room, hostInfo);
+  });
 }
 
 export interface PaginatedRoomsResult {
@@ -108,7 +164,7 @@ export async function getAllRooms(
   page: number = 1,
   pageSize: number = 20
 ): Promise<PaginatedRoomsResult> {
-  const { roomsCollection } = await connectToMongo();
+  const { roomsCollection, usersCollection } = await connectToMongo();
 
   // Validate pagination parameters
   const validPage = Math.max(1, page);
@@ -129,8 +185,15 @@ export async function getAllRooms(
     .limit(validPageSize)
     .toArray();
 
-  // Transform the data to match the expected format
-  const transformedResults = results.map(transformRoomDocument);
+  // Get unique owner IDs and fetch host info
+  const ownerIds = [...new Set(results.map((r) => r.ownerId as ObjectId))];
+  const hostMap = await getHostInfoForRooms(usersCollection, ownerIds);
+
+  // Transform the data to match the expected format with host info
+  const transformedResults = results.map((room) => {
+    const hostInfo = hostMap.get(room.ownerId.toString());
+    return transformRoomDocument(room, hostInfo);
+  });
 
   return {
     rooms: transformedResults,
