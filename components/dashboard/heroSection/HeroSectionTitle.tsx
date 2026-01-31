@@ -23,7 +23,7 @@ function HeroSectionTitle() {
         <span className="text-primary">mock-Interviews</span> for Everyone
       </h1>
       <p className="mt-2 text-lg font-medium text-myforeground/80 font-secondary">
-        `` Connect, Collaborate, and Code in Real-Time
+        Connect, Collaborate, and Code in Real-Time
       </p>
     </div>
   );
