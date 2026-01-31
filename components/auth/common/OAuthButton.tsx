@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { Button } from "../../ui/button";
 import Image from "next/image";
-import ComingSoonDialog from "@/components/custom/ComingSoonDialog";
+import { Loader2 } from "lucide-react";
 
 export interface OAuthButtonProps {
   provider: string;
   logo: string;
-  onClick?: () => void;
+  onClick?: () => void | Promise<void>;
   className?: string;
 }
 
@@ -18,22 +18,30 @@ export default function OAuthButton({
   onClick,
   className = "",
 }: OAuthButtonProps) {
-  const [showComingSoon, setShowComingSoon] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleClick = () => {
-    // Show coming soon dialog instead of OAuth flow
-    //  (true);
-    if (onClick) onClick();
+  const handleClick = async () => {
+    if (onClick) {
+      setIsLoading(true);
+      try {
+        await onClick();
+      } finally {
+        setIsLoading(false);
+      }
+    }
   };
 
   return (
-    <>
-      <Button
-        type="button"
-        variant="outline"
-        onClick={handleClick}
-        className={`w-full bg-mysecondary/80 dark:bg-mysecondary/80 text-mybackground hover:text-mybackground flex items-center justify-center gap-2 border border-[var(--color-myforeground)]/20 hover:cursor-pointer hover:bg-mysecondary-hover dark:hover:bg-mysecondary-hover ${className}`}
-      >
+    <Button
+      type="button"
+      variant="outline"
+      onClick={handleClick}
+      disabled={isLoading}
+      className={`w-full bg-mysecondary/80 dark:bg-mysecondary/80 text-mybackground hover:text-mybackground flex items-center justify-center gap-2 border border-myforeground/20 hover:cursor-pointer hover:bg-mysecondary-hover dark:hover:bg-mysecondary-hover disabled:opacity-70 ${className}`}
+    >
+      {isLoading ? (
+        <Loader2 className="h-5 w-5 animate-spin" />
+      ) : (
         <div className="h-5 w-5 relative">
           <Image
             src={logo}
@@ -42,13 +50,8 @@ export default function OAuthButton({
             style={{ objectFit: "contain" }}
           />
         </div>
-        <span>Continue with {provider}</span>
-      </Button>
-      <ComingSoonDialog
-        open={showComingSoon}
-        onOpenChange={setShowComingSoon}
-        featureName={`${provider} login`}
-      />
-    </>
+      )}
+      <span>{isLoading ? "Connecting..." : `Continue with ${provider}`}</span>
+    </Button>
   );
 }
