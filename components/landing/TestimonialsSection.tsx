@@ -4,6 +4,14 @@ import { Star, Quote } from "lucide-react";
 
 const testimonials = [
   {
+    name: "Dave",
+    role: "Developer",
+    avatar: "DV",
+    content:
+      "Feature rich application! Effortlessly collaborate with others",
+    rating: 5,
+  },
+  {
     name: "Sarah Chen",
     role: "Senior Developer @ TechCorp",
     avatar: "SC",
@@ -41,14 +49,6 @@ const testimonials = [
     avatar: "DK",
     content:
       "Finally, a collaboration tool that developers actually want to use. Our team adopted it without any push from leadership.",
-    rating: 5,
-  },
-  {
-    name: "Emma Watson",
-    role: "Full-stack Developer",
-    avatar: "EW",
-    content:
-      "The note-taking feature is a game-changer. We document decisions as we code, making handoffs and reviews so much smoother.",
     rating: 5,
   },
 ];
