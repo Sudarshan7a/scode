@@ -7,8 +7,7 @@ const testimonials = [
     name: "Dave",
     role: "Developer",
     avatar: "DV",
-    content:
-      "Feature rich application! Effortlessly collaborate with others",
+    content: "Feature rich application! Effortlessly collaborate with others",
     rating: 5,
   },
   {
@@ -43,14 +42,7 @@ const testimonials = [
       "Perfect for study groups and hackathons. The AI suggestions help us learn faster, and we can all code together from different locations.",
     rating: 5,
   },
-  {
-    name: "David Kim",
-    role: "Engineering Manager",
-    avatar: "DK",
-    content:
-      "Finally, a collaboration tool that developers actually want to use. Our team adopted it without any push from leadership.",
-    rating: 5,
-  },
+
   {
     name: "ᴍᴀɴɴᴀɴ",
     role: "Student",
@@ -72,8 +64,8 @@ export default function TestimonialsSection() {
             <span className="text-mysecondary"> worldwide</span>
           </h2>
           <p className="text-lg text-foreground/70 max-w-2xl mx-auto">
-            Don&apos;t just take our word for it. Here&apos;s what developers are saying
-            about S-Code.
+            Don&apos;t just take our word for it. Here&apos;s what developers
+            are saying about S-Code.
           </p>
         </div>
 
