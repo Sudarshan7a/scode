@@ -51,6 +51,14 @@ const testimonials = [
       "Finally, a collaboration tool that developers actually want to use. Our team adopted it without any push from leadership.",
     rating: 5,
   },
+  {
+    name: "ᴍᴀɴɴᴀɴ",
+    role: "Student",
+    avatar: "MN",
+    content:
+      "excellent application. as a student, its really useful! i could code with my friends and stuff",
+    rating: 5,
+  },
 ];
 
 export default function TestimonialsSection() {
