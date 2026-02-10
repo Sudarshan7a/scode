@@ -10,7 +10,12 @@ import { ThemeProvider } from "./../components/ThemeProvider";
 import DesktopOnlyNotice from "./../components/DesktopOnlyNotice";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ||
+  "https://s-code.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(BASE_URL),
   title: "S-Code | Real-time Collaborative Coding Platform",
   description:
     "Code together, think faster. The collaborative coding platform built for pair programming with real-time sync, voice chat, and AI assistance.",
