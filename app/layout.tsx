@@ -22,6 +22,21 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  openGraph: {
+    type: "website",
+    siteName: "S-Code",
+    title: "S-Code | Real-time Collaborative Coding Platform",
+    description:
+      "Code together, think faster. The collaborative coding platform built for pair programming with real-time sync, voice chat, and AI assistance.",
+    url: BASE_URL,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "S-Code | Real-time Collaborative Coding Platform",
+    description:
+      "Code together, think faster. The collaborative coding platform built for pair programming with real-time sync, voice chat, and AI assistance.",
+  },
 };
 
 export default function RootLayout({
