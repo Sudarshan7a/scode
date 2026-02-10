@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import DashboardMainContentLoading from "@/components/dashboard/DashboardMainContentLoading";
 import AsyncErrorBoundary from "@/components/AsyncErrorBoundary";
+
+export const metadata: Metadata = {
+  title: "Dashboard | S-Code",
+  robots: { index: false, follow: false },
+};
 
 export default async function Home() {
   return (
