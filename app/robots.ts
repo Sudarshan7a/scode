@@ -111,6 +111,31 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "ClaudeBot",
         disallow: ["/"],
       },
+      // Block common web scrapers and content harvesters
+      {
+        userAgent: "Bytespider",
+        disallow: ["/"],
+      },
+      {
+        userAgent: "PetalBot",
+        disallow: ["/"],
+      },
+      {
+        userAgent: "SemrushBot",
+        disallow: ["/"],
+      },
+      {
+        userAgent: "AhrefsBot",
+        disallow: ["/"],
+      },
+      {
+        userAgent: "MJ12bot",
+        disallow: ["/"],
+      },
+      {
+        userAgent: "DotBot",
+        disallow: ["/"],
+      },
     ],
     sitemap: `${BASE_URL}/sitemap.xml`,
   };
