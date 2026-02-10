@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   title: "S-Code | Real-time Collaborative Coding Platform",
   description:
     "Code together, think faster. The collaborative coding platform built for pair programming with real-time sync, voice chat, and AI assistance.",
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default function RootLayout({
