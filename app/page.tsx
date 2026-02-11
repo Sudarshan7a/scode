@@ -7,7 +7,7 @@ import DataTransparencySection from "@/components/landing/DataTransparencySectio
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ||
-  "https://s-code.vercel.app";
+  "https://s-code.live";
 
 const jsonLd = {
   "@context": "https://schema.org",

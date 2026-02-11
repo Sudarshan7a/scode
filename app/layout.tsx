@@ -12,7 +12,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ||
-  "https://s-code.vercel.app";
+  "https://s-code.live";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
