@@ -1,0 +1,7 @@
+# S-Code Security Contact
+# https://securitytxt.org/
+
+Contact: mailto:security@s-code.dev
+Preferred-Languages: en
+Canonical: https://s-code.vercel.app/.well-known/security.txt
+Expires: 2027-02-11T00:00:00.000Z
