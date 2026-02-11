@@ -1,7 +1,7 @@
 /* TEAM */
 Name: S-Code Team
-Site: https://s-code.vercel.app
-Contact: contact@s-code.dev
+Site: https://s-code.live
+Contact: sudarshan.programmer@gmail.com
 
 /* SITE */
 Last update: 2026-02-11

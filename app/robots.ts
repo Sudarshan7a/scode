@@ -5,88 +5,106 @@ const BASE_URL =
   "https://s-code.vercel.app";
 
 export default function robots(): MetadataRoute.Robots {
+  // Shared list of private/auth routes that no bot should index
+  const privateRoutes = [
+    "/api/",
+    "/dashboard/",
+    "/profile/",
+    "/room/",
+    "/login",
+    "/signup",
+    "/forgot-password",
+    "/reset-password",
+    "/verify-email",
+    "/verify-email-change",
+    "/check-email",
+    "/test-error-boundaries",
+  ];
+
+  const publicRoutes = [
+    "/",
+    "/about",
+    "/contact",
+    "/how-it-works",
+    "/explore",
+    "/privacy-policy",
+    "/terms-of-service",
+  ];
+
   return {
     rules: [
+      // Default: allow public pages, throttle unknown bots slightly
       {
         userAgent: "*",
-        allow: [
-          "/",
-          "/about",
-          "/contact",
-          "/how-it-works",
-          "/explore",
-          "/privacy-policy",
-          "/terms-of-service",
-        ],
-        disallow: [
-          "/api/",
-          "/dashboard/",
-          "/profile/",
-          "/room/",
-          "/login",
-          "/signup",
-          "/forgot-password",
-          "/reset-password",
-          "/verify-email",
-          "/verify-email-change",
-          "/check-email",
-          "/test-error-boundaries",
-        ],
+        allow: publicRoutes,
+        disallow: privateRoutes,
         crawlDelay: 1,
       },
+
+      // --- Search engine bots: full speed, they drive visibility ---
       {
         userAgent: "Googlebot",
-        allow: [
-          "/",
-          "/about",
-          "/contact",
-          "/how-it-works",
-          "/explore",
-          "/privacy-policy",
-          "/terms-of-service",
-        ],
-        disallow: [
-          "/api/",
-          "/dashboard/",
-          "/profile/",
-          "/room/",
-          "/login",
-          "/signup",
-          "/forgot-password",
-          "/reset-password",
-          "/verify-email",
-          "/verify-email-change",
-          "/check-email",
-          "/test-error-boundaries",
-        ],
+        allow: publicRoutes,
+        disallow: privateRoutes,
       },
       {
         userAgent: "Bingbot",
-        allow: [
-          "/",
-          "/about",
-          "/contact",
-          "/how-it-works",
-          "/explore",
-          "/privacy-policy",
-          "/terms-of-service",
-        ],
-        disallow: [
-          "/api/",
-          "/dashboard/",
-          "/profile/",
-          "/room/",
-          "/login",
-          "/signup",
-          "/forgot-password",
-          "/reset-password",
-          "/verify-email",
-          "/verify-email-change",
-          "/check-email",
-          "/test-error-boundaries",
-        ],
+        allow: publicRoutes,
+        disallow: privateRoutes,
+      },
+      {
+        userAgent: "Slurp", // Yahoo
+        allow: publicRoutes,
+        disallow: privateRoutes,
+      },
+      {
+        userAgent: "DuckDuckBot",
+        allow: publicRoutes,
+        disallow: privateRoutes,
+      },
+      {
+        userAgent: "Baiduspider",
+        allow: publicRoutes,
+        disallow: privateRoutes,
+      },
+      {
+        userAgent: "YandexBot",
+        allow: publicRoutes,
+        disallow: privateRoutes,
+      },
+
+      // --- SEO & analytics bots: help owners improve visibility ---
+      {
+        userAgent: "SemrushBot",
+        allow: publicRoutes,
+        disallow: privateRoutes,
         crawlDelay: 2,
       },
+      {
+        userAgent: "AhrefsBot",
+        allow: publicRoutes,
+        disallow: privateRoutes,
+        crawlDelay: 2,
+      },
+
+      // --- Social media bots: help with link previews & sharing ---
+      {
+        userAgent: "facebookexternalhit",
+        allow: publicRoutes,
+        disallow: privateRoutes,
+      },
+      {
+        userAgent: "Twitterbot",
+        allow: publicRoutes,
+        disallow: privateRoutes,
+      },
+      {
+        userAgent: "LinkedInBot",
+        allow: publicRoutes,
+        disallow: privateRoutes,
+      },
+
+      // --- AI training bots: blocked (scrape content, no visibility) ---
       {
         userAgent: "GPTBot",
         disallow: ["/"],
@@ -111,21 +129,14 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "ClaudeBot",
         disallow: ["/"],
       },
-      // Block common web scrapers and content harvesters
+
+      // --- Harmful scrapers: blocked (no visibility benefit) ---
       {
         userAgent: "Bytespider",
         disallow: ["/"],
       },
       {
         userAgent: "PetalBot",
-        disallow: ["/"],
-      },
-      {
-        userAgent: "SemrushBot",
-        disallow: ["/"],
-      },
-      {
-        userAgent: "AhrefsBot",
         disallow: ["/"],
       },
       {
