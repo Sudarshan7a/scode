@@ -4,6 +4,7 @@ import { z } from "zod";
 import { connectToMongo } from "@/lib/mongodb";
 import { ObjectId, UpdateFilter, Document, Collection } from "mongodb";
 import { roomJoinLimiter } from "@/lib/rateLimiter";
+import bcrypt from "bcrypt";
 
 type RoomLike = Document & {
   status?: string;
@@ -193,7 +194,11 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
           { status: 403 },
         );
       }
-      if (payload.password !== room.roomPassword) {
+      const passwordMatch = await bcrypt.compare(
+        payload.password,
+        room.roomPassword,
+      );
+      if (!passwordMatch) {
         return NextResponse.json(
           { error: "Incorrect password", requiresPassword: true },
           { status: 403 },
@@ -204,10 +209,13 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
     const statusResp = checkRoomStatus(room, roomIdStr);
     if (statusResp) return statusResp;
 
+    // Strip sensitive data before returning room
+    const { roomPassword, ...safeRoom } = room;
+
     // isOwner already defined above for password check
     if (isOwner) {
       return NextResponse.json(
-        { role: "host", roomId: roomIdStr, room },
+        { role: "host", roomId: roomIdStr, room: safeRoom },
         { status: 200 },
       );
     }
@@ -215,7 +223,7 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
     await ensureCollaborator(roomsCollection, room, userId, payload.role);
 
     return NextResponse.json(
-      { role: "participant", roomId: roomIdStr, room },
+      { role: "participant", roomId: roomIdStr, room: safeRoom },
       { status: 200 },
     );
   } catch (err: unknown) {
