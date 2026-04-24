@@ -29,10 +29,21 @@ function isAllowedDomain(url: string): boolean {
   try {
     const parsed = new URL(url, window.location.origin);
     const origin = parsed.origin;
+    const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    // Allow s-code.live domain
-    if (origin === "https://s-code.live") {
+    // Allow same-origin app/API calls in any environment.
+    if (origin === window.location.origin) {
       return true;
+    }
+
+    if (configuredApiUrl) {
+      const configuredApiOrigin = new URL(
+        configuredApiUrl,
+        window.location.origin
+      ).origin;
+      if (origin === configuredApiOrigin) {
+        return true;
+      }
     }
 
     // Allow any localhost port for development

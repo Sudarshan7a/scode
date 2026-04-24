@@ -1,8 +1,7 @@
 import type { MetadataRoute } from "next";
+import { getAppBaseUrl } from "@/lib/urlConfig";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ||
-  "https://s-code.live";
+const BASE_URL = getAppBaseUrl();
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();

@@ -8,6 +8,12 @@ dotenv.config({ path: ".env.local" });
 
 const PORT = process.env.PORT || 1234;
 const HOST = process.env.HOST || "0.0.0.0";
+const ALLOWED_WS_ORIGINS = (
+  process.env.ALLOWED_WS_ORIGINS || "https://s-code-live.vercel.app"
+)
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 // Track active rooms and their connections
 const activeRooms = new Map();
@@ -18,8 +24,21 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use((req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (origin) {
+    if (!ALLOWED_WS_ORIGINS.includes(origin)) {
+      res.status(403).json({ error: "Origin not allowed" });
+      return;
+    }
+
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Vary", "Origin");
+  } else if (ALLOWED_WS_ORIGINS.length > 0) {
+    res.setHeader("Access-Control-Allow-Origin", ALLOWED_WS_ORIGINS[0]);
+  }
+
   // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 

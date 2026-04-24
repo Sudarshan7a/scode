@@ -9,10 +9,9 @@ import ErrorBoundary from "./../components/ErrorBoundary";
 import { ThemeProvider } from "./../components/ThemeProvider";
 import DesktopOnlyNotice from "./../components/DesktopOnlyNotice";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { getAppBaseUrl } from "@/lib/urlConfig";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ||
-  "https://s-code.live";
+const BASE_URL = getAppBaseUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),

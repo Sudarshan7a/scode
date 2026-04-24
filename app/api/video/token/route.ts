@@ -4,6 +4,7 @@ import { StreamClient } from "@stream-io/node-sdk";
 import { videoTokenLimiter } from "@/lib/rateLimiter";
 import { connectToMongo } from "@/lib/mongodb";
 import { getAuthUserId } from "@/lib/getAuthUserId";
+import { getAppBaseUrl } from "@/lib/urlConfig";
 
 function respond(status: number, body: Record<string, unknown>) {
   return NextResponse.json(body, { status });
@@ -53,12 +54,14 @@ export async function GET(request: NextRequest) {
       return respond(404, { ok: false, message: "User not found" });
     }
 
+    const appBaseUrl = getAppBaseUrl();
+
     // Build user object with real data from database
     const user = {
       id: userId,
       role: "user",
       name: dbUser.name,
-      image: "www.s-code.live/avatars/" + (dbUser.avatarId || 0) + ".png",
+      image: `${appBaseUrl}/avatars/${dbUser.avatarId || 0}.png`,
       custom: {
         color: "red",
       },
