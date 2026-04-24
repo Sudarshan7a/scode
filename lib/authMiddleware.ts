@@ -3,12 +3,7 @@ import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 import { getAccessTokenFromHeader } from "./tokenUtils";
 import { auth } from "@/auth";
-
-const ALLOWED_ORIGINS = [
-  "https://s-code.live",
-  "https://www.s-code.live",
-  process.env.MY_DOMAIN || "http://localhost:3000",
-];
+import { getAllowedAppOrigins } from "./urlConfig";
 
 export interface AuthValidationResult {
   success: boolean;
@@ -101,16 +96,13 @@ export async function validateAuthToken(
 export function validateCSRFOrigin(request: NextRequest): boolean {
   const origin = request.headers.get("origin");
   const referer = request.headers.get("referer");
+  const allowedOrigins = getAllowedAppOrigins();
 
   // If no origin, check referer
   if (!origin && referer) {
     try {
       const refererUrl = new URL(referer);
-      return ALLOWED_ORIGINS.some(
-        (allowedOrigin) =>
-          allowedOrigin.includes(refererUrl.hostname) ||
-          refererUrl.origin === allowedOrigin
-      );
+      return allowedOrigins.includes(refererUrl.origin);
     } catch {
       return false;
     }
@@ -118,7 +110,7 @@ export function validateCSRFOrigin(request: NextRequest): boolean {
 
   // Check origin against allowed list
   if (origin) {
-    return ALLOWED_ORIGINS.includes(origin);
+    return allowedOrigins.includes(origin);
   }
 
   // For same-origin requests (no origin header), allow

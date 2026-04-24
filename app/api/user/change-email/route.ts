@@ -5,6 +5,7 @@ import crypto from "crypto";
 import { Resend } from "resend";
 import { emailChangeLimiter } from "@/lib/rateLimiter";
 import { getAuthUserId } from "@/lib/getAuthUserId";
+import { getAppBaseUrl } from "@/lib/urlConfig";
 
 export async function POST(request: NextRequest) {
   try {
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Send verification email to new email address
-    const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email-change?token=${verificationToken}`;
+    const verificationUrl = `${getAppBaseUrl()}/verify-email-change?token=${verificationToken}`;
 
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);

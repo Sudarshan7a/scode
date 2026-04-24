@@ -4,10 +4,9 @@ import HowItWorksSection from "@/components/landing/HowItWorksSection";
 import TestimonialsSection from "@/components/landing/TestimonialsSection";
 import CTASection from "@/components/landing/CTASection";
 import DataTransparencySection from "@/components/landing/DataTransparencySection";
+import { getAppBaseUrl } from "@/lib/urlConfig";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ||
-  "https://s-code.live";
+const BASE_URL = getAppBaseUrl();
 
 const jsonLd = {
   "@context": "https://schema.org",
