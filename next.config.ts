@@ -31,6 +31,34 @@ const nextConfig: NextConfig = {
             key: "Permissions-Policy",
             value: "camera=(self), microphone=(self), geolocation=()",
           },
+          {
+            key: "Content-Security-Policy",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=31536000; includeSubDomains; preload",
+          },
+        ],
+      },
+      // Prevent search engines from indexing API routes
+      {
+        source: "/api/:path*",
+        headers: [
+          {
+            key: "X-Robots-Tag",
+            value: "noindex, nofollow",
+          },
+        ],
+      },
+      // Cache static assets for crawlers and performance
+      {
+        source: "/(.*)\\.(ico|svg|png|jpg|jpeg|gif|webp|woff|woff2)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
         ],
       },
     ];

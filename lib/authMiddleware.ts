@@ -4,6 +4,12 @@ import { jwtVerify } from "jose";
 import { getAccessTokenFromHeader } from "./tokenUtils";
 import { auth } from "@/auth";
 
+const ALLOWED_ORIGINS = [
+  "https://s-code.live",
+  "https://www.s-code.live",
+  process.env.MY_DOMAIN || "http://localhost:3000",
+];
+
 export interface AuthValidationResult {
   success: boolean;
   userId?: string;
@@ -91,11 +97,50 @@ export async function validateAuthToken(
   }
 }
 
+// CSRF validation: Check origin header for state-changing requests
+export function validateCSRFOrigin(request: NextRequest): boolean {
+  const origin = request.headers.get("origin");
+  const referer = request.headers.get("referer");
+
+  // If no origin, check referer
+  if (!origin && referer) {
+    try {
+      const refererUrl = new URL(referer);
+      return ALLOWED_ORIGINS.some(
+        (allowedOrigin) =>
+          allowedOrigin.includes(refererUrl.hostname) ||
+          refererUrl.origin === allowedOrigin
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  // Check origin against allowed list
+  if (origin) {
+    return ALLOWED_ORIGINS.includes(origin);
+  }
+
+  // For same-origin requests (no origin header), allow
+  return true;
+}
+
 // Higher-order function for protected routes
 export function withAuth(
   handler: (request: NextRequest, userId: string) => Promise<NextResponse>
 ) {
   return async (request: NextRequest): Promise<NextResponse> => {
+    // Validate CSRF origin for state-changing requests
+    if (
+      ["POST", "PUT", "DELETE", "PATCH"].includes(request.method) &&
+      !validateCSRFOrigin(request)
+    ) {
+      return NextResponse.json(
+        { error: "CSRF validation failed" },
+        { status: 403 }
+      );
+    }
+
     const authResult = await validateAuthToken(request);
 
     if (!authResult.success) {

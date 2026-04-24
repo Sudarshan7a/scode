@@ -1,9 +1,17 @@
+import type { Metadata } from "next";
 import React from "react";
 import { UserPlus, Settings, Code2, Rocket } from "lucide-react";
 import HeroSection from "@/components/how-it-works/HeroSection";
 import StepCard from "@/components/how-it-works/StepCard";
 import PainPointsSection from "@/components/how-it-works/PainPointsSection";
 import CTASection from "@/components/how-it-works/CTASection";
+
+export const metadata: Metadata = {
+  title: "How It Works | S-Code",
+  description:
+    "See how S-Code works – create a room, invite collaborators, code in real-time with voice chat and AI assistance. Get started in minutes.",
+  alternates: { canonical: "/how-it-works" },
+};
 
 export default function HowItWorksPage() {
   const steps = [

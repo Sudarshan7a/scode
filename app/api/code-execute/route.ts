@@ -5,11 +5,13 @@ import {
   codeExecuteHourlyLimiter,
   getUserIdOrIP,
 } from "@/lib/rateLimiter";
-import { getLanguageFileName } from "@/constants/languageFileNames";
+import { getLanguageFileName, LANGUAGE_FILE_NAMES } from "@/constants/languageFileNames";
 
 const EXECUTION_API_KEY = process.env.CODE_EXECUTION_API_KEY!;
 const EXECUTION_API_URL = process.env.CODE_EXECUTION_API_URL!;
 const EXECUTION_API_HOST = process.env.CODE_EXECUTION_API_HOST!;
+
+const ALLOWED_LANGUAGES = Object.keys(LANGUAGE_FILE_NAMES);
 
 export async function POST(req: NextRequest) {
   // Rate limiting - dual tier protection

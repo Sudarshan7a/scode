@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import EmailStatusCard from "@/components/auth/EmailStatusCard";
 import { Mail } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Check Email | S-Code",
+  robots: { index: false, follow: false },
+};
 
 export default function CheckEmail() {
   return (

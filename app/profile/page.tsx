@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import Profile from "@/components/profile/Profile";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "Profile | S-Code",
+  robots: { index: false, follow: false },
+};
 
 function page() {
   return (

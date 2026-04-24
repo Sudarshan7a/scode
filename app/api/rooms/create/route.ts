@@ -4,6 +4,7 @@ import { z } from "zod";
 import { ObjectId } from "mongodb";
 import { connectToMongo } from "@/lib/mongodb";
 import { roomCreateLimiter } from "@/lib/rateLimiter";
+import bcrypt from "bcrypt";
 
 export const POST = withAuth(async (request: NextRequest, userId: string) => {
   try {
@@ -54,12 +55,17 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
       ? payload.privacyLevel === "private"
       : Boolean(payload.isPrivate);
 
+    const hashedPassword =
+      isPrivate && payload.roomPassword
+        ? await bcrypt.hash(payload.roomPassword, 12)
+        : null;
+
     const doc = {
       title,
       ownerId: new ObjectId(userId),
       collaborators: [],
       isPrivate,
-      roomPassword: isPrivate && payload.roomPassword ? payload.roomPassword : null,
+      roomPassword: hashedPassword,
       createdAt: new Date(),
       duration,
       scheduledAt: payload.scheduledAt ? new Date(payload.scheduledAt) : null,

@@ -1,0 +1,10 @@
+/* TEAM */
+Name: S-Code Team
+Site: https://s-code.live
+Contact: sudarshan.programmer@gmail.com
+
+/* SITE */
+Last update: 2026-02-11
+Standards: HTML5, CSS3, JavaScript
+Software: Next.js, React, TypeScript, Monaco Editor
+Components: Radix UI, Tailwind CSS, Stream Video

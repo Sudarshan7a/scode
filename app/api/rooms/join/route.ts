@@ -204,7 +204,6 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
     const statusResp = checkRoomStatus(room, roomIdStr);
     if (statusResp) return statusResp;
 
-    // isOwner already defined above for password check
     if (isOwner) {
       return NextResponse.json(
         { role: "host", roomId: roomIdStr, room },

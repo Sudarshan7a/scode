@@ -4,6 +4,7 @@ import { z } from "zod";
 import { ObjectId } from "mongodb";
 import { connectToMongo } from "@/lib/mongodb";
 import { roomStartLimiter } from "@/lib/rateLimiter";
+import bcrypt from "bcrypt";
 
 class HttpError extends Error {
   status: number;
@@ -39,7 +40,7 @@ function validateStart(body: unknown): StartPayload {
   return parsed.data;
 }
 
-function buildRoomDoc(payload: StartPayload, userId: string) {
+function buildRoomDoc(payload: StartPayload, userId: string, hashedPassword: string | null) {
   const title = (payload.title || payload.roomName || payload.name || "")
     .toString()
     .trim();
@@ -60,7 +61,7 @@ function buildRoomDoc(payload: StartPayload, userId: string) {
     title,
     ownerId: new ObjectId(userId),
     isPrivate,
-    roomPassword: isPrivate && payload.roomPassword ? payload.roomPassword : null,
+    roomPassword: hashedPassword,
     createdAt: startedAt,
     duration,
     // start immediately: set scheduledAt to startedAt
@@ -153,7 +154,16 @@ export const POST = withAuth(async (request: NextRequest, userId: string) => {
     }
 
     // Case 2: Creating a new room (existing functionality)
-    const doc = buildRoomDoc(payload, userId);
+    const isPrivate = payload.privacyLevel
+      ? payload.privacyLevel === "private"
+      : Boolean(payload.isPrivate);
+
+    const hashedPassword =
+      isPrivate && payload.roomPassword
+        ? await bcrypt.hash(payload.roomPassword, 12)
+        : null;
+
+    const doc = buildRoomDoc(payload, userId, hashedPassword);
     const result = await roomsCollection.insertOne(doc);
 
     return NextResponse.json(

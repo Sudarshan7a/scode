@@ -10,10 +10,44 @@ import { ThemeProvider } from "./../components/ThemeProvider";
 import DesktopOnlyNotice from "./../components/DesktopOnlyNotice";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ||
+  "https://s-code.live";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(BASE_URL),
   title: "S-Code | Real-time Collaborative Coding Platform",
   description:
     "Code together, think faster. The collaborative coding platform built for pair programming with real-time sync, voice chat, and AI assistance.",
+  keywords: [
+    "collaborative coding",
+    "pair programming",
+    "real-time code editor",
+    "coding platform",
+    "online IDE",
+    "code interview",
+    "voice chat coding",
+    "AI coding assistant",
+    "S-Code",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "S-Code",
+    title: "S-Code | Real-time Collaborative Coding Platform",
+    description:
+      "Code together, think faster. The collaborative coding platform built for pair programming with real-time sync, voice chat, and AI assistance.",
+    url: BASE_URL,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "S-Code | Real-time Collaborative Coding Platform",
+    description:
+      "Code together, think faster. The collaborative coding platform built for pair programming with real-time sync, voice chat, and AI assistance.",
+  },
 };
 
 export default function RootLayout({
