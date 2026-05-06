@@ -8,6 +8,8 @@ import { SessionProviderWrapper } from "./../components/auth/SessionProviderWrap
 import ErrorBoundary from "./../components/ErrorBoundary";
 import { ThemeProvider } from "./../components/ThemeProvider";
 import DesktopOnlyNotice from "./../components/DesktopOnlyNotice";
+import TechnicalDifficultiesBanner from "./../components/TechnicalDifficultiesBanner";
+import { technicalIssueConfig } from "@/constants/technicalIssueConfig";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { getAppBaseUrl } from "@/lib/urlConfig";
 
@@ -72,6 +74,13 @@ export default function RootLayout({
           >
             <ErrorBoundary>
               <DesktopOnlyNotice />
+              {technicalIssueConfig.enabled && (
+                <TechnicalDifficultiesBanner
+                  message={technicalIssueConfig.message}
+                  affectedFeatures={technicalIssueConfig.affectedFeatures}
+                  persistent={technicalIssueConfig.persistent}
+                />
+              )}
               <RootAuthGuard>
                 <Navbar />
                 {children}
