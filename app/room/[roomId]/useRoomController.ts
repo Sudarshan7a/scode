@@ -103,7 +103,6 @@ export function useRoomController(roomId: string) {
       // Update local state
       setRoomState("ended");
       setHasJoinedEditor(false);
-      success(TOAST_MESSAGES.ROOM.ENDED);
     } catch (error: unknown) {
       if (hasAxiosResponse(error)) {
         console.error(

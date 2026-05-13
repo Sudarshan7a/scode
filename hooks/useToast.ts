@@ -176,7 +176,6 @@ export const TOAST_MESSAGES = {
     JOINED: "Successfully joined the room!",
     JOIN_ERROR: "Failed to join room. Please check the room ID and try again.",
     LEFT: "You've left the room.",
-    ENDED: "Room session ended successfully.",
     SCHEDULED: "Room scheduled successfully!",
     SCHEDULE_ERROR: "Failed to schedule room. Please try again.",
     DELETED: "Room deleted successfully.",
