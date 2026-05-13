@@ -182,7 +182,10 @@ export class RoomStateService {
         oldStatus: currentStatus,
         newStatus,
         updatedAt: new Date(),
-        message: `Room transitioned from "${currentStatus}" to "${newStatus}"`,
+        message:
+          newStatus === "ended"
+            ? "Room session ended successfully."
+            : `Room transitioned from "${currentStatus}" to "${newStatus}"`,
       };
     } catch (error) {
       const errorMessage =
@@ -311,7 +314,10 @@ export class RoomStateService {
         oldStatus: currentStatus,
         newStatus,
         updatedAt: now,
-        message: `Room transitioned from "${currentStatus}" to "${newStatus}"`,
+        message:
+          newStatus === "ended"
+            ? "Room session ended successfully."
+            : `Room transitioned from "${currentStatus}" to "${newStatus}"`,
       };
     } catch (error) {
       const errorMessage =
