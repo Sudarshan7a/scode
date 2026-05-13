@@ -24,7 +24,7 @@ async function notifyWebSocketServer(
   roomId: string,
   oldStatus: RoomState,
   newStatus: RoomState,
-  userId: string
+  userId: string,
 ): Promise<void> {
   try {
     const wsUrl =
@@ -53,14 +53,14 @@ async function notifyWebSocketServer(
 
     if (!response.ok) {
       console.warn(
-        `WebSocket server responded with ${response.status} for room state change`
+        `WebSocket server responded with ${response.status} for room state change`,
       );
       // Don't throw - WebSocket notification is non-critical
     }
   } catch (error) {
     console.warn(
       "Failed to notify WebSocket server about room state change:",
-      error
+      error,
     );
     // Don't throw - WebSocket notification is non-critical
   }
@@ -75,7 +75,7 @@ export class RoomStateService {
    */
   static async verifyRoomAccess(
     roomId: string,
-    userId: string
+    userId: string,
   ): Promise<{ isHost: boolean; isCollaborator: boolean }> {
     const { roomsCollection } = await connectToMongo();
 
@@ -90,7 +90,7 @@ export class RoomStateService {
     const isHost = room.ownerId.toString() === userId;
     const isCollaborator = room.collaborators?.some(
       (c: { userId: ObjectId; role: string }) =>
-        c.userId.toString() === userId && c.role === "host"
+        c.userId.toString() === userId && c.role === "host",
     );
 
     return {
@@ -123,14 +123,14 @@ export class RoomStateService {
     roomId: string,
     newStatus: RoomState,
     userId: string,
-    metadata?: UpdateStateMetadata
+    metadata?: UpdateStateMetadata,
   ): Promise<UpdateStateResult> {
     try {
       // Verify user has access
       const access = await this.verifyRoomAccess(roomId, userId);
       if (!access.isHost && !access.isCollaborator) {
         throw new Error(
-          "Only room hosts or host collaborators can update room state"
+          "Only room hosts or host collaborators can update room state",
         );
       }
 
@@ -139,9 +139,7 @@ export class RoomStateService {
 
       // Validate transition
       if (!isValidStateTransition(currentStatus, newStatus)) {
-        throw new Error(
-          getTransitionErrorMessage(currentStatus, newStatus)
-        );
+        throw new Error(getTransitionErrorMessage(currentStatus, newStatus));
       }
 
       // Update in database
@@ -165,7 +163,7 @@ export class RoomStateService {
 
       const result = await roomsCollection.updateOne(
         { _id: new ObjectId(roomId) },
-        { $set: updateData }
+        { $set: updateData },
       );
 
       if (result.matchedCount === 0) {
@@ -183,9 +181,7 @@ export class RoomStateService {
         newStatus,
         updatedAt: new Date(),
         message:
-          newStatus === "ended"
-            ? "Room session ended successfully."
-            : undefined,
+          newStatus === "ended" ? "Session ended successfully." : undefined,
       };
     } catch (error) {
       const errorMessage =
@@ -208,14 +204,19 @@ export class RoomStateService {
     roomId: string,
     newStatus: RoomState,
     userId: string,
-    metadata?: UpdateStateMetadata
+    metadata?: UpdateStateMetadata,
   ): Promise<UpdateStateResult> {
     try {
       // Get current status before update
       const currentStatus = await this.getRoomStatus(roomId);
 
       // Perform the update
-      const result = await this.updateRoomState(roomId, newStatus, userId, metadata);
+      const result = await this.updateRoomState(
+        roomId,
+        newStatus,
+        userId,
+        metadata,
+      );
 
       // Notify WebSocket server if update was successful
       if (result.success) {
@@ -224,9 +225,9 @@ export class RoomStateService {
           (error) => {
             console.warn(
               "WebSocket notification failed but room state was updated:",
-              error
+              error,
             );
-          }
+          },
         );
       }
 
@@ -253,7 +254,7 @@ export class RoomStateService {
     roomId: string,
     newStatus: RoomState,
     userId: string,
-    metadata?: UpdateStateMetadata
+    metadata?: UpdateStateMetadata,
   ): Promise<UpdateStateResult> {
     const { roomsCollection } = await connectToMongo();
 
@@ -262,7 +263,7 @@ export class RoomStateService {
       const access = await this.verifyRoomAccess(roomId, userId);
       if (!access.isHost && !access.isCollaborator) {
         throw new Error(
-          "Only room hosts or host collaborators can update room state"
+          "Only room hosts or host collaborators can update room state",
         );
       }
 
@@ -271,9 +272,7 @@ export class RoomStateService {
 
       // Validate transition
       if (!isValidStateTransition(currentStatus, newStatus)) {
-        throw new Error(
-          getTransitionErrorMessage(currentStatus, newStatus)
-        );
+        throw new Error(getTransitionErrorMessage(currentStatus, newStatus));
       }
 
       const now = new Date();
@@ -297,7 +296,7 @@ export class RoomStateService {
               metadata: metadata || {},
             },
           },
-        }
+        },
       );
 
       if (result.matchedCount === 0) {
@@ -315,9 +314,7 @@ export class RoomStateService {
         newStatus,
         updatedAt: now,
         message:
-          newStatus === "ended"
-            ? "Room session ended successfully."
-            : undefined,
+          newStatus === "ended" ? "Session ended successfully." : undefined,
       };
     } catch (error) {
       const errorMessage =
@@ -341,7 +338,7 @@ export class RoomStateService {
     roomId: string,
     newStatus: RoomState,
     userId: string,
-    metadata?: UpdateStateMetadata
+    metadata?: UpdateStateMetadata,
   ): Promise<UpdateStateResult> {
     try {
       // Get current status before update
@@ -352,7 +349,7 @@ export class RoomStateService {
         roomId,
         newStatus,
         userId,
-        metadata
+        metadata,
       );
 
       // Notify WebSocket server if update was successful
@@ -362,9 +359,9 @@ export class RoomStateService {
           (error) => {
             console.warn(
               "WebSocket notification failed but room state was updated:",
-              error
+              error,
             );
-          }
+          },
         );
       }
 

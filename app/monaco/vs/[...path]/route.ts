@@ -9,7 +9,7 @@ const MONACO_VS_ROOT = path.join(
   "node_modules",
   "monaco-editor",
   "min",
-  "vs"
+  "vs",
 );
 
 function getContentType(filePath: string) {
@@ -26,7 +26,7 @@ function getContentType(filePath: string) {
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<{ path?: string[] }> }
+  { params }: { params: Promise<{ path?: string[] }> },
 ) {
   const resolvedParams = await params;
   const relativePath = (resolvedParams.path || []).join(path.sep);

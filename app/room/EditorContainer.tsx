@@ -52,11 +52,15 @@ const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
     // Expose methods to parent via ref
     useImperativeHandle(ref, () => ({
       getCode: () => {
-        const model = editorRef.current?.getModel() as { getValue?: () => string } | null;
+        const model = editorRef.current?.getModel() as {
+          getValue?: () => string;
+        } | null;
         return model?.getValue?.() || "";
       },
       setCode: (code: string) => {
-        const model = editorRef.current?.getModel() as { setValue?: (value: string) => void } | null;
+        const model = editorRef.current?.getModel() as {
+          setValue?: (value: string) => void;
+        } | null;
         if (model && typeof model.setValue === "function") {
           model.setValue(code);
         }
@@ -84,7 +88,7 @@ const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
           m.editor.setModelLanguage(model, def.monacoId);
         }
       },
-      [languages]
+      [languages],
     );
 
     // react to language changes at runtime (user selects a new language)
@@ -97,7 +101,7 @@ const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
         try {
           await loadLanguageContribution(
             monacoRef.current as MonacoLike,
-            selected
+            selected,
           );
           applyLanguageLocally(languageId);
         } catch (err) {
@@ -134,7 +138,7 @@ const EditorContainer = forwardRef<EditorContainerRef, EditorContainerProps>(
         }}
       />
     );
-  }
+  },
 );
 
 EditorContainer.displayName = "EditorContainer";

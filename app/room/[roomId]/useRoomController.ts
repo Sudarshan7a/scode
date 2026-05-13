@@ -58,33 +58,44 @@ export function useRoomController(roomId: string) {
     }
   }, [roomId]);
 
-  const handleJoinRoom = useCallback(async (password?: string) => {
-    setIsJoining(true);
-    setPasswordError("");
-    try {
-      if (!isValidObjectId(roomId)) {
-        console.error("Invalid roomId format, aborting join:", roomId);
-        return;
-      }
-      const resp = await axiosInstance.post("/api/rooms/join", { roomId, password });
-      if (resp.data) {
-        setRequiresPassword(false);
-        setHasJoinedEditor(true);
-      }
-    } catch (error: unknown) {
-      logRequestError("Failed to join room", error);
-      // Check if password is required
-      if (hasAxiosResponse(error)) {
-        const errorData = error.response.data as { requiresPassword?: boolean; error?: string };
-        if (errorData?.requiresPassword) {
-          setRequiresPassword(true);
-          setPasswordError(errorData?.error || "Password required for this private room");
+  const handleJoinRoom = useCallback(
+    async (password?: string) => {
+      setIsJoining(true);
+      setPasswordError("");
+      try {
+        if (!isValidObjectId(roomId)) {
+          console.error("Invalid roomId format, aborting join:", roomId);
+          return;
         }
+        const resp = await axiosInstance.post("/api/rooms/join", {
+          roomId,
+          password,
+        });
+        if (resp.data) {
+          setRequiresPassword(false);
+          setHasJoinedEditor(true);
+        }
+      } catch (error: unknown) {
+        logRequestError("Failed to join room", error);
+        // Check if password is required
+        if (hasAxiosResponse(error)) {
+          const errorData = error.response.data as {
+            requiresPassword?: boolean;
+            error?: string;
+          };
+          if (errorData?.requiresPassword) {
+            setRequiresPassword(true);
+            setPasswordError(
+              errorData?.error || "Password required for this private room",
+            );
+          }
+        }
+      } finally {
+        setIsJoining(false);
       }
-    } finally {
-      setIsJoining(false);
-    }
-  }, [roomId]);
+    },
+    [roomId],
+  );
 
   const handleEndSession = useCallback(async () => {
     if (!isValidObjectId(roomId)) {
@@ -107,7 +118,7 @@ export function useRoomController(roomId: string) {
       if (hasAxiosResponse(error)) {
         console.error(
           "Failed to end session - server response:",
-          error.response.data
+          error.response.data,
         );
         if (error.response.status === 401) {
           router.push("/login");
@@ -153,7 +164,7 @@ export function useRoomController(roomId: string) {
             hasPassword?: boolean;
           };
           const { nextState, nextInfo, isHost } = deriveRoomState(typedData);
-          
+
           setIsHost(isHost);
           setRoomState(nextState);
           setRoomInfo(nextInfo);

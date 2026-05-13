@@ -26,7 +26,7 @@ export interface UseToastReturn {
   info: (message: string, options?: ToastOptions) => string | number;
   loading: (
     message: string,
-    options?: Omit<ToastOptions, "action">
+    options?: Omit<ToastOptions, "action">,
   ) => string | number;
   promise: <T>(
     promise: Promise<T>,
@@ -34,7 +34,7 @@ export interface UseToastReturn {
       loading: string;
       success: string | ((data: T) => string);
       error: string | ((error: Error) => string);
-    }
+    },
   ) => Promise<T>;
   dismiss: (toastId?: string | number) => void;
   dismissAll: () => void;
@@ -72,9 +72,9 @@ export interface UseToastReturn {
 function makeHandler(
   handler: (
     message: string,
-    options?: Record<string, unknown>
+    options?: Record<string, unknown>,
   ) => string | number,
-  defaults: { duration?: number; allowAction?: boolean } = {}
+  defaults: { duration?: number; allowAction?: boolean } = {},
 ) {
   return (message: string, options?: ToastOptions) => {
     const payload = {
@@ -119,12 +119,12 @@ export function useToast(): UseToastReturn {
         loading: string;
         success: string | ((data: T) => string);
         error: string | ((error: Error) => string);
-      }
+      },
     ): Promise<T> => {
       toast.promise(promiseToResolve, options);
       return promiseToResolve;
     },
-    []
+    [],
   );
 
   const dismiss = useCallback((toastId?: string | number) => {
