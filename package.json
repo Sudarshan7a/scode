@@ -94,4 +94,16 @@
     "typescript": "^5.9.3",
     "worker-loader": "^3.0.8"
   }
+  ,
+  "pnpm": {
+    "overrides": {
+      "fast-uri": "3.1.2",
+      "dompurify": "3.4.0",
+      "uuid": "13.0.1",
+      "picomatch": "4.0.4",
+      "brace-expansion": "2.0.3",
+      "yaml": "1.10.3",
+      "path-to-regexp": "8.4.0"
+    }
+  }
 }
