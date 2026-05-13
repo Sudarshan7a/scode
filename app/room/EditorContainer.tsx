@@ -1,5 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
+import { loader } from "@monaco-editor/react";
 import {
   useRef,
   useEffect,
@@ -16,6 +17,12 @@ import {
   initializeEditor,
   loadLanguageContribution,
 } from "@/app/room/editorHelpers";
+
+loader.config({
+  paths: {
+    vs: "/monaco/vs",
+  },
+});
 
 const Editor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
