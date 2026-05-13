@@ -33,7 +33,7 @@ export interface TechnicalIssueConfig {
  * };
  */
 export const technicalIssueConfig: TechnicalIssueConfig = {
-  enabled: true, // Set to true to show the banner
+  enabled: false, // Set to true to show the banner
   message:
     "We're experiencing some technical difficulties. Some features may not work as expected.",
   affectedFeatures: [],
