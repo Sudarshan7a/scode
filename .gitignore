@@ -78,3 +78,6 @@ execute-commits.bat
 #ignore codeviz folder
 /codeviz/*/*
 .codeviz/Workspace 1/Workspace-1.drawio
+
+# local project knowledge map (work in progress)
+project-knowledge-map.md
