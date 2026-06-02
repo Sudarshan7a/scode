@@ -18,6 +18,17 @@ function stripApiPath(value?: string): string | null {
   return normalizeOrigin(value.replace(/\/api\/?$/, ""));
 }
 
+function normalizeWebSocketOrigin(value?: string): string | null {
+  const origin = normalizeOrigin(value);
+  if (!origin) return null;
+
+  return origin.startsWith("http://")
+    ? origin.replace(/^http:\/\//, "ws://")
+    : origin.startsWith("https://")
+      ? origin.replace(/^https:\/\//, "wss://")
+      : origin;
+}
+
 export function getAppBaseUrl(): string {
   return (
     normalizeOrigin(process.env.NEXT_PUBLIC_APP_URL) ||
@@ -35,6 +46,16 @@ export function getAllowedAppOrigins(): string[] {
     PROD_BASE_URL,
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+  ].filter((origin): origin is string => Boolean(origin));
+
+  return Array.from(new Set(origins));
+}
+
+export function getAllowedWebSocketOrigins(): string[] {
+  const origins = [
+    normalizeWebSocketOrigin(process.env.NEXT_PUBLIC_MY_WEBSOCKET_DOMAIN),
+    "ws://localhost:1234",
+    "ws://127.0.0.1:1234",
   ].filter((origin): origin is string => Boolean(origin));
 
   return Array.from(new Set(origins));
