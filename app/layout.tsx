@@ -11,6 +11,7 @@ import DesktopOnlyNotice from "./../components/DesktopOnlyNotice";
 import TechnicalDifficultiesBanner from "./../components/TechnicalDifficultiesBanner";
 import { technicalIssueConfig } from "@/constants/technicalIssueConfig";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { getAppBaseUrl } from "@/lib/urlConfig";
 
 const BASE_URL = getAppBaseUrl();
@@ -95,6 +96,7 @@ export default function RootLayout({
             gaId={process.env.NEXT_PUBLIC_GA_MEASURE_ID as string}
           />
         )}
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -5,7 +5,7 @@
 **🚀 A collaborative, cloud-based coding platform for interview preparation and social coding**
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue?logo=typescript)](https://typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://typescriptlang.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-green?logo=mongodb)](https://mongodb.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -44,10 +44,10 @@ S‑code makes coding practice feel like multiplayer gaming — secure, fast, an
 
 **Frontend & Framework**
 
-- [Next.js 15](https://nextjs.org/) + TypeScript (App Router)
+- [Next.js 16](https://nextjs.org/) + TypeScript 5.9 (App Router)
 - [React 19](https://react.dev/) with modern hooks
-- [Tailwind CSS](https://tailwindcss.com/) + [Radix UI](https://radix-ui.com/) for styling
-- [Monaco Editor](https://microsoft.github.io/monaco-editor/) for code editing
+- [Tailwind CSS v4](https://tailwindcss.com/) + [Radix UI](https://radix-ui.com/) for styling
+- [Monaco Editor](https://microsoft.github.io/monaco-editor/) (Self-hosted assets)
 
 **Backend & Database**
 
@@ -84,7 +84,7 @@ S‑code makes coding practice feel like multiplayer gaming — secure, fast, an
 
 **AI Integration**
 
-- [Google Gemini](https://ai.google.dev/) for AI-powered coding assistance
+- [Google Gemini SDK](https://ai.google.dev/) (`@google/genai`) for AI-powered coding assistance
 - Context-aware code analysis and suggestions
 - Smart retry logic with error handling
 
@@ -107,10 +107,13 @@ Privacy-first auth and token hygiene:
 - Middleware-protected routes with server-side refresh validation
 - Rate limiting hooks in place to prevent brute-force attacks
 - Strong password hashing (bcrypt)
-- **Security headers**: X-Frame-Options, X-Content-Type-Options, Permissions-Policy
+- **Room Password Protection**: Cryptographically secure room passwords hashed with bcrypt on creation and verified with `bcrypt.compare` on join
+- **CSRF Origin Protection**: Validation of request origin and referer on all protected state-changing API endpoints
+- **Security headers**: Strict-Transport-Security (HSTS), Content-Security-Policy (CSP) tailored for WebSockets/APIs, X-Frame-Options, X-Content-Type-Options, and Permissions-Policy
 - **Permissions-Policy**: Camera and microphone access enabled for same-origin (video calls)
 - **User enumeration prevention**: Generic error messages on login/forgot-password
 - Session invalidation on password reset (logout all devices)
+- **Sensitive Data Isolation**: Complete exclusion of passwords/credentials from all room detail and public API response models
 
 ## Features (MVP)
 
@@ -130,7 +133,7 @@ Privacy-first auth and token hygiene:
 
 - **Real-time Synchronization**: Y.js CRDTs for conflict-free collaboration
 - **Multi-language Support**: JavaScript, TypeScript, Python, Go, Java, C, C++
-- **Monaco Editor**: Full-featured code editor with syntax highlighting
+- **Monaco Editor**: Full-featured code editor with syntax highlighting and self-hosted assets to eliminate external CDN dependencies and latency
 - **Code Execution**: Run code directly in the browser with output display
 - **WebSocket Integration**: Seamless real-time updates
 - **Optimized Performance**: Removed cursor tracking for cleaner console logs
@@ -182,6 +185,17 @@ Privacy-first auth and token hygiene:
 - **Rejoin Support**: Seamless reconnection after leaving or being kicked
 - **Permissions Policy**: Configured to allow camera/mic for same-origin (security compliant)
 
+### 📈 SEO, Discovery & Trust
+
+- **Dynamic Sitemap & Robots**: Generated dynamically to prioritize indexable public pages while restricting crawler access on auth, chat, or room workspaces.
+- **Search & Bot Crawler Friendliness**: Optimized rules to allow search, social preview, and SEO visibility bots to crawl meta tags.
+- **Humans.txt & Security.txt**: Configured `/humans.txt` for contributor credits, and `/.well-known/security.txt` for responsible vulnerability disclosure.
+- **Static Asset Cache Hashing**: Automated Cache-Control headers for media and script assets to optimize browser performance.
+
+### 📢 Global Alerts
+
+- **Technical Difficulties Banner**: Configuration-driven global alert system to notify active users of ongoing maintenance, system outages, or degraded features with customizable alert persistency. See [Technical Difficulties Banner Manual](docs/TECHNICAL_DIFFICULTIES_BANNER.md).
+
 ### ⚙️ Developer Features
 
 - **Type Safety**: Full TypeScript implementation
@@ -218,6 +232,10 @@ Privacy-first auth and token hygiene:
 - **Video Call Integration**: Stream Video SDK with pre-join preview and device management
 - **Permission Handling**: Browser camera/microphone permission monitoring and user guidance
 - **Video Moderation**: Block/kick event handling for room hosts
+- **Security Hardening**: Implemented CSRF origin protection, HSTS headers, secure CSP connection routing, and room password bcrypt hashing
+- **SEO & Bot Management**: Added humans.txt, security.txt, dynamic sitemap/robots, and crawler optimizations
+- **Asset Self-Hosting**: Transitioned Monaco Editor assets to local route hosting for zero-latency loading
+- **Global Notices**: Implemented a flexible Technical Difficulties Banner component for system-wide announcements
 
 ### 🚧 In Progress
 

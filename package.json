@@ -43,6 +43,7 @@
     "@stream-io/video-react-sdk": "^1.28.2",
     "@upstash/ratelimit": "^2.0.7",
     "@upstash/redis": "^1.35.8",
+    "@vercel/speed-insights": "^2.0.0",
     "@y/websocket-server": "^0.1.1",
     "axios": "^1.16.0",
     "bcrypt": "^6.0.0",
