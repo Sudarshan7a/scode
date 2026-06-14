@@ -81,3 +81,7 @@ execute-commits.bat
 
 # local project knowledge map (work in progress)
 project-knowledge-map.md
+
+# Monaco editor static build assets
+/public/monaco/
+

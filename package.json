@@ -4,8 +4,8 @@
   "description": "A collaborative, cloud-based coding platform built with Next.js that blends real-time interview preparation with social coding",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "node scripts/copy-monaco.js && next dev",
+    "build": "node scripts/copy-monaco.js && next build",
     "start": "next start",
     "lint": "eslint .",
     "audit:repo": "./scripts/git-audit.sh",
