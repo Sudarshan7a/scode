@@ -1,72 +1,18 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
-import { SignupFormValues } from "@/types/authTypes";
 import OAuthSection from "../common/OAuthSection";
-import FormDivider from "../common/FormDivider";
-import SignupEmailPasswordForm from "./SignupEmailPasswordForm";
 import TermsAndPrivacy from "../common/TermsAndPrivacy";
-import { useToast, TOAST_MESSAGES } from "@/hooks/useToast";
 import googleAuth from "@/lib/Oauth/GoogleProvider";
 import githubAuth from "@/lib/Oauth/GitHubProvider";
 
 export function MySignupForm() {
-  const router = useRouter();
-  const { success, error } = useToast();
-
   // Handler for OAuth signup
   const handleOAuthSignup = async (providerId: string): Promise<void> => {
     if (providerId === "google") {
       await googleAuth();
     } else if (providerId === "github") {
       await githubAuth();
-    }
-  };
-
-  // Handler for email/password signup
-  const handleEmailPasswordSubmit = async (
-    values: SignupFormValues
-  ): Promise<{
-    ok: boolean;
-    message?: string;
-    redirect?: string;
-    fieldErrors?: Partial<Record<keyof SignupFormValues | "root", string>>;
-  }> => {
-    // Add signup logic here (API call, error handling, etc.)
-    try {
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-
-      const result = await res.json();
-
-      if (!res.ok || !result.ok) {
-        error(result.message ?? TOAST_MESSAGES.AUTH.SIGNUP_ERROR);
-        return {
-          ok: false,
-          message: result.message,
-          fieldErrors: result.fieldErrors,
-        };
-      }
-
-      success(result.message ?? TOAST_MESSAGES.AUTH.SIGNUP_SUCCESS);
-
-      // Redirect or show success message
-      if (result.redirect) {
-        router.push(result.redirect);
-      }
-
-      return { ok: true, message: result.message, redirect: result.redirect };
-    } catch (err) {
-      const message = `Unexpected signup error: ${err}`;
-      error(TOAST_MESSAGES.AUTH.SIGNUP_ERROR);
-      return { ok: false, message };
     }
   };
 
@@ -85,14 +31,10 @@ export function MySignupForm() {
         {/* OAuth Provider Section */}
         <OAuthSection onOAuthLogin={handleOAuthSignup} />
 
-        {/* Divider */}
-        <FormDivider text="or continue with email" />
-
-        {/* Email/Password Signup Form */}
-        <SignupEmailPasswordForm
-          onSubmit={handleEmailPasswordSubmit}
-          buttonText="Sign Up"
-        />
+        <div className="mt-4 rounded-md border border-amber-400/40 bg-amber-100/10 p-3 text-sm text-amber-200">
+          Email signup is temporarily unavailable due to technical
+          difficulties. Please continue with Google or GitHub.
+        </div>
 
         {/* Terms & Privacy */}
         <div className="mt-4 text-xs text-white">

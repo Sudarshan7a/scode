@@ -12,3 +12,5 @@ export const MSG_INVALID_INPUT = "Invalid input data";
 export const MSG_INTERNAL_ERROR = "Internal server error";
 export const MSG_SIGNUP_SUCCESS =
   "Account created successfully. Please check your email to verify your account.";
+export const MSG_EMAIL_SIGNUP_TEMP_DISABLED =
+  "Email signup is temporarily unavailable due to technical difficulties. Please continue with Google or GitHub.";

@@ -113,8 +113,13 @@ export function MyLoginForm() {
         {/* OAuth Provider Section */}
         <OAuthSection onOAuthLogin={handleOAuthLogin} />
 
+        <div className="mt-4 rounded-md border border-amber-500/30 bg-amber-100/10 p-3 text-sm text-amber-700 dark:text-amber-200">
+          New users should continue with Google or GitHub. Existing users can
+          still log in with email and password.
+        </div>
+
         {/* Divider */}
-        <FormDivider text="or continue with email" />
+        <FormDivider text="existing users can continue with email" />
 
         {/* Email/Password Form */}
         <EmailPasswordForm

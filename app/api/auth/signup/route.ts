@@ -14,6 +14,7 @@ import {
   MSG_INVALID_INPUT,
   MSG_INTERNAL_ERROR,
   MSG_SIGNUP_SUCCESS,
+  MSG_EMAIL_SIGNUP_TEMP_DISABLED,
 } from "./messages";
 import { signupSchema } from "@/types/authTypes";
 import { sendActionToken } from "@/lib/sendActionToken";
@@ -89,9 +90,22 @@ function mapUserCreationError(userResult: { error: string; status?: number }) {
   return respond(body, status);
 }
 
+const EMAIL_PASSWORD_SIGNUP_ENABLED = false;
+
 export async function POST(req: NextRequest) {
   const rateLimitRes = await rateLimit(req);
   if (rateLimitRes) return rateLimitRes;
+
+  if (!EMAIL_PASSWORD_SIGNUP_ENABLED) {
+    return respond(
+      {
+        ok: false,
+        message: MSG_EMAIL_SIGNUP_TEMP_DISABLED,
+        fieldErrors: { root: MSG_EMAIL_SIGNUP_TEMP_DISABLED },
+      },
+      503
+    );
+  }
 
   try {
     const body = await req.json();
