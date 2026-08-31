@@ -60,7 +60,8 @@ function Page() {
               Welcome Back
             </h2>
             <p className="text-sm font-medium text-mysecondary/80 mt-2">
-              Please enter your credentials to access your account
+              Sign in is temporarily unavailable while we resolve a technical
+              issue
             </p>
           </div>
 

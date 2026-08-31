@@ -7,6 +7,8 @@ import { strongPassword } from "@/types/authTypes";
 import { ObjectId } from "mongodb";
 import { getIP } from "@/lib/getIp";
 
+const RESET_PASSWORD_ENABLED = false;
+
 // Schema: token, password, confirmPassword
 const resetSchema = z
   .object({
@@ -20,6 +22,17 @@ const resetSchema = z
   });
 
 export async function POST(req: NextRequest) {
+  if (!RESET_PASSWORD_ENABLED) {
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          "Password reset is temporarily unavailable due to technical difficulties. We are working to fix this as soon as possible.",
+      },
+      { status: 503 }
+    );
+  }
+
   try {
     // Rate limiting by IP address
     const ip = getIP(req);

@@ -9,7 +9,20 @@ import { getIP } from "@/lib/getIp";
 import { loginLimiter } from "@/lib/rateLimiter";
 import { issueRefreshSession, setAuthCookies } from "@/lib/refreshSession";
 
+const EMAIL_PASSWORD_LOGIN_ENABLED = false;
+
 export async function POST(req: NextRequest) {
+  if (!EMAIL_PASSWORD_LOGIN_ENABLED) {
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          "Sign in is temporarily unavailable due to technical difficulties. We are working to fix this as soon as possible.",
+      },
+      { status: 503 }
+    );
+  }
+
   const ip = getIP(req);
   const { success } = await loginLimiter.limit(ip);
 
