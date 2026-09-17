@@ -2,7 +2,6 @@ import React from "react";
 import RoomJoinForm from "./RoomJoinForm";
 import ProductHighlightCard from "./ProductHighlightCard";
 import HeroSectionTitle from "./HeroSectionTitle";
-// import ScheduleModal from "@/components/schedule/ScheduleModal";
 
 function HeroSection() {
   return (
@@ -22,7 +21,6 @@ function HeroSection() {
           <ProductHighlightCard />
         </div>
       </div>
-      {/* <ScheduleModal /> */}
     </section>
   );
 }

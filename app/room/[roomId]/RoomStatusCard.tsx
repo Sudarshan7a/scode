@@ -187,10 +187,6 @@ function ActionArea({
         disabled={shouldDisable}
         loading={Boolean(loading)}
       />
-
-      <Button className="w-full text-foreground/80 py-2 text-sm rounded-md border-1 border-foreground/60 transition-all duration-300 bg-foreground/5 hover:bg-mysecondary/40">
-        View Details
-      </Button>
     </div>
   );
 }
