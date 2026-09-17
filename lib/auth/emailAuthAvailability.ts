@@ -1,0 +1,2 @@
+export const EMAIL_AUTH_UNAVAILABLE_MESSAGE =
+  "Email and password authentication is temporarily unavailable because of a technical difficulty with our third-party service. Our team is working to fix it as soon as possible. You can still sign in with Google or GitHub.";

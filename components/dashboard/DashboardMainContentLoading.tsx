@@ -35,7 +35,6 @@ export default async function DashboardMainContentLoading(): Promise<React.React
       <WelcomeBanner username={user?.name ?? "Guest"} />
       <HeroSection />
       <UpcomingRoomsClient />
-      {/* <YourActivitiesClient /> */}
     </div>
   );
 }

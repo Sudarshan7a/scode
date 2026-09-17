@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Calendar, Clock, Users, Lock, User, FileCode } from "lucide-react";
+import { toast } from "sonner";
 
 interface RoomCardProps {
   recreate?: boolean;
@@ -129,7 +130,7 @@ const RoomCard = ({
     const roomId = _id?.$oid || _id?.toString() || _id;
 
     if (!roomId) {
-      alert("Room ID is missing");
+      toast.error("Room ID is missing");
       console.error("Room ID debugging:", { _id, roomId, room });
       return;
     }
@@ -139,7 +140,7 @@ const RoomCard = ({
       const { data: userData } = await axiosInstance.get("/api/auth/me");
 
       if (!userData.user?.id) {
-        alert("Please log in to subscribe to notifications");
+        toast.error("Please log in to subscribe to notifications");
         return;
       }
 
@@ -148,7 +149,7 @@ const RoomCard = ({
         userId: userData.user.id,
       });
 
-      alert(
+      toast.success(
         response.data.message || "Successfully subscribed to notifications",
       );
     } catch (error) {
@@ -160,7 +161,7 @@ const RoomCard = ({
         axiosError.response?.data?.error ||
         axiosError.response?.data?.message ||
         "Failed to subscribe to notifications";
-      alert(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsNotifying(false);
     }
